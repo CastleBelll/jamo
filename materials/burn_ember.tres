@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; Burn ember. Unshaded and with no emission on purpose: doc v0.3 section 24
+; asks for a small ember, and the world Environment carries no glow pass, so a
+; bright emissive here would only wash out rather than bloom.
+[resource]
+resource_name = "BurnEmber"
+shading_mode = 0
+albedo_color = Color(0.976, 0.478, 0.153, 1)

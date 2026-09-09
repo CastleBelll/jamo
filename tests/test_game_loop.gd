@@ -10,7 +10,12 @@ extends Node
 const CHOICE_SCENE := "res://scenes/ui/jamo_choice.tscn"
 const HUD_SCENE := "res://scenes/ui/hud.tscn"
 const TREE_SCENE := "res://scenes/ui/word_tree.tscn"
+const WORD_COMPLETE_SCENE := "res://scenes/ui/word_complete.tscn"
+const SETTINGS_SCENE := "res://scenes/ui/settings.tscn"
 const WORLD_SCENE := "res://scenes/world/game_world.tscn"
+## A path that is deliberately not in the project, to prove a missing audio
+## file is skipped rather than raising a load error. Doc v0.3 section 25.
+const MISSING_AUDIO_PATH := "res://art/audio/sfx/step_heavy.ogg"
 ## Every monster the spawner can put on the field, plain and special.
 const MONSTER_SCENES := [
 	"res://scenes/monsters/monster_giyeok.tscn",
@@ -76,6 +81,13 @@ func _ready() -> void:
 	_test_hud_and_tree_show_the_same_words()
 	await _test_no_monster_size_leaves_the_slab()
 	await _test_hud_buttons_take_keyboard_focus()
+	await _test_burn_vfx_follows_effects_changed()
+	await _test_energy_warning_threshold_comes_from_balance()
+	_test_volume_settings_survive_a_save()
+	_test_missing_audio_files_are_skipped()
+	_test_step_sfx_paths_differ_per_motion_profile()
+	await _test_word_completion_can_be_skipped()
+	await _test_settings_sliders_drive_the_buses()
 
 	if _failures == 0:
 		print("OK - all game loop checks passed.")
@@ -1392,3 +1404,214 @@ func _test_hud_buttons_take_keyboard_focus() -> void:
 	)
 
 	hud.queue_free()
+
+
+## F3 left StatusEffectContainer.effects_changed with no listener at all. The
+## burn ember is that listener: applying a burn must switch the particles on
+## and clearing it must switch them off, without anything polling per frame.
+## Doc v0.3 section 24.
+func _test_burn_vfx_follows_effects_changed() -> void:
+	_reset()
+	for jamo in ["ㅂ", "ㅜ", "ㄹ"]:
+		GameState.add_jamo(jamo)
+	GameState.complete_ready_words()
+	var burn: WordEffectData = GameState.get_burn_effect()
+	_check(burn != null, "불 should be unlocked before the burn VFX check")
+
+	var monster: JamoMonster = (load(MONSTER_SCENE) as PackedScene).instantiate()
+	add_child(monster)
+	await get_tree().process_frame
+	var ember: CPUParticles3D = monster.get_node("StatusEffectAnchor/BurnEmber")
+	_check(not ember.emitting, "the ember stays off while nothing burns")
+
+	monster.apply_status_effect(burn)
+	_check(ember.emitting, "applying burn must switch the ember on")
+
+	var status: StatusEffectContainer = monster.get_node("StatusEffects")
+	status.clear()
+	_check(not ember.emitting, "clearing the effects must switch the ember off")
+
+	monster.queue_free()
+	await get_tree().process_frame
+
+
+## The warning threshold is balance data, not a constant in hud.gd: moving it in
+## game_balance.tres has to move the warning. Doc v0.3 section 23.3.
+func _test_energy_warning_threshold_comes_from_balance() -> void:
+	_reset()
+	var hud: Control = (load(HUD_SCENE) as PackedScene).instantiate()
+	add_child(hud)
+	await get_tree().process_frame
+	var warn_label: Label = hud.get_node("%EnergyWarnLabel")
+	var original: int = GameState.balance.low_energy_warning
+
+	GameState.balance.low_energy_warning = 3
+	SignalBus.energy_changed.emit(5, 20)
+	_check(not warn_label.visible, "5 energy is above a threshold of 3")
+	SignalBus.energy_changed.emit(3, 20)
+	_check(warn_label.visible, "3 energy is at a threshold of 3")
+
+	# Raising the threshold in the data alone has to widen the warning band.
+	GameState.balance.low_energy_warning = 6
+	SignalBus.energy_changed.emit(5, 20)
+	_check(warn_label.visible, "5 energy warns once the balance threshold is 6")
+	SignalBus.energy_changed.emit(0, 20)
+	_check(not warn_label.visible, "an empty day is the day end, not a warning")
+
+	GameState.balance.low_energy_warning = original
+	hud.queue_free()
+	await get_tree().process_frame
+
+
+## Volumes travel in the same save file as the rest of the progress.
+func _test_volume_settings_survive_a_save() -> void:
+	_reset()
+	var original: Dictionary = AudioManager.to_dict()
+
+	AudioManager.set_volume(AudioManager.BUS_MASTER, 0.4)
+	AudioManager.set_volume(AudioManager.BUS_BGM, 0.0)
+	AudioManager.set_volume(AudioManager.BUS_SFX, 0.75)
+	_check(SaveManager.save_game(), "saving the volumes should succeed")
+
+	AudioManager.set_volume(AudioManager.BUS_MASTER, 1.0)
+	AudioManager.set_volume(AudioManager.BUS_BGM, 1.0)
+	AudioManager.set_volume(AudioManager.BUS_SFX, 1.0)
+	_check(SaveManager.load_game(), "loading the volumes should succeed")
+	_close(AudioManager.get_volume(AudioManager.BUS_MASTER), 0.4, "master volume")
+	_close(AudioManager.get_volume(AudioManager.BUS_BGM), 0.0, "bgm volume")
+	_close(AudioManager.get_volume(AudioManager.BUS_SFX), 0.75, "sfx volume")
+
+	# A muted bus really is muted, not merely quiet.
+	var bgm_bus := AudioServer.get_bus_index(String(AudioManager.BUS_BGM))
+	_check(bgm_bus >= 0, "the BGM bus must exist in the project bus layout")
+	_check(AudioServer.is_bus_mute(bgm_bus), "a volume of 0 should mute the bus")
+
+	AudioManager.from_dict(original)
+
+
+## No audio asset ships with the repository yet, so every cue resolves to a
+## missing file. That has to be silent, never a load error mid-fight.
+func _test_missing_audio_files_are_skipped() -> void:
+	_check(
+		not ResourceLoader.exists(MISSING_AUDIO_PATH),
+		"this check needs %s to still be absent" % MISSING_AUDIO_PATH
+	)
+	# None of these may raise; a cue with no file simply plays nothing.
+	AudioManager.play_sfx_path(MISSING_AUDIO_PATH)
+	AudioManager.play_sfx_path("")
+	AudioManager.play_sfx(&"click")
+	AudioManager.play_sfx(&"word_complete")
+	AudioManager.play_sfx(&"not_a_cue_at_all")
+
+	var pool: Node = AudioManager.get_node("SfxPool")
+	var playing := 0
+	for child: Node in pool.get_children():
+		var player := child as AudioStreamPlayer
+		if player != null and player.playing:
+			playing += 1
+	_check(playing == 0, "a missing audio file must leave every player idle")
+	_check(
+		AudioManager.library != null and AudioManager.library.path_for(&"click").is_empty(),
+		"the click cue is still waiting for its audio asset"
+	)
+
+
+## Doc v0.3 section 25 asks for a different step sound per motion profile
+## family. The paths live on the .tres files, so the split survives a rebalance.
+func _test_step_sfx_paths_differ_per_motion_profile() -> void:
+	var profiles := {
+		"heavy_step": "step_heavy",
+		"light_step": "step_light",
+		"bounce": "step_bounce",
+		"roll": "step_roll",
+		"glide": "step_glide",
+	}
+	var seen: Dictionary = {}
+	for name: String in profiles:
+		var profile: MotionProfile = load("res://resources/motion_profiles/%s.tres" % name)
+		_check(profile != null, "%s.tres should load" % name)
+		if profile == null:
+			continue
+		_check(
+			profile.step_sfx_path.contains(profiles[name]),
+			"%s should point at %s (got %s)"
+				% [name, profiles[name], profile.step_sfx_path]
+		)
+		seen[profile.step_sfx_path] = true
+	_check(seen.size() == 5, "the five step families need five distinct sounds")
+
+	# The step is fired from the walk animation's method track, not from code.
+	var library: AnimationLibrary = load("res://resources/animations/walk_library.tres")
+	for animation_name: StringName in library.get_animation_list():
+		if not String(animation_name).begins_with("walk_"):
+			continue
+		var animation: Animation = library.get_animation(animation_name)
+		var step_keys := 0
+		for track in animation.get_track_count():
+			if animation.track_get_type(track) == Animation.TYPE_METHOD:
+				step_keys += animation.track_get_key_count(track)
+		_check(step_keys > 0, "%s needs at least one step method key" % animation_name)
+
+
+## The word-complete gather is the game's biggest reward beat, but it is also
+## seen over and over: a click has to jump straight to the reveal.
+## Doc v0.3 section 14.2.
+func _test_word_completion_can_be_skipped() -> void:
+	_reset()
+	var panel: Control = (load(WORD_COMPLETE_SCENE) as PackedScene).instantiate()
+	add_child(panel)
+	await get_tree().process_frame
+
+	var revealed := [false]
+	var handler := func() -> void: revealed[0] = true
+	SignalBus.word_revealed.connect(handler)
+
+	var word: WordData = GameState.database.find_word(&"fire_001")
+	panel.open([word] as Array[WordData])
+	await get_tree().process_frame
+	_check(not revealed[0], "the gather has to run before the reveal")
+
+	var skip := InputEventAction.new()
+	skip.action = &"click"
+	skip.pressed = true
+	Input.parse_input_event(skip)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(revealed[0], "a click during the gather must jump to the reveal")
+	_check(
+		panel.get_node("%CompletedWord").text == word.word,
+		"the skipped reveal still has to show the finished word"
+	)
+
+	SignalBus.word_revealed.disconnect(handler)
+	panel.queue_free()
+	await get_tree().process_frame
+
+
+## The settings screen is what the player actually reaches, so the sliders have
+## to move the buses and read back the stored positions. Doc v0.3 section 25.
+func _test_settings_sliders_drive_the_buses() -> void:
+	var original: Dictionary = AudioManager.to_dict()
+	var panel: Control = (load(SETTINGS_SCENE) as PackedScene).instantiate()
+	add_child(panel)
+	await get_tree().process_frame
+
+	var slider: HSlider = panel.get_node("%SfxSlider")
+	var value_label: Label = panel.get_node("%SfxValueLabel")
+	slider.value = 0.5
+	_close(
+		AudioManager.get_volume(AudioManager.BUS_SFX), 0.5,
+		"moving the SFX slider should move the SFX bus"
+	)
+	_check(value_label.text == "50%", "the slider needs a readable value, got %s" % value_label.text)
+
+	# Reopening has to show the stored position, not the value baked into
+	# the scene.
+	AudioManager.set_volume(AudioManager.BUS_SFX, 0.2)
+	panel.open()
+	_close(slider.value, 0.2, "reopening settings should show the stored volume")
+	_check(value_label.text == "20%", "the percentage should follow the stored volume")
+
+	AudioManager.from_dict(original)
+	panel.queue_free()
+	await get_tree().process_frame

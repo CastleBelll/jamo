@@ -18,18 +18,58 @@
 [ext_resource type="PackedScene" path="res://scenes/monsters/special/monster_fast_ieung.tscn" id="16_fast_ieung"]
 [ext_resource type="PackedScene" path="res://scenes/monsters/special/monster_golden_hieut.tscn" id="17_golden_hieut"]
 
-[node name="GameWorld" type="Node3D" node_paths=PackedStringArray("fx_root")]
+[node name="GameWorld" type="Node3D" node_paths=PackedStringArray("fx_root", "hit_fx_pool", "death_fx_pool")]
 script = ExtResource("1_world")
 damage_number_scene = ExtResource("6_number")
-hit_fx_scene = ExtResource("7_hit")
-death_fx_scene = ExtResource("8_death")
 fx_root = NodePath("FXRoot")
+hit_fx_pool = NodePath("FXRoot/HitFXPool")
+death_fx_pool = NodePath("FXRoot/DeathFXPool")
 
 [node name="Arena" parent="." instance=ExtResource("2_arena")]
 
 [node name="MonsterRoot" type="Node3D" parent="."]
 
 [node name="FXRoot" type="Node3D" parent="."]
+
+[node name="HitFXPool" type="Node3D" parent="FXRoot"]
+
+[node name="HitFX0" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="HitFX1" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="HitFX2" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="HitFX3" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="HitFX4" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="HitFX5" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="HitFX6" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="HitFX7" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="HitFX8" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="HitFX9" parent="FXRoot/HitFXPool" instance=ExtResource("7_hit")]
+
+[node name="DeathFXPool" type="Node3D" parent="FXRoot"]
+
+[node name="DeathFX0" parent="FXRoot/DeathFXPool" instance=ExtResource("8_death")]
+
+[node name="DeathFX1" parent="FXRoot/DeathFXPool" instance=ExtResource("8_death")]
+
+[node name="DeathFX2" parent="FXRoot/DeathFXPool" instance=ExtResource("8_death")]
+
+[node name="DeathFX3" parent="FXRoot/DeathFXPool" instance=ExtResource("8_death")]
+
+[node name="DeathFX4" parent="FXRoot/DeathFXPool" instance=ExtResource("8_death")]
+
+[node name="DeathFX5" parent="FXRoot/DeathFXPool" instance=ExtResource("8_death")]
+
+[node name="DeathFX6" parent="FXRoot/DeathFXPool" instance=ExtResource("8_death")]
+
+[node name="DeathFX7" parent="FXRoot/DeathFXPool" instance=ExtResource("8_death")]
 
 [node name="CameraRig" parent="." instance=ExtResource("3_camera")]
 

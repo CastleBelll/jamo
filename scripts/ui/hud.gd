@@ -4,9 +4,6 @@ extends Control
 ## current word progress and three buttons - no timer, no player HP, no skill
 ## bar. Doc v0.3 section 23.1.
 
-## Below this much energy the bar warns the player the day is nearly over.
-## Doc v0.3 section 23.3.
-const LOW_ENERGY_WARNING := 3
 ## Shown while no target word is set. Doc v0.3 section 23.1.
 const TARGET_NONE_TEXT := "TARGET: 없음  (트리에서 지정)"
 
@@ -17,6 +14,13 @@ signal pause_pressed()
 @onready var _day_label: Label = %DayLabel
 @onready var _energy_label: Label = %EnergyLabel
 @onready var _energy_bar: ProgressBar = %EnergyBar
+## The low-energy warning: a label that appears and blinks, so the cue is text
+## plus motion and not colour alone. Doc v0.3 section 23.3.
+@onready var _energy_warn_label: Label = %EnergyWarnLabel
+## Punch on every energy change; the warning loop lives in its own player
+## because one AnimationPlayer cannot run both at once.
+@onready var _energy_pulse_anim: AnimationPlayer = %EnergyPulseAnim
+@onready var _energy_warn_anim: AnimationPlayer = %EnergyWarnAnim
 @onready var _gold_label: Label = %GoldLabel
 @onready var _kills_label: Label = %KillsLabel
 ## One static row per word in the database; the script only shows, hides and
@@ -88,8 +92,26 @@ func _on_energy_changed(current: int, maximum: int) -> void:
 	_energy_bar.max_value = maxi(1, maximum)
 	_energy_bar.value = current
 	# Colour is a reinforcement, never the only cue: the number is always there.
-	var low := current <= LOW_ENERGY_WARNING and current > 0
+	var low := current <= GameState.balance.low_energy_warning and current > 0
 	_energy_label.modulate = Color(0.72, 0.27, 0.18) if low else Color.WHITE
+	_set_low_energy_warning(low)
+	# Stopped first so a fast click streak restarts the punch every time
+	# instead of resuming the one already in flight.
+	_energy_pulse_anim.stop()
+	_energy_pulse_anim.play(&"pulse")
+
+
+## Runs the blinking warning while the day is nearly out of energy, and puts
+## the bar back to its normal tint when it is not.
+func _set_low_energy_warning(low: bool) -> void:
+	_energy_warn_label.visible = low
+	if low:
+		if not _energy_warn_anim.is_playing():
+			_energy_warn_anim.play(&"warn")
+		return
+	if _energy_warn_anim.is_playing():
+		_energy_warn_anim.stop()
+	_energy_bar.self_modulate = Color.WHITE
 
 
 func _on_gold_changed(total: float) -> void:

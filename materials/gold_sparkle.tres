@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; Golden individual sparkle. Kept unshaded and small; doc v0.3 section 24 calls
+; for "아주 작은 sparkle" and explicitly forbids heavy bloom on gold.
+[resource]
+resource_name = "GoldSparkle"
+shading_mode = 0
+albedo_color = Color(1, 0.906, 0.62, 1)

@@ -34,7 +34,17 @@ func _unhandled_input(event: InputEvent) -> void:
 	var is_critical := GameState.roll_critical()
 	monster.take_click_damage(GameState.get_click_damage(is_critical), is_critical)
 	monster.apply_status_effect(GameState.get_burn_effect())
+	AudioManager.play_sfx(_click_cue(monster, is_critical))
 	get_viewport().set_input_as_handled()
+
+
+## Which of the click cues in doc v0.3 section 25 this hit gets. A golden
+## individual wins over the critical cue: it is the rarer event of the two.
+static func _click_cue(monster: JamoMonster, is_critical: bool) -> StringName:
+	var data: JamoMonsterData = monster.monster_data
+	if data != null and data.special_type == JamoMonsterData.SpecialType.GOLDEN:
+		return &"click_golden"
+	return &"click_critical" if is_critical else &"click"
 
 
 ## Returns the monster under the given screen point, or null.

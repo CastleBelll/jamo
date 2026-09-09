@@ -16,6 +16,9 @@ var loaded_existing_save: bool = false
 func save_game() -> bool:
 	var payload: Dictionary = GameState.to_dict()
 	payload["save_version"] = SAVE_VERSION
+	# Volume sliders live in the same file as the rest of the progress rather
+	# than a second settings file. Doc v0.3 section 30.
+	payload["audio"] = AudioManager.to_dict()
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file == null:
@@ -60,6 +63,10 @@ func load_game() -> bool:
 		)
 
 	GameState.from_dict(data)
+	# Saves written before the volume sliders existed have no "audio" key; those
+	# keep the defaults instead of dropping to silence.
+	var audio: Variant = data.get("audio", {})
+	AudioManager.from_dict(audio if audio is Dictionary else {})
 	loaded_existing_save = true
 	return true
 

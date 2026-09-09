@@ -1,0 +1,61 @@
+{
+	"phase": "read",
+	"restored_before_opening_panel": {
+		"bgm": 0.25,
+		"master": 0.0,
+		"sfx": 0.5
+	},
+	"save_path": "user://jamo_save.json",
+	"saved_file": {
+		"content": {
+			"audio": {
+				"bgm": 0.25,
+				"master": 0.0,
+				"sfx": 0.5
+			},
+			"day": 1.0,
+			"gold": 0.0,
+			"jamo_inventory": {},
+			"rerolls_left": 0.0,
+			"save_version": 1.0,
+			"target_word": "",
+			"unlocked_words": [],
+			"upgrade_levels": {}
+		},
+		"exists": true,
+		"keys": [
+			"audio",
+			"day",
+			"gold",
+			"jamo_inventory",
+			"rerolls_left",
+			"save_version",
+			"target_word",
+			"unlocked_words",
+			"upgrade_levels"
+		]
+	},
+	"sliders": {
+		"bgm": {
+			"bus_muted": false,
+			"bus_volume_db": -12.0411996841431,
+			"label": "25%",
+			"manager_volume": 0.25,
+			"slider": 0.25
+		},
+		"master": {
+			"bus_muted": true,
+			"bus_volume_db": -60.0,
+			"label": "0%",
+			"manager_volume": 0.0,
+			"slider": 0.0
+		},
+		"sfx": {
+			"bus_muted": false,
+			"bus_volume_db": -6.02059984207153,
+			"label": "50%",
+			"manager_volume": 0.5,
+			"slider": 0.5
+		}
+	}
+}

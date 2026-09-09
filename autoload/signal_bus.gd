@@ -24,6 +24,9 @@ signal damage_dealt(world_position: Vector3, amount: float, is_critical: bool)
 signal jamo_collected(jamo: String)
 ## A word finished. Its effects are already active.
 signal word_completed(word: WordData)
+## The word completion panel reached its reveal beat. The camera listens for
+## this to run the word-complete zoom. Doc v0.3 sections 14.2 and 26.
+signal word_revealed()
 ## The target word changed. `word` is null when the target was cleared.
 signal target_word_changed(word: WordData)
 ## An upgrade level was bought.

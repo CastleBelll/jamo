@@ -10,3 +10,4 @@ turn_speed = 4.0
 idle_min = 0.8
 idle_max = 2.2
 avoidance_radius = 1.35
+step_sfx_path = "res://art/audio/sfx/step_heavy.ogg"

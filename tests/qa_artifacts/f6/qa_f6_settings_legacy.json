@@ -1,0 +1,31 @@
+{
+	"legacy_click_damage_level": 2,
+	"legacy_day": 3,
+	"legacy_gold": 120.0,
+	"legacy_loaded": true,
+	"phase": "legacy",
+	"save_path": "user://jamo_save.json",
+	"sliders": {
+		"bgm": {
+			"bus_muted": false,
+			"bus_volume_db": 0.0,
+			"label": "100%",
+			"manager_volume": 1.0,
+			"slider": 1.0
+		},
+		"master": {
+			"bus_muted": false,
+			"bus_volume_db": 0.0,
+			"label": "100%",
+			"manager_volume": 1.0,
+			"slider": 1.0
+		},
+		"sfx": {
+			"bus_muted": false,
+			"bus_volume_db": 0.0,
+			"label": "100%",
+			"manager_volume": 1.0,
+			"slider": 1.0
+		}
+	}
+}

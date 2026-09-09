@@ -12,3 +12,4 @@ turn_speed = 3.5
 idle_min = 1.2
 idle_max = 2.6
 avoidance_radius = 1.75
+step_sfx_path = "res://art/audio/sfx/step_bounce.ogg"

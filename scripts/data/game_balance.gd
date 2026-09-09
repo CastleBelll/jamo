@@ -11,6 +11,11 @@ extends Resource
 ## Energy consumed by one manual click. Doc v0.3 section 2.2.
 @export var click_energy_cost: int = 1
 
+## Energy remaining at which the HUD starts warning that the day is nearly
+## over. Doc v0.3 section 23.3 asks for "마지막 3 에너지". Raise it here rather
+## than in hud.gd so the warning can be retuned without a code change.
+@export_range(0, 20) var low_energy_warning: int = 3
+
 @export_group("Click")
 ## Click damage at upgrade level 0. Doc v0.3 section 10.1.
 @export var base_click_damage: float = 1.0

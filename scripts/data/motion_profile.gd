@@ -25,6 +25,15 @@ extends Resource
 @export_range(0.0, 10.0, 0.05) var idle_min: float = 0.6
 @export_range(0.0, 10.0, 0.05) var idle_max: float = 1.8
 
+@export_group("Audio")
+## Step sound for this walk personality, one per profile family in doc v0.3
+## section 25 (HEAVY 톡/툭 / LIGHT 틱/탭 / BOUNCE 뽁/통 / ROLL 구름 / GLIDE 스윽).
+## A path rather than an AudioStream because the audio assets are not in the
+## repository yet: an empty or missing path plays nothing and raises no error.
+## The walk animations fire it from their method track, so the beat is keyed in
+## the AnimationPlayer, not in code.
+@export_file("*.ogg", "*.wav", "*.mp3") var step_sfx_path: String = ""
+
 @export_group("Spacing")
 ## Monsters closer than this nudge away from each other. Doc v0.3 section 4.1.
 @export_range(0.0, 3.0, 0.05) var avoidance_radius: float = 0.55

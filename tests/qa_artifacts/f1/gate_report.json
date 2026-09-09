@@ -45,6 +45,7 @@
 			"script",
 			"start_max_energy",
 			"click_energy_cost",
+			"low_energy_warning",
 			"base_click_damage",
 			"base_crit_multiplier",
 			"base_monster_hp",
@@ -55,6 +56,8 @@
 			"special_spawn_chance",
 			"golden_spawn_chance",
 			"base_jamo_candidates",
+			"focus_weight_steps",
+			"base_focus_level",
 			"day_end_settle_seconds"
 		]
 	},

@@ -1,9 +1,72 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" path="res://art/ui/btn_dictionary.png" id="2_dict"]
 [ext_resource type="Texture2D" path="res://art/ui/btn_settings.png" id="3_set"]
 [ext_resource type="Texture2D" path="res://art/ui/btn_pause.png" id="4_pause"]
+
+[sub_resource type="Animation" id="Animation_energy_pulse"]
+resource_name = "pulse"
+length = 0.22
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TopBar/EnergyPanel:pivot_offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(100, 25)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("TopBar/EnergyPanel:scale")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.07, 0.22),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.06, 1.09), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_energy_warn"]
+resource_name = "warn"
+length = 0.9
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TopBar/EnergyPanel/EnergyBox/EnergyWarnLabel:modulate")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.45, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(0.86, 0.31, 0.2, 1), Color(0.86, 0.31, 0.2, 0.3), Color(0.86, 0.31, 0.2, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("TopBar/EnergyPanel/EnergyBox/EnergyBar:self_modulate")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.45, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 0.55, 0.45, 1), Color(1, 0.85, 0.8, 1), Color(1, 0.55, 0.45, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_energy"]
+_data = {
+&"pulse": SubResource("Animation_energy_pulse"),
+&"warn": SubResource("Animation_energy_warn")
+}
 
 [node name="HUD" type="Control"]
 layout_mode = 3
@@ -65,6 +128,14 @@ max_value = 20.0
 value = 20.0
 show_percentage = false
 
+[node name="EnergyWarnLabel" type="Label" parent="TopBar/EnergyPanel/EnergyBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.86, 0.31, 0.2, 1)
+text = "⚠ 에너지 부족"
+
 [node name="GoldPanel" type="PanelContainer" parent="TopBar"]
 layout_mode = 2
 size_flags_vertical = 0
@@ -102,7 +173,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 focus_mode = 2
-tooltip_text = "단어 도감"
+tooltip_text = "단어 트리"
 theme_type_variation = &"HudIconButton"
 icon = ExtResource("2_dict")
 expand_icon = true
@@ -256,3 +327,15 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "[ㅂ][ㅜ][ ]"
 horizontal_alignment = 1
+
+[node name="EnergyPulseAnim" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_energy")
+}
+
+[node name="EnergyWarnAnim" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_energy")
+}

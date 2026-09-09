@@ -41,6 +41,8 @@ const MIN_WALKABLE_HALF_EXTENT := 0.5
 @onready var _animation: AnimationPlayer = $AnimationPlayer
 @onready var _status: StatusEffectContainer = $StatusEffects
 @onready var _hit_anchor: Marker3D = $HitFXAnchor
+## Burn ember, placed in jamo_monster_base.tscn. Switched by _on_effects_changed.
+@onready var _burn_ember: CPUParticles3D = $StatusEffectAnchor/BurnEmber
 
 var max_hp: float = 1.0
 var hp: float = 1.0
@@ -96,6 +98,7 @@ func _ready() -> void:
 	_roll_stats()
 
 	_status.tick_damage.connect(_on_status_tick_damage)
+	_status.effects_changed.connect(_on_effects_changed)
 	_animation.animation_finished.connect(_on_animation_finished)
 	_animation.play(&"spawn")
 
@@ -344,6 +347,23 @@ func _apply_damage(amount: float, is_critical: bool = false) -> void:
 
 func _on_status_tick_damage(amount: float) -> void:
 	take_status_damage(amount)
+
+
+## The only consumer of StatusEffectContainer.effects_changed: it turns the
+## status VFX on and off, so a burn is visible without polling every frame.
+## Doc v0.3 section 24.
+func _on_effects_changed() -> void:
+	_burn_ember.emitting = _status.has(WordEffectData.EffectType.UNLOCK_BURN)
+
+
+## Called from the method track of every walk animation, so a footstep sound
+## lands on the beat the animator keyed rather than on a timer in code.
+## Silent while the motion profile has no step_sfx_path or the file is missing.
+## Doc v0.3 sections 7.1 and 25.
+func play_step_sfx() -> void:
+	if _profile == null or _state != State.WALK:
+		return
+	AudioManager.play_sfx_path(_profile.step_sfx_path)
 
 
 ## Applies a status effect, ignoring null so callers can pass an effect that is

@@ -7,3 +7,4 @@ script = ExtResource("1_script")
 profile_name = &"SWAY"
 walk_animation = &"walk_sway"
 avoidance_radius = 1.05
+step_sfx_path = "res://art/audio/sfx/step_glide.ogg"

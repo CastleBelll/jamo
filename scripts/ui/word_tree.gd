@@ -188,10 +188,10 @@ func _fill_column(index: int, words: Array) -> void:
 		return
 	# More words than slots must never fail silently: say how many are hidden
 	# instead of dropping them off the bottom of the column.
-	var hidden: int = words.size() - slots.size()
-	overflow.visible = hidden > 0
-	if hidden > 0:
-		overflow.text = OVERFLOW_FORMAT % hidden
+	var hidden_count: int = words.size() - slots.size()
+	overflow.visible = hidden_count > 0
+	if hidden_count > 0:
+		overflow.text = OVERFLOW_FORMAT % hidden_count
 
 
 func _slot_text(word: WordData) -> String:

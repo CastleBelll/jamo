@@ -1,0 +1,219 @@
+{
+	"audio_buses": {
+		"bus_count": 3,
+		"bus_names": [
+			"Master",
+			"BGM",
+			"SFX"
+		],
+		"layout_setting": "res://default_bus_layout.tres"
+	},
+	"burn_ember": {
+		"burn_duration": 3.0,
+		"ember_lifetime": 0.7,
+		"emitting_after_expiry": false,
+		"emitting_after_particle_lifetime": false,
+		"emitting_before": false,
+		"emitting_during": true,
+		"env_glow_enabled": false,
+		"seconds_until_off": 2.19166533333333
+	},
+	"burn_ember_monster": {
+		"jamo": "@CharacterBody3D@35",
+		"screen": "(693.7339, 455.7359)"
+	},
+	"burst_pooling": {
+		"clicks_attempted": 20,
+		"clicks_that_hit": 20,
+		"fps_during_burst": {
+			"average_fps": 59.9983800437387,
+			"engine_fps": 60.0,
+			"frames": 120,
+			"worst_frame_ms": 37.1166666666667
+		},
+		"pool_after": {
+			"death_pool": 8,
+			"hit_pool": 10
+		},
+		"pool_before": {
+			"death_pool": 8,
+			"hit_pool": 10
+		},
+		"worst_click_frame_ms": 50.501
+	},
+	"click_feedback": {
+		"animation_after_click": "hit",
+		"damage_numbers_added": 1,
+		"hitfx_emitting": 1
+	},
+	"day_end_settle": {
+		"at_zero": {
+			"day_end_visible": false,
+			"dim_visible": false,
+			"energy": 0,
+			"spent": true,
+			"warn_visible_at_zero": false
+		},
+		"day_end_after_ms": 756,
+		"dim_visible_at_day_end": true,
+		"gold_earned_delta": 4.07867701630874,
+		"kills_delta": 1,
+		"settle_seconds_setting": 0.8
+	},
+	"energy_feedback": {
+		"above_threshold": {
+			"warn_anim": false,
+			"warn_visible": false
+		},
+		"at_threshold": {
+			"bar_self_modulate": "(1.0, 0.5512, 0.4514, 1.0)",
+			"energy": 3,
+			"pulse_anim_name": "pulse",
+			"warn_anim_name": "warn",
+			"warn_anim_playing": true,
+			"warn_text": "⚠ 에너지 부족",
+			"warn_visible": true
+		},
+		"low_energy_warning": 3
+	},
+	"energy_warning_threshold_ab": {
+		"restored_quiet_at_energy_6": true,
+		"restored_threshold": 3,
+		"threshold_6_quiet_at_energy_7": true,
+		"threshold_6_warns_at_energy_6": true
+	},
+	"golden_sparkle": {
+		"env_glow_enabled": false,
+		"golden_unlocked": true,
+		"screen": "(640.0, 360.0443)",
+		"sparkle_amount": 10,
+		"sparkle_emitting": true,
+		"sparkle_node_present": true
+	},
+	"load_fps": {
+		"fps": {
+			"average_fps": 60.0000000000001,
+			"engine_fps": 60.0,
+			"frames": 120,
+			"worst_frame_ms": 16.6666666666667
+		},
+		"monsters_alive": 20,
+		"monsters_burning": 20
+	},
+	"missing_audio": {
+		"bgm_path": "",
+		"cues": {
+			"click": {
+				"exists": false,
+				"path": ""
+			},
+			"click_critical": {
+				"exists": false,
+				"path": ""
+			},
+			"click_golden": {
+				"exists": false,
+				"path": ""
+			},
+			"kill": {
+				"exists": false,
+				"path": ""
+			},
+			"word_complete": {
+				"exists": false,
+				"path": ""
+			}
+		},
+		"library_assigned": true,
+		"step_paths": {
+			"bounce.tres": {
+				"exists": false,
+				"step_sfx_path": "res://art/audio/sfx/step_bounce.ogg"
+			},
+			"glide.tres": {
+				"exists": false,
+				"step_sfx_path": "res://art/audio/sfx/step_glide.ogg"
+			},
+			"heavy_bounce.tres": {
+				"exists": false,
+				"step_sfx_path": "res://art/audio/sfx/step_bounce.ogg"
+			},
+			"heavy_step.tres": {
+				"exists": false,
+				"step_sfx_path": "res://art/audio/sfx/step_heavy.ogg"
+			},
+			"light_step.tres": {
+				"exists": false,
+				"step_sfx_path": "res://art/audio/sfx/step_light.ogg"
+			},
+			"roll.tres": {
+				"exists": false,
+				"step_sfx_path": "res://art/audio/sfx/step_roll.ogg"
+			},
+			"roll_fast.tres": {
+				"exists": false,
+				"step_sfx_path": "res://art/audio/sfx/step_roll.ogg"
+			},
+			"sway.tres": {
+				"exists": false,
+				"step_sfx_path": "res://art/audio/sfx/step_glide.ogg"
+			},
+			"upright.tres": {
+				"exists": false,
+				"step_sfx_path": "res://art/audio/sfx/step_light.ogg"
+			}
+		}
+	},
+	"word_reveal": {
+		"panel_hidden_after_queue": true,
+		"queue_replay": {
+			"first_gather_jamo": 3,
+			"second_gather_jamo": 3,
+			"second_panel_hidden_during_gather": true,
+			"second_word_gathers_again": true,
+			"second_word_text": "돈"
+		},
+		"stage_1_ring": {
+			"fly_layer_visible": true,
+			"jamo_on_ring": 3,
+			"panel_visible": false,
+			"ring_spread_px": 240.0
+		},
+		"stage_2_midway": {
+			"spread_px": 261.390930175781
+		},
+		"stage_3_reveal": {
+			"camera_size_after_zoom_out": 9.60000038146973,
+			"camera_size_at_reveal": 9.60000038146973,
+			"camera_size_at_zoom_peak": 8.16959953308105,
+			"camera_size_before": 9.60000038146973,
+			"effect_text": "화상 해금. 클릭한 몬스터가 3초 동안 1초마다 1 피해를 받는다.",
+			"fly_layer_visible": false,
+			"jamo_text": "ㅂ + ㅜ + ㄹ",
+			"panel_visible": true,
+			"reveal_anim_name": "reveal",
+			"reveal_anim_playing": true,
+			"word_text": "불"
+		}
+	},
+	"word_reveal_skip": {
+		"skip_by_click": {
+			"closed_after_continue": true,
+			"effect_text": "화상 해금. 클릭한 몬스터가 3초 동안 1초마다 1 피해를 받는다.",
+			"fly_layer_visible": false,
+			"jamo_text": "ㅂ + ㅜ + ㄹ",
+			"panel_visible_after_skip": true,
+			"panel_visible_before_skip": false,
+			"word_text": "불"
+		},
+		"skip_by_ui_accept": {
+			"closed_after_continue": true,
+			"effect_text": "화상 해금. 클릭한 몬스터가 3초 동안 1초마다 1 피해를 받는다.",
+			"fly_layer_visible": false,
+			"jamo_text": "ㅂ + ㅜ + ㄹ",
+			"panel_visible_after_skip": true,
+			"panel_visible_before_skip": false,
+			"word_text": "불"
+		}
+	}
+}

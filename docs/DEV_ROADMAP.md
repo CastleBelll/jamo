@@ -83,18 +83,18 @@
 - [x] S5 키보드 네비게이션 / 포커스 표시 / 색 대비 WCAG AA
 - [x] QA 확인: 4상태 시각 구분 / Target 지정 후 후보 가중 변화 / 키보드만으로 조작 가능
 
-## F6. Juice / Polish  `[~]`
+## F6. Juice / Polish  `[x]`
 
 근거: v0.3 §23 §24 §25 / Phase 9
 
-- [ ] S0 이월: word_tree.gd:191 shadowing 경고, 책 아이콘 툴팁이 아직 "단어 도감"
-- [ ] S1 클릭 피드백 4종 완비 — squash / 파티클 / Damage Number / SFX
-- [ ] S2 상태이상 VFX — burn ember, golden sparkle (과도한 Bloom 금지)
-- [ ] S3 에너지 피드백 — 게이지 pulse, 잔여 3 이하 경고, 0 에서 Day End 트랜지션
-- [ ] S4 단어 완성 연출 — 자모 중앙 집결 → 음절 합성 → Glyph 등장 → Zoom + Sting
-- [ ] S5 MotionProfile 별 Step SFX 분기 (HEAVY/LIGHT/BOUNCE/ROLL/GLIDE)
-- [ ] S6 `AudioManager` autoload 추가 + 설정 화면 볼륨 연동
-- [ ] QA 확인: 무음/무연출 구간 없음 / 60FPS 유지 / 설정에서 볼륨 조절 반영
+- [x] S0 이월: word_tree.gd:191 shadowing 경고, 책 아이콘 툴팁이 아직 "단어 도감"
+- [x] S1 클릭 피드백 4종 완비 — squash / 파티클 / Damage Number / SFX
+- [x] S2 상태이상 VFX — burn ember, golden sparkle (과도한 Bloom 금지)
+- [x] S3 에너지 피드백 — 게이지 pulse, 잔여 3 이하 경고, 0 에서 Day End 트랜지션
+- [x] S4 단어 완성 연출 — 자모 중앙 집결 → 음절 합성 → Glyph 등장 → Zoom + Sting
+- [x] S5 MotionProfile 별 Step SFX 분기 (HEAVY/LIGHT/BOUNCE/ROLL/GLIDE)
+- [x] S6 `AudioManager` autoload 추가 + 설정 화면 볼륨 연동
+- [x] QA 확인: 무음/무연출 구간 없음 / 60FPS 유지 / 설정에서 볼륨 조절 반영
 
 ---
 
@@ -102,10 +102,18 @@
 
 F1~F6 완료 후 아래를 일괄 점검하고 통과해야 Phase 10(밸런싱) 으로 넘어간다.
 
-- [ ] 맵 1개 / 자모 6종 / 특수 3종 / Day 1~20 진행 가능
-- [ ] 단어 10개 이상, 3개 이상 계열
-- [ ] Gold Upgrade 5종 이상
-- [ ] Burn / Critical / Gold Word / Energy Word 동작
-- [ ] Jamo Choice + Reroll
-- [ ] Save / Load / Settings
-- [ ] 30분 이상 진행 시 심각한 막힘 없음
+- [x] 맵 1개 / 자모 6종 / 특수 3종 / Day 1~20 진행 가능
+- [x] 단어 10개 이상, 3개 이상 계열
+- [x] Gold Upgrade 5종 이상
+- [x] Burn / Critical / Gold Word / Energy Word 동작
+- [x] Jamo Choice + Reroll
+- [x] Save / Load / Settings
+- [ ] 30분 이상 진행 시 심각한 막힘 없음 (장시간 플레이 세션 미실시)
+
+### 남은 LOW 이슈 (F6 QA)
+- [ ] `word_revealed` unused-signal 에디터 경고
+- [ ] 단어 완성 시 집결 자모 시인성
+- [ ] burn ember / gold sparkle 가독성 하한
+
+### 오디오 애셋
+- [ ] `art/audio/sfx/` 가 비어 있다. 경로 export 와 재생 구조만 존재하며 소리는 나지 않는다

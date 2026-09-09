@@ -1,32 +1,32 @@
 {
 	"click_counts": {
 		"big_mieum": {
-			"clicks": 9,
-			"energy_spent": 9,
+			"clicks": 3,
+			"energy_spent": 3,
 			"gold_gained": 6.0,
 			"killed": true,
 			"max_hp": 9.0,
 			"missed_attempts": 0
 		},
 		"fast_ieung": {
-			"clicks": 3,
-			"energy_spent": 3,
+			"clicks": 1,
+			"energy_spent": 1,
 			"gold_gained": 4.0,
 			"killed": true,
 			"max_hp": 2.25,
 			"missed_attempts": 0
 		},
 		"normal_ieung": {
-			"clicks": 3,
-			"energy_spent": 3,
+			"clicks": 1,
+			"energy_spent": 1,
 			"gold_gained": 2.0,
 			"killed": true,
 			"max_hp": 3.0,
 			"missed_attempts": 0
 		},
 		"normal_mieum": {
-			"clicks": 3,
-			"energy_spent": 3,
+			"clicks": 1,
+			"energy_spent": 1,
 			"gold_gained": 2.0,
 			"killed": true,
 			"max_hp": 3.0,
@@ -36,21 +36,21 @@
 	"day_rollover": {
 		"day": 2,
 		"energy": 20,
-		"gold_after": 25.0,
-		"gold_before": 25.0,
+		"gold_after": 94525.0,
+		"gold_before": 94525.0,
 		"max_energy": 20,
 		"monsters_after_rollover": 8
 	},
 	"diversity": {
 		"histogram": {
-			"digeut": 34,
-			"giyeok": 31,
-			"i": 25,
-			"ieung": 35,
-			"mieum": 39,
-			"siot": 36
+			"digeut": 28,
+			"giyeok": 30,
+			"i": 38,
+			"ieung": 31,
+			"mieum": 36,
+			"siot": 37
 		},
-		"immediate_repeat_rate": 0.0301507537688442,
+		"immediate_repeat_rate": 0.0251256281407035,
 		"longest_same_jamo_run": 2,
 		"samples": 200
 	},
@@ -63,13 +63,13 @@
 			},
 			"ids": [
 				"digeut",
-				"giyeok",
+				"mieum",
+				"siot",
+				"digeut",
 				"digeut",
 				"giyeok",
-				"ieung",
-				"siot",
-				"mieum",
-				"siot"
+				"i",
+				"ieung"
 			]
 		},
 		"locked_golden_chance": 0.0,
@@ -86,38 +86,38 @@
 				"special": 7
 			},
 			"ids": [
-				"big_mieum",
 				"fast_ieung",
 				"big_mieum",
 				"fast_ieung",
-				"ieung",
+				"big_mieum",
 				"fast_ieung",
 				"big_mieum",
-				"big_mieum"
+				"digeut",
+				"fast_ieung"
 			]
 		},
 		"unlocked_field": {
 			"counts": {
-				"golden": 8,
-				"normal": 0,
+				"golden": 6,
+				"normal": 2,
 				"special": 0
 			},
 			"ids": [
 				"golden_hieut",
 				"golden_hieut",
+				"i",
 				"golden_hieut",
 				"golden_hieut",
 				"golden_hieut",
 				"golden_hieut",
-				"golden_hieut",
-				"golden_hieut"
+				"digeut"
 			]
 		},
 		"unlocked_golden_chance": 0.9,
 		"unlocked_golden_unlocked_flag": true,
 		"unlocked_pool_draws": {
-			"golden": 1795,
-			"normal": 205,
+			"golden": 1810,
+			"normal": 190,
 			"special": 0
 		}
 	},
@@ -128,11 +128,11 @@
 	"golden_lifetime": {
 		"declared_lifetime": 8.0,
 		"expired_on_its_own": true,
-		"gold_after": 14.0,
-		"gold_before": 14.0,
+		"gold_after": 94514.0,
+		"gold_before": 94514.0,
 		"kills_after": 0,
 		"kills_before": 0,
-		"observed_seconds": 7.986
+		"observed_seconds": 7.985
 	},
 	"luck": {
 		"with_un": {
@@ -241,11 +241,11 @@
 		"average_fps": 60.0,
 		"capacity": 20,
 		"mix": {
-			"golden": 4,
-			"normal": 11,
+			"golden": 6,
+			"normal": 10,
 			"special": 5
 		},
-		"monsters_on_field": 20,
+		"monsters_on_field": 21,
 		"sampled_frames": 240,
 		"worst_fps": 60.0
 	},

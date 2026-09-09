@@ -1,6 +1,6 @@
 {
 	"click_damage_level": 3,
-	"clicks": 82,
+	"clicks": 9,
 	"crit_chance": 0.0199999995529652,
 	"crit_level": 1,
 	"crit_multiplier": 2.0,
@@ -10,22 +10,22 @@
 		"label_outline_modulate": "(1.0, 0.94, 0.78, 1.0)",
 		"label_pixel_size": 0.00447999965399504,
 		"label_text": "8",
-		"max_shake_offset": 0.058924775570631
+		"max_shake_offset": 0.0532640293240547
 	},
 	"critical_captured": true,
 	"critical_click_damage": 8.0,
 	"crits": 1,
 	"day": 25,
-	"hits": 82,
+	"hits": 9,
 	"normal": {
 		"amount": 4.0,
-		"label_modulate": "(0.22, 0.16, 0.1, 0.9886)",
+		"label_modulate": "(0.22, 0.16, 0.1, 0.9826)",
 		"label_outline_modulate": "(0.95, 0.9, 0.81, 1.0)",
 		"label_pixel_size": 0.00279999990016222,
 		"label_text": "4",
-		"max_shake_offset": 0.0123848561197519
+		"max_shake_offset": 0.0311355255544186
 	},
 	"normal_captured": true,
 	"normal_click_damage": 4.0,
-	"observed_crit_rate": 0.0121951219512195
+	"observed_crit_rate": 0.111111111111111
 }
