@@ -22,10 +22,11 @@ func _ready() -> void:
 	SignalBus.monster_killed.connect(_on_monster_killed)
 
 
-func _on_damage_dealt(world_position: Vector3, amount: float) -> void:
+func _on_damage_dealt(world_position: Vector3, amount: float, is_critical: bool) -> void:
 	if damage_number_scene != null:
 		var number := damage_number_scene.instantiate()
 		number.amount = amount
+		number.is_critical = is_critical
 		fx_root.add_child(number)
 		number.global_position = world_position
 	_spawn_fx(hit_fx_scene, world_position)

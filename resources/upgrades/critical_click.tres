@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"critical_click"
+display_name = "치명 클릭"
+category = &"click"
+description = "클릭이 치명타가 될 확률. 치명타는 피해 2배."
+costs = PackedInt64Array(1500, 4000, 10000, 25000, 60000)
+values = PackedFloat32Array(0.02, 0.04, 0.06, 0.08, 0.1)
+value_display_scale = 100.0
+value_suffix = "%"
+unlock_day = 25
+required_word = &""
+required_upgrade = &"click_damage"
+required_level = 3

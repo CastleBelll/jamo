@@ -29,6 +29,10 @@ extends Resource
 @export var unlock_day: int = 1
 ## Hidden until this word is completed. Empty means no requirement.
 @export var required_word: StringName = &""
+## Hidden until another upgrade track reaches required_level. Empty means no
+## requirement. growth_balance v0.2 section 8.3 gates 치명 클릭 behind 클릭 피해 Lv.3.
+@export var required_upgrade: StringName = &""
+@export_range(0, 20, 1) var required_level: int = 0
 
 
 func max_level() -> int:

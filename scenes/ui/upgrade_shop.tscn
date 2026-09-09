@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/upgrade_shop.gd" id="1_shop"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_row.tscn" id="2_row"]
 [ext_resource type="Resource" path="res://resources/upgrades/max_energy.tres" id="3_energy"]
 [ext_resource type="Resource" path="res://resources/upgrades/click_damage.tres" id="4_damage"]
+[ext_resource type="Resource" path="res://resources/upgrades/critical_click.tres" id="7_critical"]
 [ext_resource type="Resource" path="res://resources/upgrades/gold_bonus.tres" id="5_gold"]
 [ext_resource type="Resource" path="res://resources/upgrades/monster_capacity.tres" id="6_capacity"]
 
@@ -56,6 +57,11 @@ upgrade = ExtResource("3_energy")
 unique_name_in_owner = true
 layout_mode = 2
 upgrade = ExtResource("4_damage")
+
+[node name="RowCritical" parent="Center/Panel/Box" instance=ExtResource("2_row")]
+unique_name_in_owner = true
+layout_mode = 2
+upgrade = ExtResource("7_critical")
 
 [node name="RowGold" parent="Center/Panel/Box" instance=ExtResource("2_row")]
 unique_name_in_owner = true

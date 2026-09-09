@@ -29,7 +29,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not GameState.spend_click_energy():
 		return
 
-	monster.take_click_damage(GameState.get_click_damage())
+	# One critical roll per click, shared by the gold upgrade and the 강타 words.
+	# Doc v0.3 section 10.2.
+	var is_critical := GameState.roll_critical()
+	monster.take_click_damage(GameState.get_click_damage(is_critical), is_critical)
 	monster.apply_status_effect(GameState.get_burn_effect())
 	get_viewport().set_input_as_handled()
 

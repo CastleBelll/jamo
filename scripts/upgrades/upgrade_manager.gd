@@ -12,15 +12,18 @@ enum Availability {
 	LOCKED_BY_DAY,
 	## A prerequisite word is still missing.
 	LOCKED_BY_WORD,
+	## A prerequisite upgrade track is not high enough yet.
+	LOCKED_BY_UPGRADE,
 	## Unlocked but the player cannot afford the next level.
 	TOO_EXPENSIVE,
 }
 
 
+## Only the day gate hides a track completely (growth_balance v0.2 section 13:
+## not every upgrade is shown on Day 1). The other locks stay listed so the
+## shop can spell out which requirement is still missing.
 static func is_visible(upgrade: UpgradeData) -> bool:
-	var availability := get_availability(upgrade)
-	return availability != Availability.LOCKED_BY_DAY \
-		and availability != Availability.LOCKED_BY_WORD
+	return get_availability(upgrade) != Availability.LOCKED_BY_DAY
 
 
 static func get_availability(upgrade: UpgradeData) -> Availability:
@@ -28,6 +31,9 @@ static func get_availability(upgrade: UpgradeData) -> Availability:
 		return Availability.LOCKED_BY_DAY
 	if upgrade.required_word != &"" and not GameState.is_word_unlocked(upgrade.required_word):
 		return Availability.LOCKED_BY_WORD
+	if upgrade.required_upgrade != &"" \
+			and GameState.get_upgrade_level(upgrade.required_upgrade) < upgrade.required_level:
+		return Availability.LOCKED_BY_UPGRADE
 	var level := GameState.get_upgrade_level(upgrade.id)
 	if level >= upgrade.max_level():
 		return Availability.MAXED

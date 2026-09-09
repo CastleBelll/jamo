@@ -10,3 +10,7 @@ export_presets.cfg
 Thumbs.db
 .DS_Store
 *.tmp
+
+# QA screenshot evidence (reports and logs stay tracked)
+tests/qa_artifacts/**/*.png
+tests/qa_artifacts/**/*.png.import

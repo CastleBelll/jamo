@@ -14,6 +14,8 @@ extends Resource
 @export_group("Click")
 ## Click damage at upgrade level 0. Doc v0.3 section 10.1.
 @export var base_click_damage: float = 1.0
+## CritMultiplier before word bonuses are added. Doc v0.3 section 10.2.
+@export_range(1.0, 10.0, 0.1) var base_crit_multiplier: float = 2.0
 
 @export_group("Monster Scaling")
 ## HP = base_monster_hp * pow(hp_growth_per_day, day - 1). Doc v0.3 section 8.1.

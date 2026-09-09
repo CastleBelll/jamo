@@ -214,12 +214,12 @@ func get_hit_position() -> Vector3:
 
 ## Applies click damage and the click reaction. Returns false when the monster
 ## was already dead, so the caller can ignore a stale hit.
-func take_click_damage(amount: float) -> bool:
+func take_click_damage(amount: float, is_critical: bool = false) -> bool:
 	if not is_alive():
 		return false
 	_animation.speed_scale = 1.0
 	_animation.play(&"hit")
-	_apply_damage(amount)
+	_apply_damage(amount, is_critical)
 	return true
 
 
@@ -230,9 +230,9 @@ func take_status_damage(amount: float) -> void:
 	_apply_damage(amount)
 
 
-func _apply_damage(amount: float) -> void:
+func _apply_damage(amount: float, is_critical: bool = false) -> void:
 	hp -= amount
-	SignalBus.damage_dealt.emit(get_hit_position(), amount)
+	SignalBus.damage_dealt.emit(get_hit_position(), amount, is_critical)
 	if hp <= 0.0:
 		_die()
 

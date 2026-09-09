@@ -13,6 +13,7 @@ const DATABASE_PATH := "res://resources/balance/game_database.tres"
 ## Upgrade ids, matching the .tres files under res://resources/upgrades/.
 const UPGRADE_MAX_ENERGY := &"max_energy"
 const UPGRADE_CLICK_DAMAGE := &"click_damage"
+const UPGRADE_CRITICAL_CLICK := &"critical_click"
 const UPGRADE_GOLD_BONUS := &"gold_bonus"
 const UPGRADE_MONSTER_CAPACITY := &"monster_capacity"
 
@@ -36,6 +37,8 @@ var gold_earned_today: float = 0.0
 # --- Cached word bonuses, refreshed by _recalculate_word_bonuses() ---------
 var _word_flat_click_damage: float = 0.0
 var _word_click_multiplier: float = 1.0
+var _word_crit_chance: float = 0.0
+var _word_crit_multiplier: float = 0.0
 var _word_gold_bonus: float = 0.0
 var _word_bonus_max_energy: int = 0
 var _burn_effect: WordEffectData = null
@@ -76,14 +79,37 @@ func get_max_energy() -> int:
 	return int(from_upgrade) + _word_bonus_max_energy
 
 
-## FinalClickDamage = (BaseClickDamage + FlatWordBonus) * WordDamageMultiplier.
-## Critical and target-taken-damage multipliers are out of scope for the
-## vertical slice. Doc v0.3 section 10.1.
-func get_click_damage() -> float:
+## FinalClickDamage = (BaseClickDamage + FlatWordBonus) * WordDamageMultiplier
+## * CriticalMultiplier. TargetTakenDamageMultiplier is still out of scope for
+## the vertical slice. Doc v0.3 section 10.1.
+func get_click_damage(is_critical: bool = false) -> float:
 	var base: float = get_upgrade_value(
 		UPGRADE_CLICK_DAMAGE, balance.base_click_damage
 	)
-	return (base + _word_flat_click_damage) * _word_click_multiplier
+	var damage: float = (base + _word_flat_click_damage) * _word_click_multiplier
+	if is_critical:
+		damage *= get_crit_multiplier()
+	return damage
+
+
+## CritChance = GoldCritChance + StrongHitWordBonus. Doc v0.3 section 10.2:
+## the gold upgrade and the 강타 word family share one roll, never two.
+func get_crit_chance() -> float:
+	return clampf(
+		get_upgrade_value(UPGRADE_CRITICAL_CLICK, 0.0) + _word_crit_chance, 0.0, 1.0
+	)
+
+
+## CritMultiplier = base_crit_multiplier + WordCritMultiplierBonus.
+func get_crit_multiplier() -> float:
+	return balance.base_crit_multiplier + _word_crit_multiplier
+
+
+## The single critical roll of one click. Call it exactly once per click and
+## pass the result to get_click_damage(). Doc v0.3 section 10.2.
+func roll_critical() -> bool:
+	var chance: float = get_crit_chance()
+	return chance > 0.0 and randf() < chance
 
 
 ## PermanentGoldMultiplier. Upgrade and word bonuses add together, matching the
@@ -241,6 +267,9 @@ func _consume_jamo(word: WordData) -> void:
 func _recalculate_word_bonuses() -> void:
 	_word_flat_click_damage = 0.0
 	_word_click_multiplier = 1.0
+	# Summation points for the 강타 / 괴력 words. No word feeds them yet.
+	_word_crit_chance = 0.0
+	_word_crit_multiplier = 0.0
 	_word_gold_bonus = 0.0
 	_word_bonus_max_energy = 0
 	_burn_effect = null

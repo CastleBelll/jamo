@@ -17,7 +17,8 @@ signal day_ended(day: int, kills: int, gold_earned: float)
 ## A monster died. `gold` is the amount already granted to the player.
 signal monster_killed(jamo: String, gold: float, world_position: Vector3)
 ## Damage was applied somewhere in the world, for floating numbers and shake.
-signal damage_dealt(world_position: Vector3, amount: float)
+## `is_critical` only ever comes from a click; status ticks never crit.
+signal damage_dealt(world_position: Vector3, amount: float, is_critical: bool)
 
 ## The player picked a jamo at day end.
 signal jamo_collected(jamo: String)

@@ -4,12 +4,20 @@ extends Node3D
 ## The only motion is a short shake on damage, applied to ShakePivot so the
 ## Camera3D transform you set in the editor stays untouched.
 
+@export_group("Hit Shake")
 @export_range(0.0, 0.3, 0.001) var shake_strength: float = 0.03
-@export_range(1.0, 30.0, 0.1) var shake_decay: float = 9.0
+@export_range(0.02, 1.0, 0.01) var shake_duration: float = 0.12
+
+@export_group("Critical Shake")
+## Doc v0.3 section 23.2: a critical hit adds a small extra camera kick.
+@export_range(0.0, 0.5, 0.001) var critical_shake_strength: float = 0.09
+@export_range(0.02, 1.0, 0.01) var critical_shake_duration: float = 0.22
 
 @onready var _pivot: Node3D = $ShakePivot
 
-var _shake: float = 0.0
+var _strength: float = 0.0
+var _remaining: float = 0.0
+var _duration: float = 0.0
 var _rest_position: Vector3
 
 
@@ -18,18 +26,33 @@ func _ready() -> void:
 	SignalBus.damage_dealt.connect(_on_damage_dealt)
 
 
-func _process(delta: float) -> void:
-	if _shake <= 0.0:
+## Starts a shake that fades out over `duration` seconds. A shake already in
+## flight is only ever strengthened, never cut short by a weaker hit.
+func shake(strength: float, duration: float) -> void:
+	if strength <= 0.0 or duration <= 0.0:
 		return
-	_shake = maxf(0.0, _shake - shake_decay * delta * _shake)
-	if _shake < 0.001:
-		_shake = 0.0
+	_strength = maxf(_strength, strength)
+	_duration = maxf(_duration, duration)
+	_remaining = maxf(_remaining, duration)
+
+
+func _process(delta: float) -> void:
+	if _remaining <= 0.0:
+		return
+	_remaining = maxf(0.0, _remaining - delta)
+	if _remaining <= 0.0:
+		_strength = 0.0
+		_duration = 0.0
 		_pivot.position = _rest_position
 		return
+	var falloff: float = _remaining / _duration
 	_pivot.position = _rest_position + Vector3(
 		randf_range(-1.0, 1.0), randf_range(-1.0, 1.0), 0.0
-	) * shake_strength * _shake
+	) * _strength * falloff
 
 
-func _on_damage_dealt(_world_position: Vector3, _amount: float) -> void:
-	_shake = 1.0
+func _on_damage_dealt(_world_position: Vector3, _amount: float, is_critical: bool) -> void:
+	if is_critical:
+		shake(critical_shake_strength, critical_shake_duration)
+	else:
+		shake(shake_strength, shake_duration)

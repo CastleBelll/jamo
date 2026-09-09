@@ -20,6 +20,7 @@ func _ready() -> void:
 	_test_word_effects_apply()
 	_test_upgrade_purchase()
 	_test_upgrade_blocked_when_poor()
+	_test_critical_click()
 	_test_candidates_are_useful()
 	_test_save_round_trip()
 
@@ -180,6 +181,69 @@ func _test_upgrade_blocked_when_poor() -> void:
 	_check(GameState.get_upgrade_level(&"max_energy") == 0, "level must stay at 0")
 
 
+## Doc v0.3 section 10.2 and growth_balance v0.2 sections 8.3 and 13: one shared
+## crit system, gated behind Day 25 AND 클릭 피해 Lv.3.
+func _test_critical_click() -> void:
+	_reset()
+	var critical: UpgradeData = GameState.database.find_upgrade(&"critical_click")
+	_check(critical != null, "critical_click should be registered in the database")
+	if critical == null:
+		return
+
+	_close(GameState.get_crit_chance(), 0.0, "crit chance starts at 0")
+	_close(GameState.get_crit_multiplier(), 2.0, "base crit multiplier is 2.0")
+	_check(not GameState.roll_critical(), "a 0% chance must never roll critical")
+	# growth_balance v0.2 section 13 puts 치명 클릭 on Day 25 and section 8.3
+	# behind 클릭 피해 Lv.3. Both conditions must hold, so either one alone
+	# still leaves the track locked.
+	_check(critical.unlock_day == 25, "치명 클릭 unlocks on Day 25")
+	_check(
+		UpgradeManager.get_availability(critical)
+			== UpgradeManager.Availability.LOCKED_BY_DAY,
+		"치명 클릭 stays locked before Day 25"
+	)
+	_check(not UpgradeManager.is_visible(critical), "a day-locked track is not listed")
+
+	var damage: UpgradeData = GameState.database.find_upgrade(&"click_damage")
+	GameState.gold = 10000.0
+	for _level in 3:
+		_check(UpgradeManager.purchase(damage), "클릭 피해 should be affordable")
+	_check(
+		UpgradeManager.get_availability(critical)
+			== UpgradeManager.Availability.LOCKED_BY_DAY,
+		"클릭 피해 Lv.3 alone does not unlock 치명 클릭 before Day 25"
+	)
+
+	GameState.day = 25
+	GameState.upgrade_levels[&"click_damage"] = 0
+	_check(
+		UpgradeManager.get_availability(critical)
+			== UpgradeManager.Availability.LOCKED_BY_UPGRADE,
+		"Day 25 alone does not unlock 치명 클릭 below 클릭 피해 Lv.3"
+	)
+	_check(
+		UpgradeManager.is_visible(critical),
+		"a requirement-locked track stays listed so the shop can name the reason"
+	)
+
+	GameState.upgrade_levels[&"click_damage"] = 3
+	_check(UpgradeManager.is_visible(critical), "Day 25 + 클릭 피해 Lv.3 unlocks 치명 클릭")
+
+	GameState.gold = 1500.0
+	_check(UpgradeManager.purchase(critical), "1500G should buy 치명 클릭 Lv.1")
+	_close(GameState.get_crit_chance(), 0.02, "치명 클릭 Lv.1 is 2%")
+	_check(critical.format_value(1, 0.0) == "2%", "the shop should show 2%")
+
+	# FinalClickDamage = normal * CriticalMultiplier, one roll per click.
+	var normal: float = GameState.get_click_damage()
+	_close(normal, 4.0, "클릭 피해 Lv.3 deals 4")
+	_close(GameState.get_click_damage(true), normal * 2.0, "a crit doubles the hit")
+
+	# A guaranteed chance proves the roll actually reads the summed chance.
+	GameState.upgrade_levels[&"critical_click"] = critical.max_level()
+	_close(GameState.get_crit_chance(), 0.1, "치명 클릭 Lv.5 is 10%")
+
+
 ## Doc v0.3 section 13.4: candidates come from the pool of jamo a craftable
 ## word still needs, so a pick is never wasted.
 func _test_candidates_are_useful() -> void:
@@ -198,6 +262,7 @@ func _test_save_round_trip() -> void:
 	GameState.day = 7
 	GameState.gold = 1234.5
 	GameState.upgrade_levels[&"max_energy"] = 3
+	GameState.upgrade_levels[&"critical_click"] = 2
 	GameState.unlocked_word_ids.append(&"fire_001")
 	GameState.jamo_inventory["ㅏ"] = 2
 
@@ -212,6 +277,11 @@ func _test_save_round_trip() -> void:
 	_check(GameState.day == 7, "day should survive the round trip")
 	_close(GameState.gold, 1234.5, "gold should survive the round trip")
 	_check(GameState.get_upgrade_level(&"max_energy") == 3, "upgrade level should persist")
+	_check(
+		GameState.get_upgrade_level(&"critical_click") == 2,
+		"치명 클릭 level should persist"
+	)
+	_close(GameState.get_crit_chance(), 0.04, "a loaded save restores the crit chance")
 	_check(GameState.is_word_unlocked(&"fire_001"), "unlocked word should persist")
 	_check(GameState.get_jamo_count("ㅏ") == 2, "jamo inventory should persist")
 	_check(GameState.get_burn_effect() != null, "loaded words should reapply their effects")

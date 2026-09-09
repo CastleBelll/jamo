@@ -19,20 +19,20 @@
 
 ---
 
-## F1. Critical 시스템  `[~]`
+## F1. Critical 시스템  `[x]`
 
 근거: v0.3 §10.1 §10.2 §23.2 / growth_balance v0.2 §8.3
 
-- [ ] S1 `GameBalance` 에 `base_crit_multiplier = 2.0` export 추가 (.tres 반영)
-- [ ] S2 `UpgradeData` 에 `required_upgrade` / `required_level` 해금 조건 추가
-- [ ] S3 `resources/upgrades/critical_click.tres` 생성 — 확률 2/4/6/8/10%, 가격 1.5k~60k, 클릭 피해 Lv3 게이트
-- [ ] S4 `game_database.tres` upgrades 배열 등록 + 상점 행 표시("2%" 포맷)
-- [ ] S5 클릭당 Critical 판정 **1회**로 통합 — `GameState.roll_critical()`, 단어 보너스 합산 지점 확보
-- [ ] S6 피드백 — Damage Number 크기 증가 + 색(둘 다, 색 단독 금지), CameraRig shake (@export 강도/시간)
-- [ ] S7 세이브/로드 후 치명 레벨 유지
-- [ ] QA 확인: 상점 게이트 동작 / 크리 발생 시 숫자·shake / 헤드리스 테스트 통과 / Day1→Day2 회귀
+- [x] S1 `GameBalance` 에 `base_crit_multiplier = 2.0` export 추가 (.tres 반영)
+- [x] S2 `UpgradeData` 에 `required_upgrade` / `required_level` 해금 조건 추가
+- [x] S3 `resources/upgrades/critical_click.tres` 생성 — 확률 2/4/6/8/10%, 가격 1.5k~60k, 클릭 피해 Lv3 게이트
+- [x] S4 `game_database.tres` upgrades 배열 등록 + 상점 행 표시("2%" 포맷)
+- [x] S5 클릭당 Critical 판정 **1회**로 통합 — `GameState.roll_critical()`, 단어 보너스 합산 지점 확보
+- [x] S6 피드백 — Damage Number 크기 증가 + 색(둘 다, 색 단독 금지), CameraRig shake (@export 강도/시간)
+- [x] S7 세이브/로드 후 치명 레벨 유지
+- [x] QA 확인: 상점 게이트 동작 / 크리 발생 시 숫자·shake / 헤드리스 테스트 통과 / Day1→Day2 회귀
 
-## F2. Reroll 시스템  `[ ]`
+## F2. Reroll 시스템  `[~]`
 
 근거: v0.3 §13.1 §13.2 / growth_balance v0.2 자모 연구
 

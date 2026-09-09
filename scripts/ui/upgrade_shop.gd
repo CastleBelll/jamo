@@ -5,7 +5,9 @@ extends Control
 
 signal closed()
 
-@onready var _rows: Array[UpgradeRow] = [%RowEnergy, %RowDamage, %RowGold, %RowCapacity]
+@onready var _rows: Array[UpgradeRow] = [
+	%RowEnergy, %RowDamage, %RowCritical, %RowGold, %RowCapacity,
+]
 @onready var _gold_label: Label = %ShopGoldLabel
 
 

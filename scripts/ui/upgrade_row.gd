@@ -32,6 +32,15 @@ func refresh() -> void:
 	_name_label.text = "%s  Lv.%d" % [upgrade.display_name, level]
 
 	var availability := UpgradeManager.get_availability(upgrade)
+	if availability == UpgradeManager.Availability.LOCKED_BY_UPGRADE \
+			or availability == UpgradeManager.Availability.LOCKED_BY_WORD:
+		# The missing requirement is spelled out in text, never signalled by
+		# colour alone. Day-locked tracks are not listed at all instead.
+		_value_label.text = "잠김"
+		_cost_label.text = _lock_reason(availability)
+		_buy_button.disabled = true
+		_buy_button.text = "잠김"
+		return
 	if availability == UpgradeManager.Availability.MAXED:
 		_value_label.text = upgrade.format_value(level, base)
 		_cost_label.text = "최대"
@@ -51,6 +60,18 @@ func refresh() -> void:
 	else:
 		_cost_label.text = "%d G" % cost
 		_buy_button.disabled = false
+
+
+## Text form of the unmet requirement, e.g. "클릭 피해 Lv.3 필요".
+func _lock_reason(availability: UpgradeManager.Availability) -> String:
+	if availability == UpgradeManager.Availability.LOCKED_BY_WORD:
+		var word: WordData = GameState.database.find_word(upgrade.required_word)
+		var word_text: String = word.word if word != null else String(upgrade.required_word)
+		return "단어 %s 필요" % word_text
+	var required: UpgradeData = GameState.database.find_upgrade(upgrade.required_upgrade)
+	var required_name: String = required.display_name if required != null \
+		else String(upgrade.required_upgrade)
+	return "%s Lv.%d 필요" % [required_name, upgrade.required_level]
 
 
 ## Level 0 of each track shows the game base value, which lives in GameBalance.
