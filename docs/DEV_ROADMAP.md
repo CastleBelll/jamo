@@ -44,21 +44,21 @@
 - [x] S6 리롤 잔여 횟수 세이브 포함
 - [x] QA 확인: Day5 이전 미노출 / 구매 후 노출 / 리롤 시 후보 변경 / 횟수 소진 후 disabled
 
-## F3. 단어 확장 tier-2  `[~]`
+## F3. 단어 확장 tier-2  `[x]`
 
 근거: v0.3 §14 §15 §33 / word_tree v0.1
 
-- [ ] S1 `WordData` prerequisites 체인 검증 — 선행 단어 미완성 시 후보/제작 불가
-- [ ] S2 `화염` (불 선행, burn 틱 피해 2) `.tres`
-- [ ] S3 `불꽃` (불 선행, 사망 시 80px 1명 전이) — 전이 로직은 StatusEffectContainer 확장
-- [ ] S4 `강타` (힘 선행, CritChance +10%p) — F1 의 단어 보너스 합산 지점에 연결
-- [ ] S5 `금` (돈 선행, 황금 개체 출현 해금 플래그) `.tres`
-- [ ] S6 `체력` (밥 선행, 최대 에너지 추가) `.tres`
-- [ ] S7 `운` (신규 루트, 특수 개체 확률 보정) `.tres`
-- [ ] S8 `WordEffectData.EffectType` 신규 타입 추가 (BURN_TICK_BONUS / BURN_SPREAD / CRIT_CHANCE / UNLOCK_GOLDEN / LUCK)
-- [ ] QA 확인: 선행 잠금 동작 / 각 단어 완성 시 실제 규칙 변화 관측 / 총 단어 10개
+- [x] S1 `WordData` prerequisites 체인 검증 — 선행 단어 미완성 시 후보/제작 불가
+- [x] S2 `화염` (불 선행, burn 틱 피해 2) `.tres`
+- [x] S3 `불꽃` (불 선행, 사망 시 80px 1명 전이) — 전이 로직은 StatusEffectContainer 확장
+- [x] S4 `강타` (힘 선행, CritChance +10%p) — F1 의 단어 보너스 합산 지점에 연결
+- [x] S5 `금` (돈 선행, 황금 개체 출현 해금 플래그) `.tres`
+- [x] S6 `체력` (밥 선행, 최대 에너지 추가) `.tres`
+- [x] S7 `운` (신규 루트, 특수 개체 확률 보정) `.tres`
+- [x] S8 `WordEffectData.EffectType` 신규 타입 추가 (BURN_TICK_BONUS / BURN_SPREAD / CRIT_CHANCE / UNLOCK_GOLDEN / LUCK)
+- [x] QA 확인: 선행 잠금 동작 / 각 단어 완성 시 실제 규칙 변화 관측 / 총 단어 10개
 
-## F4. 특수 몬스터  `[ ]`
+## F4. 특수 몬스터  `[~]`
 
 근거: v0.3 §9 §28 §32
 
@@ -74,6 +74,7 @@
 
 근거: v0.3 §15 §23.5 / Phase 6
 
+- [ ] S0 F3 이월: 도감 패널이 HUD 상단바와 겹침 (스크롤 컨테이너 없음)
 - [ ] S1 `scenes/ui/word_tree.tscn` 신규 (Control 기반, 에디터 편집 가능 구조)
 - [ ] S2 노드 상태 4종 표시 — 해금 / 제작 가능 / 선행 잠금 / 미발견
 - [ ] S3 노드 클릭 → 목표 단어(Target) 지정, HUD 하단 `TARGET: 불 [ㅂ][ㅜ][ ]` 연동

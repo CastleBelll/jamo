@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1_word"]
+[ext_resource type="Script" path="res://scripts/data/word_effect_data.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Resource_burn_bonus"]
+script = ExtResource("2_effect")
+effect_type = 4
+base_value = 1.0
+duration = 0.0
+tick_interval = 1.0
+proc_chance = 1.0
+max_stack = 1
+radius = 0.0
+chain_count = 0
+max_chain_depth = 1
+
+[resource]
+script = ExtResource("1_word")
+id = &"fire_002"
+word = "화염"
+category = &"fire"
+required_jamo = PackedStringArray("ㅎ", "ㅗ", "ㅏ", "ㅇ", "ㅕ", "ㅁ")
+prerequisites = Array[StringName]([&"fire_001"])
+effects = Array[Resource]([SubResource("Resource_burn_bonus")])
+tier = 2
+description = "화상 틱 피해 1 -> 2. 선행 단어 불이 필요하다."

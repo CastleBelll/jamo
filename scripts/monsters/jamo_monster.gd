@@ -40,6 +40,13 @@ const AVOIDANCE_PUSH := 0.6
 var max_hp: float = 1.0
 var hp: float = 1.0
 
+## How many times the burn on this monster has already been passed on.
+## 불꽃 uses it to stop a spread from chaining across the whole field.
+var burn_chain_depth: int = 0
+## Whether this monster was still burning when it died. Read by SpawnManager
+## after death, because _die() clears the status container.
+var died_burning: bool = false
+
 var _state: State = State.SPAWN
 var _profile: MotionProfile
 var _speed: float = 1.0
@@ -242,16 +249,22 @@ func _on_status_tick_damage(amount: float) -> void:
 
 
 ## Applies a status effect, ignoring null so callers can pass an effect that is
-## still locked behind an unfinished word.
-func apply_status_effect(effect: WordEffectData) -> void:
-	if is_alive():
-		_status.apply(effect)
+## still locked behind an unfinished word. `chain_depth` records how many times
+## a spread produced this application; a direct click leaves it at 0, which
+## makes the monster able to spread its burn again.
+func apply_status_effect(effect: WordEffectData, chain_depth: int = 0) -> void:
+	if not is_alive():
+		return
+	if effect != null and effect.effect_type == WordEffectData.EffectType.UNLOCK_BURN:
+		burn_chain_depth = chain_depth
+	_status.apply(effect)
 
 
 func _die() -> void:
 	if _state == State.DEAD:
 		return
 	_state = State.DEAD
+	died_burning = _status.has(WordEffectData.EffectType.UNLOCK_BURN)
 	_status.clear()
 	set_physics_process(false)
 	# Stop responding to clicks and stop blocking other monsters, but stay

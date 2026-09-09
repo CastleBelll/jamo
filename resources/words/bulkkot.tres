@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1_word"]
+[ext_resource type="Script" path="res://scripts/data/word_effect_data.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Resource_burn_spread"]
+script = ExtResource("2_effect")
+effect_type = 5
+base_value = 1.0
+duration = 0.0
+tick_interval = 1.0
+proc_chance = 1.0
+max_stack = 1
+radius = 1.07
+chain_count = 1
+max_chain_depth = 1
+
+[resource]
+script = ExtResource("1_word")
+id = &"fire_003"
+word = "불꽃"
+category = &"fire"
+required_jamo = PackedStringArray("ㅂ", "ㅜ", "ㄹ", "ㄱ", "ㄱ", "ㅗ", "ㅊ")
+prerequisites = Array[StringName]([&"fire_001"])
+effects = Array[Resource]([SubResource("Resource_burn_spread")])
+tier = 2
+description = "화상 중인 몬스터가 죽으면 반경 1.07m 내 가장 가까운 1마리에게 화상이 전이된다. 전이된 화상은 다시 전이되지 않는다."

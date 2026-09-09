@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1_word"]
+[ext_resource type="Script" path="res://scripts/data/word_effect_data.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Resource_golden"]
+script = ExtResource("2_effect")
+effect_type = 7
+base_value = 1.0
+duration = 0.0
+tick_interval = 1.0
+proc_chance = 1.0
+max_stack = 1
+radius = 0.0
+chain_count = 0
+max_chain_depth = 1
+
+[resource]
+script = ExtResource("1_word")
+id = &"gold_002"
+word = "금"
+category = &"gold"
+required_jamo = PackedStringArray("ㄱ", "ㅡ", "ㅁ")
+prerequisites = Array[StringName]([&"gold_001"])
+effects = Array[Resource]([SubResource("Resource_golden")])
+tier = 2
+description = "황금 몬스터 출현을 해금한다. 실제 스폰은 특수 몬스터 기능에서 이 해금 상태를 읽어간다."

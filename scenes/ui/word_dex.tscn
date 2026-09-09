@@ -40,7 +40,7 @@ text = "단어 도감"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
-text = "완성한 단어  0 / 4"
+text = "완성한 단어  0 / 10"
 
 [node name="DexRow0" type="Label" parent="Center/Panel/Box"]
 unique_name_in_owner = true
@@ -64,6 +64,42 @@ autowrap_mode = 3
 unique_name_in_owner = true
 layout_mode = 2
 text = "[제작 가능] 밥   필요 ㅂ + ㅏ + ㅂ"
+autowrap_mode = 3
+
+[node name="DexRow4" type="Label" parent="Center/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[선행 잠금] 화염"
+autowrap_mode = 3
+
+[node name="DexRow5" type="Label" parent="Center/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[선행 잠금] 불꽃"
+autowrap_mode = 3
+
+[node name="DexRow6" type="Label" parent="Center/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[선행 잠금] 강타"
+autowrap_mode = 3
+
+[node name="DexRow7" type="Label" parent="Center/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[선행 잠금] 금"
+autowrap_mode = 3
+
+[node name="DexRow8" type="Label" parent="Center/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[선행 잠금] 체력"
+autowrap_mode = 3
+
+[node name="DexRow9" type="Label" parent="Center/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[제작 가능] 운   필요 ㅇ + ㅜ + ㄴ"
 autowrap_mode = 3
 
 [node name="DexCloseButton" type="Button" parent="Center/Panel/Box"]

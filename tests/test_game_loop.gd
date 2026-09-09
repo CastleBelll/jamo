@@ -8,6 +8,7 @@ extends Node
 ## are only registered as globals once a scene main loop starts.
 
 const CHOICE_SCENE := "res://scenes/ui/jamo_choice.tscn"
+const HUD_SCENE := "res://scenes/ui/hud.tscn"
 
 var _failures: int = 0
 
@@ -20,6 +21,16 @@ func _ready() -> void:
 	_test_bap_needs_two_bieup()
 	_test_shared_jamo_is_not_double_spent()
 	_test_word_effects_apply()
+	_test_prerequisites_gate_words()
+	_test_hwayeom_raises_burn_tick()
+	_test_bulkkot_spread_data()
+	_test_bulkkot_spreads_burn_on_death()
+	_test_gangta_adds_crit_chance()
+	_test_geum_unlocks_golden()
+	_test_chelyeok_adds_energy()
+	_test_un_boosts_special_spawn()
+	_test_database_holds_ten_words()
+	_test_hud_lists_every_craftable_word()
 	_test_upgrade_purchase()
 	_test_upgrade_blocked_when_poor()
 	_test_critical_click()
@@ -255,7 +266,7 @@ func _test_critical_click() -> void:
 ## word still needs, so a pick is never wasted.
 func _test_candidates_are_useful() -> void:
 	_reset()
-	var needed := PackedStringArray(["ㅂ", "ㅜ", "ㄹ", "ㅎ", "ㅣ", "ㅁ", "ㄷ", "ㅗ", "ㄴ", "ㅏ"])
+	var needed := _craftable_jamo()
 	for _attempt in 50:
 		var candidates := CandidateGenerator.generate(2)
 		_check(candidates.size() == 2, "two candidates should be offered")
@@ -391,7 +402,7 @@ func _test_reroll_charges_and_blocks() -> void:
 ## without the hand it replaces.
 func _test_reroll_redraws_candidates() -> void:
 	_reset()
-	var needed := PackedStringArray(["ㅂ", "ㅜ", "ㄹ", "ㅎ", "ㅣ", "ㅁ", "ㄷ", "ㅗ", "ㄴ", "ㅏ"])
+	var needed := _craftable_jamo()
 	for _attempt in 50:
 		var first := CandidateGenerator.generate(2)
 		var second := CandidateGenerator.regenerate(2, first)
@@ -403,8 +414,11 @@ func _test_reroll_redraws_candidates() -> void:
 
 	# Edge case: only 밥 is left to craft, so the pool is exactly ㅂ and ㅏ and
 	# the reroll has to hand back the same two rather than return an empty hand.
-	for word_id in [&"fire_001", &"power_001", &"gold_001"]:
-		GameState.unlocked_word_ids.append(word_id)
+	# Every other word is unlocked; the tier-2 words behind 밥 stay locked
+	# because their prerequisite is the one word still missing.
+	for word: WordData in GameState.database.words:
+		if word.id != &"energy_001" and word.id != &"energy_002":
+			GameState.unlocked_word_ids.append(word.id)
 	var small := CandidateGenerator.generate(2)
 	_check(small.size() == 2, "the two-jamo pool should still fill a hand")
 	var rerolled := CandidateGenerator.regenerate(2, small)
@@ -485,3 +499,342 @@ func _test_reroll_panel_states() -> void:
 	_check(panel.get_node("%Card0").jamo == picked_hand, "the confirmed hand must not change")
 
 	panel.queue_free()
+
+
+# --- F3 tier-2 words -------------------------------------------------------
+
+const MONSTER_SCENE := "res://scenes/monsters/monster_mieum.tscn"
+
+
+## Every jamo some currently craftable word still needs, which is exactly the
+## pool CandidateGenerator draws from. Derived rather than written out, so
+## adding a word does not silently invalidate the check.
+func _craftable_jamo() -> PackedStringArray:
+	var pool := PackedStringArray()
+	for word: WordData in GameState.get_craftable_words():
+		for jamo: String in word.required_jamo:
+			if not pool.has(jamo):
+				pool.append(jamo)
+	return pool
+
+
+## Unlocks words by id without going through the jamo inventory, then refreshes
+## the cached bonuses the way a load would.
+func _unlock(word_ids: Array) -> void:
+	for word_id: StringName in word_ids:
+		if not GameState.unlocked_word_ids.has(word_id):
+			GameState.unlocked_word_ids.append(word_id)
+	GameState.from_dict(GameState.to_dict())
+
+
+func _grant(jamo_list: Array) -> void:
+	for jamo: String in jamo_list:
+		GameState.add_jamo(jamo)
+
+
+func _is_burning(monster: JamoMonster) -> bool:
+	var container: StatusEffectContainer = monster.get_node("StatusEffects")
+	return container.has(WordEffectData.EffectType.UNLOCK_BURN)
+
+
+## Doc word_tree v0.1 section 15: a tier-2 word is uncraftable, and its jamo are
+## not even offered, until its prerequisite word is unlocked.
+func _test_prerequisites_gate_words() -> void:
+	_reset()
+	var hwayeom: WordData = GameState.database.find_word(&"fire_002")
+	_check(hwayeom != null, "화염 should be registered in the database")
+	if hwayeom == null:
+		return
+	_check(
+		hwayeom.prerequisites.has(&"fire_001"),
+		"화염 should list 불 as its prerequisite"
+	)
+	_check(not GameState.are_prerequisites_met(hwayeom), "불 is not unlocked yet")
+
+	_grant(["ㅎ", "ㅗ", "ㅏ", "ㅇ", "ㅕ", "ㅁ"])
+	_check(
+		GameState.complete_ready_words().is_empty(),
+		"a full 화염 inventory must not complete it while 불 is locked"
+	)
+	_check(not GameState.is_word_unlocked(&"fire_002"), "화염 should still be locked")
+	for word: WordData in GameState.get_craftable_words():
+		_check(
+			word.id != &"fire_002",
+			"a word with an unmet prerequisite must not be craftable"
+		)
+
+	# ㅕ, ㅊ, ㅌ and ㅡ are only needed by words that are still gated, so the
+	# candidate pool must never offer them.
+	var gated := PackedStringArray(["ㅕ", "ㅊ", "ㅌ", "ㅡ"])
+	for _attempt in 50:
+		for jamo: String in CandidateGenerator.generate(2):
+			_check(
+				not gated.has(jamo),
+				"%s belongs to a gated word and must not be offered" % jamo
+			)
+
+	# Unlocking 불 opens 화염, and the jamo already held finish it at once.
+	_grant(["ㅂ", "ㅜ", "ㄹ"])
+	var completed_words := PackedStringArray()
+	for word: WordData in GameState.complete_ready_words():
+		completed_words.append(word.word)
+	_check(completed_words.has("불"), "불 should complete")
+	_check(
+		completed_words.has("화염"),
+		"화염 should complete in the same batch once 불 unlocks it"
+	)
+
+
+## 화염: burn tick damage 1 -> 2, added on top of the 불 effect rather than
+## replacing it. Doc v0.3 section 15.1.
+func _test_hwayeom_raises_burn_tick() -> void:
+	_reset()
+	_unlock([&"fire_001"])
+	_close(GameState.get_burn_effect().base_value, 1.0, "불 alone ticks for 1")
+
+	_unlock([&"fire_002"])
+	_close(GameState.get_burn_effect().base_value, 2.0, "화염 raises the tick to 2")
+	_close(
+		GameState.get_burn_effect().duration, 3.0,
+		"화염 must leave the burn duration alone"
+	)
+	# The bonus is applied to a copy: mutating the shared .tres would make the
+	# tick grow again on every recalculation.
+	var source: WordData = GameState.database.find_word(&"fire_001")
+	_close(source.effects[0].base_value, 1.0, "the 불 resource must not be mutated")
+	GameState.from_dict(GameState.to_dict())
+	_close(
+		GameState.get_burn_effect().base_value, 2.0,
+		"recalculating must not stack the bonus a second time"
+	)
+
+
+## 불꽃 carries its radius and target count as data, not as constants in code.
+func _test_bulkkot_spread_data() -> void:
+	_reset()
+	_check(GameState.get_burn_spread_effect() == null, "불꽃 starts locked")
+	_unlock([&"fire_001", &"fire_003"])
+	var spread: WordEffectData = GameState.get_burn_spread_effect()
+	_check(spread != null, "불꽃 should expose a spread effect")
+	if spread == null:
+		return
+	_check(spread.radius > 0.0, "the spread radius must come from the .tres")
+	_check(spread.chain_count == 1, "불꽃 spreads to one neighbour")
+	_check(spread.max_chain_depth == 1, "a spread burn must not spread again")
+
+
+## The behaviour itself: a monster that dies burning hands its burn to the
+## nearest neighbour inside the radius, and that second burn does not chain on.
+func _test_bulkkot_spreads_burn_on_death() -> void:
+	_reset()
+	_unlock([&"fire_001", &"fire_003"])
+	var spread: WordEffectData = GameState.get_burn_spread_effect()
+	if spread == null:
+		return
+
+	var scene: PackedScene = load(MONSTER_SCENE)
+	var spawner := SpawnManager.new()
+	var root := Node3D.new()
+	spawner.spawn_root = root
+	# A non-empty pool keeps _ready quiet; the refill loop itself is off so the
+	# test controls exactly which monsters are on the field.
+	spawner.monster_scenes = [scene]
+	add_child(spawner)
+	spawner.add_child(root)
+	spawner.set_process(false)
+
+	var monsters: Array[JamoMonster] = []
+	for i in 3:
+		var monster: JamoMonster = scene.instantiate()
+		root.add_child(monster)
+		# In a line, each one a third of the radius from the last, so every
+		# monster has a neighbour in range but the far one is never nearest.
+		monster.global_position = Vector3(float(i) * spread.radius * 0.3, 0.0, 0.0)
+		monster.died.connect(spawner._on_monster_died)
+		spawner._alive.append(monster)
+		monsters.append(monster)
+
+	var burn: WordEffectData = GameState.get_burn_effect()
+	monsters[0].apply_status_effect(burn)
+	_check(_is_burning(monsters[0]), "the clicked monster should be burning")
+	_check(not _is_burning(monsters[1]), "the neighbour should not be burning yet")
+
+	monsters[0].take_status_damage(9999.0)
+	_check(not monsters[0].is_alive(), "enough damage should kill the monster")
+	_check(_is_burning(monsters[1]), "the burn should spread to the nearest neighbour")
+	_check(
+		monsters[1].burn_chain_depth == 1,
+		"a spread burn should be marked as one hop deep"
+	)
+
+	# The safety net: the second death must not start a third fire.
+	monsters[1].take_status_damage(9999.0)
+	_check(
+		not _is_burning(monsters[2]),
+		"a burn that already spread once must not spread again"
+	)
+
+	# A fresh click resets the depth, so the player can restart the chain.
+	monsters[2].apply_status_effect(burn)
+	_check(monsters[2].burn_chain_depth == 0, "a clicked burn starts at depth 0")
+
+	spawner.queue_free()
+
+
+## 강타: +10%p on the one shared critical roll, never a second roll.
+## Doc v0.3 section 10.2.
+func _test_gangta_adds_crit_chance() -> void:
+	_reset()
+	_unlock([&"power_001"])
+	_close(GameState.get_crit_chance(), 0.0, "힘 alone grants no crit chance")
+
+	_unlock([&"power_002"])
+	_close(GameState.get_crit_chance(), 0.1, "강타 grants +10%p crit chance")
+	_check(
+		GameState.get_click_damage(true) > GameState.get_click_damage(),
+		"a critical hit still multiplies the same click damage"
+	)
+
+	# The gold track and the word add into one chance rather than rolling twice.
+	GameState.day = 25
+	GameState.upgrade_levels[&"click_damage"] = 3
+	GameState.upgrade_levels[&"critical_click"] = 5
+	_close(
+		GameState.get_crit_chance(), 0.2,
+		"치명 클릭 Lv.5 and 강타 sum into a single 20% chance"
+	)
+
+
+## 금 only reports that golden monsters are unlocked; the spawn itself is F4.
+func _test_geum_unlocks_golden() -> void:
+	_reset()
+	_check(not GameState.is_golden_monster_unlocked(), "golden starts locked")
+	_unlock([&"gold_001"])
+	_check(not GameState.is_golden_monster_unlocked(), "돈 alone does not unlock it")
+	_unlock([&"gold_002"])
+	_check(GameState.is_golden_monster_unlocked(), "금 unlocks golden monsters")
+
+	_check(SaveManager.save_game(), "save should succeed")
+	GameState.unlocked_word_ids.clear()
+	GameState.from_dict(GameState.to_dict())
+	_check(not GameState.is_golden_monster_unlocked(), "clearing words relocks it")
+	_check(SaveManager.load_game(), "load should succeed")
+	_check(
+		GameState.is_golden_monster_unlocked(),
+		"the golden unlock should survive a save round trip"
+	)
+	SaveManager.delete_save()
+
+
+## 체력: +3 max energy on top of the +2 from 밥. Doc word_tree v0.1 section 10.
+func _test_chelyeok_adds_energy() -> void:
+	_reset()
+	_unlock([&"energy_001"])
+	_check(GameState.get_max_energy() == 22, "밥 alone gives 22 max energy")
+	_unlock([&"energy_002"])
+	_check(GameState.get_max_energy() == 25, "체력 adds a further +3")
+	GameState.begin_day()
+	_check(GameState.energy == 25, "the new maximum is what the day refills to")
+
+
+## 운: a multiplier the special monster spawn will read in F4.
+func _test_un_boosts_special_spawn() -> void:
+	_reset()
+	_close(
+		GameState.get_special_spawn_multiplier(), 1.0,
+		"the special spawn multiplier starts neutral"
+	)
+	var un: WordData = GameState.database.find_word(&"luck_001")
+	_check(un != null, "운 should be registered in the database")
+	if un == null:
+		return
+	_check(un.prerequisites.is_empty(), "운 opens a new root with no prerequisite")
+	_unlock([&"luck_001"])
+	_close(
+		GameState.get_special_spawn_multiplier(), 1.05,
+		"운 raises the special spawn multiplier by 5%"
+	)
+
+
+## Doc v0.3 section 33: the prototype set is exactly ten words.
+func _test_database_holds_ten_words() -> void:
+	var expected := PackedStringArray(
+		["불", "화염", "불꽃", "힘", "강타", "돈", "금", "밥", "체력", "운"]
+	)
+	_check(
+		GameState.database.words.size() == 10,
+		"the database should hold 10 words (got %d)" % GameState.database.words.size()
+	)
+	for word_text: String in expected:
+		var found := false
+		for word: WordData in GameState.database.words:
+			if word != null and word.word == word_text:
+				found = true
+				break
+		_check(found, "%s should be registered in the database" % word_text)
+
+
+## Doc v0.3 section 19.1 / F3 regression: the HUD craft list is scene nodes, so
+## it must hold at least one row per database word. It used to stop at four,
+## which silently hid 운 on Day 1 while the dex still listed it.
+func _test_hud_lists_every_craftable_word() -> void:
+	_reset()
+	var hud: Control = (load(HUD_SCENE) as PackedScene).instantiate()
+	add_child(hud)
+
+	var rows := _hud_word_rows(hud)
+	var empty_label: Label = hud.get_node("%WordEmptyLabel")
+	var overflow_label: Label = hud.get_node("%WordOverflowLabel")
+
+	_check(
+		rows.size() >= GameState.database.words.size(),
+		"the HUD needs a row per word (%d rows for %d words)"
+			% [rows.size(), GameState.database.words.size()]
+	)
+
+	hud.refresh()
+	var craftable := GameState.get_craftable_words()
+	_check(craftable.size() >= 5, "Day 1 should offer at least the five tier-1 words")
+	_check(
+		_visible_word_texts(rows).size() == craftable.size(),
+		"the HUD should show %d rows on Day 1 (got %d)"
+			% [craftable.size(), _visible_word_texts(rows).size()]
+	)
+	for word: WordData in craftable:
+		var listed := false
+		for text: String in _visible_word_texts(rows):
+			if text.begins_with(word.word):
+				listed = true
+				break
+		_check(listed, "the HUD craft list should show %s" % word.word)
+	_check(not empty_label.visible, "the empty notice must stay hidden while words remain")
+	_check(not overflow_label.visible, "nothing is truncated while rows outnumber words")
+
+	# Everything completed: the panel must say so instead of going blank.
+	var every_id: Array = []
+	for word: WordData in GameState.database.words:
+		every_id.append(word.id)
+	_unlock(every_id)
+	hud.refresh()
+	_check(GameState.get_craftable_words().is_empty(), "unlocking every word empties the list")
+	_check(_visible_word_texts(rows).is_empty(), "no rows should remain visible")
+	_check(empty_label.visible, "an empty craft list needs a readable notice")
+
+	hud.queue_free()
+
+
+## The HUD's WordRow labels, read from the scene so the count is never guessed.
+func _hud_word_rows(hud: Control) -> Array[Label]:
+	var rows: Array[Label] = []
+	for child in hud.get_node("WordProgressPanel/WordBox").get_children():
+		if child is Label and child.name.begins_with("WordRow"):
+			rows.append(child)
+	return rows
+
+
+func _visible_word_texts(rows: Array[Label]) -> PackedStringArray:
+	var texts := PackedStringArray()
+	for row: Label in rows:
+		if row.visible:
+			texts.append(row.text)
+	return texts

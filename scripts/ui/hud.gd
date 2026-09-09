@@ -17,9 +17,14 @@ signal pause_pressed()
 @onready var _energy_bar: ProgressBar = %EnergyBar
 @onready var _gold_label: Label = %GoldLabel
 @onready var _kills_label: Label = %KillsLabel
+## One static row per word in the database; the script only shows, hides and
+## fills them, it never creates nodes. Doc v0.3 section 19.1.
 @onready var _word_rows: Array[Label] = [
-	%WordRow0, %WordRow1, %WordRow2, %WordRow3,
+	%WordRow0, %WordRow1, %WordRow2, %WordRow3, %WordRow4,
+	%WordRow5, %WordRow6, %WordRow7, %WordRow8, %WordRow9,
 ]
+@onready var _word_overflow_label: Label = %WordOverflowLabel
+@onready var _word_empty_label: Label = %WordEmptyLabel
 
 
 func _ready() -> void:
@@ -105,6 +110,14 @@ func _refresh_word_progress() -> void:
 			continue
 		row.visible = true
 		row.text = _describe_progress(craftable[i])
+
+	# Nothing left to craft still has to say so; an empty box reads as a bug.
+	_word_empty_label.visible = craftable.is_empty()
+	# More words than rows must not fail silently: say how many are hidden.
+	var overflow := craftable.size() - _word_rows.size()
+	_word_overflow_label.visible = overflow > 0
+	if overflow > 0:
+		_word_overflow_label.text = "외 %d개 더" % overflow
 
 
 func _describe_progress(word: WordData) -> String:

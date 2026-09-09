@@ -5,7 +5,10 @@ extends Control
 
 signal closed()
 
-@onready var _rows: Array[Label] = [%DexRow0, %DexRow1, %DexRow2, %DexRow3]
+@onready var _rows: Array[Label] = [
+	%DexRow0, %DexRow1, %DexRow2, %DexRow3, %DexRow4,
+	%DexRow5, %DexRow6, %DexRow7, %DexRow8, %DexRow9,
+]
 @onready var _count_label: Label = %DexCount
 
 
@@ -17,16 +20,16 @@ func _ready() -> void:
 func open() -> void:
 	var words: Array[WordData] = GameState.database.words
 	var unlocked := 0
+	for word: WordData in words:
+		if GameState.is_word_unlocked(word.id):
+			unlocked += 1
 	for i in _rows.size():
 		var row := _rows[i]
 		if i >= words.size():
 			row.visible = false
 			continue
-		var word: WordData = words[i]
 		row.visible = true
-		row.text = _describe(word)
-		if GameState.is_word_unlocked(word.id):
-			unlocked += 1
+		row.text = _describe(words[i])
 	_count_label.text = "완성한 단어  %d / %d" % [unlocked, words.size()]
 	show()
 	%DexCloseButton.grab_focus()

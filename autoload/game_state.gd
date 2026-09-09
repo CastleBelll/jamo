@@ -45,6 +45,9 @@ var _word_crit_multiplier: float = 0.0
 var _word_gold_bonus: float = 0.0
 var _word_bonus_max_energy: int = 0
 var _burn_effect: WordEffectData = null
+var _burn_spread_effect: WordEffectData = null
+var _golden_monster_unlocked: bool = false
+var _word_special_luck: float = 0.0
 
 
 func _ready() -> void:
@@ -150,9 +153,28 @@ func consume_reroll() -> bool:
 	return true
 
 
-## The burn effect granted by the word 불, or null while it is still locked.
+## The burn effect granted by the word 불, already carrying the 화염 tick
+## bonus, or null while 불 is still locked.
 func get_burn_effect() -> WordEffectData:
 	return _burn_effect
+
+
+## The 불꽃 spread rule, or null while it is still locked. Read by SpawnManager
+## when a monster dies burning.
+func get_burn_spread_effect() -> WordEffectData:
+	return _burn_spread_effect
+
+
+## True once 금 is completed. The golden monster spawn itself is F4 scope; this
+## only reports that the rule is unlocked. Doc word_tree v0.1 section 9.
+func is_golden_monster_unlocked() -> bool:
+	return _golden_monster_unlocked
+
+
+## Multiplier applied to the special monster spawn chance, 1.0 while 운 is
+## locked. Doc word_tree v0.1 section 11.
+func get_special_spawn_multiplier() -> float:
+	return 1.0 + _word_special_luck
 
 
 # --- Energy ----------------------------------------------------------------
@@ -296,6 +318,10 @@ func _recalculate_word_bonuses() -> void:
 	_word_gold_bonus = 0.0
 	_word_bonus_max_energy = 0
 	_burn_effect = null
+	_burn_spread_effect = null
+	_golden_monster_unlocked = false
+	_word_special_luck = 0.0
+	var burn_tick_bonus := 0.0
 	for word_id: StringName in unlocked_word_ids:
 		var word: WordData = database.find_word(word_id)
 		if word == null:
@@ -312,6 +338,22 @@ func _recalculate_word_bonuses() -> void:
 					_word_bonus_max_energy += int(effect.base_value)
 				WordEffectData.EffectType.UNLOCK_BURN:
 					_burn_effect = effect
+				WordEffectData.EffectType.BURN_TICK_BONUS:
+					burn_tick_bonus += effect.base_value
+				WordEffectData.EffectType.BURN_SPREAD:
+					_burn_spread_effect = effect
+				WordEffectData.EffectType.CRIT_CHANCE:
+					_word_crit_chance += effect.base_value
+				WordEffectData.EffectType.UNLOCK_GOLDEN:
+					_golden_monster_unlocked = true
+				WordEffectData.EffectType.SPECIAL_LUCK:
+					_word_special_luck += effect.base_value
+	# 화염 raises the tick damage of the burn 불 unlocked. Applied to a copy so
+	# the shared .tres resource is never mutated, and after the loop so the
+	# unlock order of the two words does not matter.
+	if _burn_effect != null and burn_tick_bonus > 0.0:
+		_burn_effect = _burn_effect.duplicate() as WordEffectData
+		_burn_effect.base_value += burn_tick_bonus
 
 
 # --- Save / load -----------------------------------------------------------

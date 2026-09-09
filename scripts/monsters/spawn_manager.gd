@@ -148,3 +148,45 @@ func _weight_for(scene: PackedScene) -> float:
 
 func _on_monster_died(monster: JamoMonster) -> void:
 	_alive.erase(monster)
+	_spread_burn_from(monster)
+
+
+## 불꽃: a monster that dies burning hands its burn to the nearest neighbours.
+## Runs only on death and reads the cached _alive list, so no group scan and no
+## per-frame neighbour search is added. Doc v0.3 section 36.
+func _spread_burn_from(source: JamoMonster) -> void:
+	var spread: WordEffectData = GameState.get_burn_spread_effect()
+	if spread == null or not source.died_burning:
+		return
+	# A burn that already hopped its allowed number of times stops here, so a
+	# chain of deaths can never run away across the field.
+	var next_depth: int = source.burn_chain_depth + 1
+	if next_depth > spread.max_chain_depth:
+		return
+	var burn: WordEffectData = GameState.get_burn_effect()
+	if burn == null:
+		return
+	for target: JamoMonster in _nearest_alive(
+		source.global_position, spread.radius, spread.chain_count
+	):
+		target.apply_status_effect(burn, next_depth)
+
+
+## The `count` living monsters closest to `origin` and within `radius`, nearest
+## first. The field is capped at 20, so a plain sort is cheap enough here.
+func _nearest_alive(origin: Vector3, radius: float, count: int) -> Array[JamoMonster]:
+	var found: Array[JamoMonster] = []
+	if count <= 0 or radius <= 0.0:
+		return found
+	for monster: JamoMonster in _alive:
+		if not is_instance_valid(monster) or not monster.is_alive():
+			continue
+		if origin.distance_to(monster.global_position) <= radius:
+			found.append(monster)
+	found.sort_custom(
+		func(a: JamoMonster, b: JamoMonster) -> bool:
+			var to_a := origin.distance_squared_to(a.global_position)
+			var to_b := origin.distance_squared_to(b.global_position)
+			return to_a < to_b
+	)
+	return found.slice(0, count)

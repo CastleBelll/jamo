@@ -168,3 +168,53 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "밥   ㅂ 0/2  ㅏ 0/1"
+
+[node name="WordRow4" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "운   ㅇ 0/1  ㅜ 0/1  ㄴ 0/1"
+
+[node name="WordRow5" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "화염   ㅎ 0/1  ㅗ 0/1  ㅏ 0/1"
+
+[node name="WordRow6" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "불꽃   ㅂ 0/1  ㅜ 0/1  ㄹ 0/1"
+
+[node name="WordRow7" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "강타   ㄱ 0/1  ㅏ 0/2  ㅇ 0/1"
+
+[node name="WordRow8" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "금   ㄱ 0/1  ㅡ 0/1  ㅁ 0/1"
+
+[node name="WordRow9" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "체력   ㅊ 0/1  ㅓ 0/1  ㅣ 0/1"
+
+[node name="WordOverflowLabel" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "외 0개 더"
+
+[node name="WordEmptyLabel" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "완성할 단어가 없습니다"
