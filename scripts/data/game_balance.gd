@@ -29,6 +29,14 @@ extends Resource
 ## Simultaneous monsters at upgrade level 0. Doc v0.3 section 28.
 @export var base_monster_capacity: int = 8
 
+@export_group("Special Monsters")
+## Chance one spawn is drawn from the Special Pool instead of the normal one,
+## before the 운 luck multiplier. growth_balance v0.2 section 2.
+@export_range(0.0, 1.0, 0.005) var special_spawn_chance: float = 0.02
+## Same, for the Golden Pool. Only rolled once the word 금 is completed.
+## Doc v0.3 section 9.3.
+@export_range(0.0, 1.0, 0.005) var golden_spawn_chance: float = 0.02
+
 @export_group("Jamo Choice")
 ## Jamo candidates offered at day end, upgrade level 0. Doc v0.3 section 13.
 @export var base_jamo_candidates: int = 2

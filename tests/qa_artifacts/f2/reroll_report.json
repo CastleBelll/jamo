@@ -18,7 +18,8 @@
 			"ㄷ",
 			"ㅗ",
 			"ㄴ",
-			"ㅏ"
+			"ㅏ",
+			"ㅇ"
 		],
 		"off_pool_draws": [],
 		"overlap_counts": [
@@ -73,14 +74,14 @@
 			0,
 			0
 		],
-		"pool_size": 10
+		"pool_size": 11
 	},
 	"day4_hidden": {
 		"choice": {
 			"button_disabled": false,
 			"candidates": [
-				"ㅁ",
-				"ㅏ"
+				"ㅎ",
+				"ㅜ"
 			],
 			"label_text": "리롤 0/0",
 			"max_rerolls": 0,
@@ -96,8 +97,8 @@
 		"choice": {
 			"button_disabled": false,
 			"candidates": [
-				"ㅜ",
-				"ㅗ"
+				"ㅎ",
+				"ㄴ"
 			],
 			"label_text": "리롤 1/1",
 			"max_rerolls": 1,
@@ -211,8 +212,8 @@
 		"choice": {
 			"button_disabled": false,
 			"candidates": [
-				"ㄴ",
-				"ㅣ"
+				"ㅂ",
+				"ㅜ"
 			],
 			"label_text": "리롤 1/1",
 			"max_rerolls": 1,
@@ -224,12 +225,12 @@
 	},
 	"pick_final": {
 		"candidates_after_late_reroll": [
-			"ㄷ",
-			"ㅜ"
+			"ㄹ",
+			"ㅂ"
 		],
 		"candidates_at_pick": [
-			"ㄷ",
-			"ㅜ"
+			"ㄹ",
+			"ㅂ"
 		],
 		"panel_hidden_after_pick": true,
 		"rerolls_left_after_late_reroll": 1
@@ -238,231 +239,231 @@
 		"max_overlap": 0,
 		"real_click_used_for_screenshot_pair": true,
 		"screenshot_after": [
-			"ㄹ",
-			"ㅂ"
+			"ㅂ",
+			"ㄹ"
 		],
 		"screenshot_before": [
-			"ㄷ",
-			"ㅗ"
+			"ㅜ",
+			"ㅏ"
 		],
 		"trials": [
 			{
 				"after": [
-					"ㄴ",
-					"ㅎ"
-				],
-				"before": [
-					"ㅣ",
-					"ㅂ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅎ",
-					"ㅜ"
-				],
-				"before": [
-					"ㅁ",
-					"ㄹ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅎ",
-					"ㅜ"
-				],
-				"before": [
-					"ㄷ",
-					"ㅂ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅏ",
-					"ㅂ"
-				],
-				"before": [
-					"ㅎ",
-					"ㅜ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅎ",
-					"ㄷ"
-				],
-				"before": [
-					"ㄴ",
-					"ㅂ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㄷ",
-					"ㅎ"
-				],
-				"before": [
-					"ㅜ",
-					"ㅂ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅜ",
-					"ㅗ"
-				],
-				"before": [
-					"ㅁ",
-					"ㄷ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅜ",
-					"ㄹ"
-				],
-				"before": [
-					"ㄴ",
-					"ㅂ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅣ",
-					"ㅁ"
-				],
-				"before": [
 					"ㅂ",
-					"ㄹ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅜ",
-					"ㅣ"
-				],
-				"before": [
-					"ㅂ",
-					"ㅎ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅏ",
-					"ㅣ"
-				],
-				"before": [
-					"ㅂ",
-					"ㅎ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅣ",
 					"ㅏ"
-				],
-				"before": [
-					"ㅁ",
-					"ㅎ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㄷ",
-					"ㅁ"
-				],
-				"before": [
-					"ㅂ",
-					"ㅣ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅏ",
-					"ㄷ"
-				],
-				"before": [
-					"ㅎ",
-					"ㅂ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅂ",
-					"ㅗ"
-				],
-				"before": [
-					"ㄷ",
-					"ㄴ"
-				],
-				"overlap": 0
-			},
-			{
-				"after": [
-					"ㅗ",
-					"ㅂ"
 				],
 				"before": [
 					"ㄹ",
+					"ㅎ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅁ",
+					"ㅣ"
+				],
+				"before": [
+					"ㄹ",
+					"ㅜ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅜ",
+					"ㄷ"
+				],
+				"before": [
+					"ㅂ",
 					"ㄴ"
 				],
 				"overlap": 0
 			},
 			{
 				"after": [
-					"ㅗ",
-					"ㅂ"
-				],
-				"before": [
-					"ㅣ",
+					"ㅇ",
 					"ㅏ"
 				],
+				"before": [
+					"ㄴ",
+					"ㅣ"
+				],
 				"overlap": 0
 			},
 			{
 				"after": [
-					"ㅣ",
+					"ㅁ",
 					"ㅂ"
 				],
 				"before": [
-					"ㅁ",
+					"ㅣ",
 					"ㄴ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㄴ",
+					"ㄷ"
+				],
+				"before": [
+					"ㅎ",
+					"ㅂ"
 				],
 				"overlap": 0
 			},
 			{
 				"after": [
 					"ㄷ",
-					"ㅂ"
+					"ㄹ"
 				],
 				"before": [
-					"ㅎ",
+					"ㅂ",
+					"ㅁ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅁ",
+					"ㄴ"
+				],
+				"before": [
+					"ㅇ",
+					"ㅗ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㄷ",
+					"ㄴ"
+				],
+				"before": [
+					"ㅂ",
+					"ㄹ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㄴ",
+					"ㄹ"
+				],
+				"before": [
+					"ㅂ",
+					"ㅗ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅂ",
+					"ㅎ"
+				],
+				"before": [
+					"ㄹ",
 					"ㅏ"
 				],
 				"overlap": 0
 			},
 			{
 				"after": [
+					"ㄴ",
+					"ㅂ"
+				],
+				"before": [
 					"ㅣ",
+					"ㅏ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅜ",
+					"ㅇ"
+				],
+				"before": [
+					"ㅂ",
+					"ㄷ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅇ",
+					"ㅂ"
+				],
+				"before": [
+					"ㅜ",
+					"ㅏ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅏ",
+					"ㅎ"
+				],
+				"before": [
+					"ㅂ",
+					"ㅁ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅜ",
 					"ㅂ"
 				],
 				"before": [
 					"ㅁ",
+					"ㄹ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅁ",
 					"ㅗ"
+				],
+				"before": [
+					"ㅏ",
+					"ㅂ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㄴ",
+					"ㅣ"
+				],
+				"before": [
+					"ㄹ",
+					"ㅏ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㄷ",
+					"ㅇ"
+				],
+				"before": [
+					"ㅗ",
+					"ㅂ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅜ",
+					"ㅎ"
+				],
+				"before": [
+					"ㅣ",
+					"ㅂ"
 				],
 				"overlap": 0
 			}

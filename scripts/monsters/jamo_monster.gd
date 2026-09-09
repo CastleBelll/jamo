@@ -54,6 +54,8 @@ var _target: Vector3 = Vector3.ZERO
 var _state_timer: float = 0.0
 var _avoidance_timer: float = 0.0
 var _separation: Vector3 = Vector3.ZERO
+## Seconds left before the monster leaves on its own. 0 disables the timer.
+var _lifetime_left: float = 0.0
 
 
 func _ready() -> void:
@@ -70,7 +72,9 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 
-	_speed = monster_data.base_speed * _profile.move_speed_multiplier
+	_speed = monster_data.base_speed * _profile.move_speed_multiplier \
+		* monster_data.speed_multiplier
+	_lifetime_left = monster_data.lifetime_seconds
 	_visual_root.scale = Vector3.ONE * monster_data.visual_scale
 	_apply_click_radius(monster_data.click_radius)
 	_roll_stats()
@@ -97,6 +101,11 @@ func _apply_click_radius(radius: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _lifetime_left > 0.0:
+		_lifetime_left -= delta
+		if _lifetime_left <= 0.0:
+			_expire()
+			return
 	match _state:
 		State.IDLE:
 			_process_idle(delta)
@@ -263,22 +272,34 @@ func apply_status_effect(effect: WordEffectData, chain_depth: int = 0) -> void:
 func _die() -> void:
 	if _state == State.DEAD:
 		return
-	_state = State.DEAD
 	died_burning = _status.has(WordEffectData.EffectType.UNLOCK_BURN)
-	_status.clear()
-	set_physics_process(false)
-	# Stop responding to clicks and stop blocking other monsters, but stay
-	# visible until the death animation finishes.
-	$ClickArea.monitorable = false
-	$ClickArea.input_ray_pickable = false
-	_click_shape.set_deferred(&"disabled", true)
-	$MoveCollision.set_deferred(&"disabled", true)
-
+	_leave_field()
 	GameState.register_kill(
 		monster_data.jamo, _calculate_gold_reward(), global_position
 	)
 	died.emit(self)
 
+
+## The monster ran out of lifetime_seconds and leaves without being killed, so
+## it pays no gold and its burn does not spread. Doc v0.3 section 9.3.
+func _expire() -> void:
+	if _state == State.DEAD:
+		return
+	died_burning = false
+	_leave_field()
+	died.emit(self)
+
+
+## Shared teardown: stop moving, stop taking clicks, stop blocking the others,
+## but stay visible until the death animation finishes.
+func _leave_field() -> void:
+	_state = State.DEAD
+	_status.clear()
+	set_physics_process(false)
+	$ClickArea.monitorable = false
+	$ClickArea.input_ray_pickable = false
+	_click_shape.set_deferred(&"disabled", true)
+	$MoveCollision.set_deferred(&"disabled", true)
 	_animation.speed_scale = 1.0
 	_animation.play(&"death")
 

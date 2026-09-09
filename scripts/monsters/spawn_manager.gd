@@ -11,9 +11,16 @@ const REPEAT_WEIGHT_PENALTY := 0.25
 ## How many placements to try before settling for the roomiest one found.
 const SPAWN_PLACEMENT_ATTEMPTS := 12
 
-@export_group("Pool")
-## One entry per jamo monster scene. Weights come from each JamoMonsterData.
+@export_group("Pools")
+## Normal Pool - one entry per plain jamo scene. Weights come from each
+## JamoMonsterData.spawn_weight. Doc v0.3 section 28.
 @export var monster_scenes: Array[PackedScene] = []
+## Special Pool - the special variants under scenes/monsters/special/.
+## Rolled with GameBalance.special_spawn_chance.
+@export var special_scenes: Array[PackedScene] = []
+## Golden Pool - rolled with GameBalance.golden_spawn_chance, and only once the
+## word 금 is completed. Doc v0.3 section 9.3.
+@export var golden_scenes: Array[PackedScene] = []
 
 @export_group("Field")
 ## Node the spawned monsters are parented to.
@@ -33,6 +40,9 @@ const SPAWN_PLACEMENT_ATTEMPTS := 12
 var _alive: Array[JamoMonster] = []
 var _spawn_timer: float = 0.0
 var _last_spawned_id: StringName = &""
+## PackedScene -> its JamoMonsterData, so the pools never re-read a packed
+## scene state while the field is refilling. Doc v0.3 section 36.
+var _data_cache: Dictionary = {}
 
 
 func _ready() -> void:
@@ -41,6 +51,23 @@ func _ready() -> void:
 	if monster_scenes.is_empty():
 		push_error("SpawnManager has an empty monster_scenes pool.")
 		set_process(false)
+	_validate_pool(monster_scenes, JamoMonsterData.SpecialType.NORMAL, "Normal")
+	_validate_pool(special_scenes, JamoMonsterData.SpecialType.SPECIAL, "Special")
+	_validate_pool(golden_scenes, JamoMonsterData.SpecialType.GOLDEN, "Golden")
+
+
+## Catches a scene dropped into the wrong pool in the editor, which would
+## otherwise only show up as a golden monster spawning before 금 is completed.
+func _validate_pool(
+	pool: Array[PackedScene], expected: JamoMonsterData.SpecialType, pool_name: String
+) -> void:
+	for scene: PackedScene in pool:
+		var data := _data_for(scene)
+		if data != null and data.special_type != expected:
+			push_warning(
+				"SpawnManager: %s is in the %s pool but its special_type is %d."
+				% [scene.resource_path, pool_name, data.special_type]
+			)
 
 
 func _process(delta: float) -> void:
@@ -64,7 +91,7 @@ func clear_field() -> void:
 
 
 func _spawn_one() -> void:
-	var scene := _pick_scene()
+	var scene := _pick_scene(_pick_pool())
 	if scene == null:
 		return
 	var monster := scene.instantiate() as JamoMonster
@@ -109,41 +136,83 @@ func _clearance_at(point: Vector3) -> float:
 	return closest
 
 
-## Weighted pick using each scene JamoMonsterData.spawn_weight, with a penalty
-## on the jamo that spawned last.
-func _pick_scene() -> PackedScene:
+## Chance the next spawn is drawn from the Golden Pool. 0 while the word 금 is
+## still locked, and the word 운 multiplies it. Doc v0.3 section 9.3.
+func get_golden_spawn_chance() -> float:
+	if golden_scenes.is_empty() or not GameState.is_golden_monster_unlocked():
+		return 0.0
+	var luck := GameState.get_special_spawn_multiplier()
+	return GameState.balance.golden_spawn_chance * luck
+
+
+## Chance the next spawn is drawn from the Special Pool, also scaled by 운.
+## growth_balance v0.2 section 2.
+func get_special_spawn_chance() -> float:
+	if special_scenes.is_empty():
+		return 0.0
+	var luck := GameState.get_special_spawn_multiplier()
+	return GameState.balance.special_spawn_chance * luck
+
+
+## One roll decides the pool: golden first, then special, then the plain jamo.
+## Doc v0.3 section 28.
+func _pick_pool() -> Array[PackedScene]:
+	var roll := randf()
+	var golden_chance := get_golden_spawn_chance()
+	if roll < golden_chance:
+		return golden_scenes
+	if roll < golden_chance + get_special_spawn_chance():
+		return special_scenes
+	return monster_scenes
+
+
+## Weighted pick inside one pool using each scene JamoMonsterData.spawn_weight,
+## with a penalty on the jamo that spawned last.
+func _pick_scene(pool: Array[PackedScene]) -> PackedScene:
+	if pool.is_empty():
+		return null
 	var weights: Array[float] = []
 	var total := 0.0
-	for scene: PackedScene in monster_scenes:
+	for scene: PackedScene in pool:
 		var weight := _weight_for(scene)
 		weights.append(weight)
 		total += weight
 	if total <= 0.0:
-		return monster_scenes.pick_random()
+		return pool.pick_random()
 
 	var roll := randf() * total
-	for i in monster_scenes.size():
+	for i in pool.size():
 		roll -= weights[i]
 		if roll <= 0.0:
-			return monster_scenes[i]
-	return monster_scenes.back()
+			return pool[i]
+	return pool.back()
 
 
 func _weight_for(scene: PackedScene) -> float:
-	var state := scene.get_state()
-	var data: JamoMonsterData = null
-	# Read the exported monster_data straight off the packed scene so the pool
-	# never has to instantiate a node just to learn its weight.
-	for i in state.get_node_property_count(0):
-		if state.get_node_property_name(0, i) == &"monster_data":
-			data = state.get_node_property_value(0, i) as JamoMonsterData
-			break
+	var data := _data_for(scene)
 	if data == null:
 		return 1.0
 	var weight := data.spawn_weight
 	if data.id == _last_spawned_id:
 		weight *= REPEAT_WEIGHT_PENALTY
 	return maxf(0.0, weight)
+
+
+## The JamoMonsterData of a pool entry, read once off the packed scene and kept,
+## so refilling the field never instantiates a node just to learn a weight.
+func _data_for(scene: PackedScene) -> JamoMonsterData:
+	if scene == null:
+		return null
+	if _data_cache.has(scene):
+		return _data_cache[scene]
+	var data: JamoMonsterData = null
+	var state := scene.get_state()
+	for i in state.get_node_property_count(0):
+		if state.get_node_property_name(0, i) == &"monster_data":
+			data = state.get_node_property_value(0, i) as JamoMonsterData
+			break
+	_data_cache[scene] = data
+	return data
 
 
 func _on_monster_died(monster: JamoMonster) -> void:

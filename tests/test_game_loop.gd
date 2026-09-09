@@ -39,6 +39,10 @@ func _ready() -> void:
 	_test_reroll_charges_and_blocks()
 	_test_reroll_redraws_candidates()
 	_test_reroll_panel_states()
+	_test_golden_pool_waits_for_geum()
+	_test_special_multipliers_reach_the_monster()
+	_test_un_multiplies_special_spawn_chance()
+	_test_golden_leaves_without_paying_gold()
 	_test_save_round_trip()
 	_test_reroll_save_round_trip()
 
@@ -838,3 +842,191 @@ func _visible_word_texts(rows: Array[Label]) -> PackedStringArray:
 		if row.visible:
 			texts.append(row.text)
 	return texts
+
+
+# --- F4 special monsters ---------------------------------------------------
+
+const IEUNG_SCENE := "res://scenes/monsters/monster_ieung.tscn"
+const BIG_MIEUM_SCENE := "res://scenes/monsters/special/monster_big_mieum.tscn"
+const FAST_IEUNG_SCENE := "res://scenes/monsters/special/monster_fast_ieung.tscn"
+const GOLDEN_HIEUT_SCENE := "res://scenes/monsters/special/monster_golden_hieut.tscn"
+## Enough picks that a 2% pool is certain to come up at least once.
+const POOL_ROLLS := 2000
+
+
+## A SpawnManager with the same three pools the game world wires up, and its
+## refill loop off so the test decides when a pick happens.
+func _make_spawner() -> SpawnManager:
+	var spawner := SpawnManager.new()
+	var root := Node3D.new()
+	spawner.spawn_root = root
+	spawner.monster_scenes = [load(MONSTER_SCENE)]
+	spawner.special_scenes = [load(BIG_MIEUM_SCENE), load(FAST_IEUNG_SCENE)]
+	spawner.golden_scenes = [load(GOLDEN_HIEUT_SCENE)]
+	add_child(spawner)
+	spawner.add_child(root)
+	spawner.set_process(false)
+	return spawner
+
+
+## How many of `rolls` spawn picks landed on each SpecialType. It goes through
+## the real pool roll and the real weighted pick, not a shortcut.
+func _count_picked_types(spawner: SpawnManager, rolls: int) -> Dictionary:
+	var counts: Dictionary = {}
+	for _i in rolls:
+		var scene: PackedScene = spawner._pick_scene(spawner._pick_pool())
+		var data: JamoMonsterData = spawner._data_for(scene)
+		if data == null:
+			continue
+		counts[data.special_type] = int(counts.get(data.special_type, 0)) + 1
+	return counts
+
+
+## Instantiates a monster scene into the tree so its _ready() applies the data.
+func _spawn_for_test(root: Node3D, scene_path: String) -> JamoMonster:
+	var monster: JamoMonster = (load(scene_path) as PackedScene).instantiate()
+	root.add_child(monster)
+	return monster
+
+
+## The Golden Pool is gated by the word 금 and nothing else. Doc v0.3 section 9.3.
+func _test_golden_pool_waits_for_geum() -> void:
+	_reset()
+	var spawner := _make_spawner()
+
+	# Every scene must sit in the pool its own special_type names, otherwise the
+	# gate below could be passed by a golden dropped into the normal list.
+	for scene: PackedScene in spawner.special_scenes:
+		_check(
+			spawner._data_for(scene).special_type == JamoMonsterData.SpecialType.SPECIAL,
+			"%s belongs in the Special Pool" % scene.resource_path
+		)
+	for scene: PackedScene in spawner.golden_scenes:
+		_check(
+			spawner._data_for(scene).special_type == JamoMonsterData.SpecialType.GOLDEN,
+			"%s belongs in the Golden Pool" % scene.resource_path
+		)
+
+	_check(not GameState.is_golden_monster_unlocked(), "금 starts locked")
+	_close(spawner.get_golden_spawn_chance(), 0.0, "a locked 금 leaves no golden chance")
+	var locked := _count_picked_types(spawner, POOL_ROLLS)
+	_check(
+		int(locked.get(JamoMonsterData.SpecialType.GOLDEN, 0)) == 0,
+		"no golden individual may spawn before 금 is completed"
+	)
+	_check(
+		int(locked.get(JamoMonsterData.SpecialType.SPECIAL, 0)) > 0,
+		"the Special Pool does not wait for 금"
+	)
+
+	_unlock([&"gold_001", &"gold_002"])
+	_check(GameState.is_golden_monster_unlocked(), "금 should unlock the golden individual")
+	_close(
+		spawner.get_golden_spawn_chance(), GameState.balance.golden_spawn_chance,
+		"an unlocked 금 gives the base golden chance from GameBalance"
+	)
+	var unlocked := _count_picked_types(spawner, POOL_ROLLS)
+	_check(
+		int(unlocked.get(JamoMonsterData.SpecialType.GOLDEN, 0)) > 0,
+		"the golden individual should appear once 금 is completed"
+	)
+	# The normal jamo still make up the bulk of the field.
+	_check(
+		int(unlocked.get(JamoMonsterData.SpecialType.NORMAL, 0)) > POOL_ROLLS / 2,
+		"special spawns must stay rare next to the normal pool"
+	)
+
+	spawner.queue_free()
+
+
+## The .tres multipliers have to land on the live monster, not only read well in
+## the Inspector. Doc v0.3 sections 9.1, 9.2 and 9.3.
+func _test_special_multipliers_reach_the_monster() -> void:
+	_reset()
+	var root := Node3D.new()
+	add_child(root)
+
+	var mieum := _spawn_for_test(root, MONSTER_SCENE)
+	var ieung := _spawn_for_test(root, IEUNG_SCENE)
+	var big := _spawn_for_test(root, BIG_MIEUM_SCENE)
+	var fast := _spawn_for_test(root, FAST_IEUNG_SCENE)
+	var golden := _spawn_for_test(root, GOLDEN_HIEUT_SCENE)
+
+	# 큰 ㅁ: HP x3, gold x3, speed x0.6.
+	_close(big.max_hp / mieum.max_hp, 3.0, "큰 ㅁ should carry 3x the HP")
+	_close(
+		big._calculate_gold_reward() / mieum._calculate_gold_reward(), 3.0,
+		"큰 ㅁ should pay 3x the gold"
+	)
+	_close(big._speed / mieum._speed, 0.6, "큰 ㅁ should walk at 0.6x the speed")
+	_check(
+		big.monster_data.visual_scale > mieum.monster_data.visual_scale,
+		"큰 ㅁ should be the bigger click target"
+	)
+
+	# 빠른 ㅇ: HP x0.75, gold x2, speed x1.8.
+	_close(fast.max_hp / ieung.max_hp, 0.75, "빠른 ㅇ should carry 0.75x the HP")
+	_close(
+		fast._calculate_gold_reward() / ieung._calculate_gold_reward(), 2.0,
+		"빠른 ㅇ should pay 2x the gold"
+	)
+	_close(fast._speed / ieung._speed, 1.8, "빠른 ㅇ should walk at 1.8x the speed")
+	_check(
+		fast.monster_data.motion_profile.idle_max < ieung.monster_data.motion_profile.idle_max,
+		"빠른 ㅇ should change direction more often"
+	)
+
+	# 황금 ㅎ: gold x5 and a shorter stay than a normal individual.
+	_close(
+		golden._calculate_gold_reward() / mieum._calculate_gold_reward(), 5.0,
+		"황금 ㅎ should pay 5x the gold"
+	)
+	_check(golden.monster_data.lifetime_seconds > 0.0, "황금 ㅎ should leave on its own")
+	_close(mieum.monster_data.lifetime_seconds, 0.0, "a normal jamo waits to be clicked")
+
+	root.queue_free()
+
+
+## 운 multiplies both special chances rather than replacing them.
+## Doc word_tree v0.1 section 11.
+func _test_un_multiplies_special_spawn_chance() -> void:
+	_reset()
+	var spawner := _make_spawner()
+	_unlock([&"gold_001", &"gold_002"])
+	_close(GameState.get_special_spawn_multiplier(), 1.0, "운 starts locked")
+	var base_special := spawner.get_special_spawn_chance()
+	var base_golden := spawner.get_golden_spawn_chance()
+	_check(base_special > 0.0 and base_golden > 0.0, "both pools start with a chance")
+
+	_unlock([&"luck_001"])
+	var luck := GameState.get_special_spawn_multiplier()
+	_check(luck > 1.0, "운 should raise the special spawn multiplier (got %f)" % luck)
+	_close(
+		spawner.get_special_spawn_chance(), base_special * luck,
+		"운 multiplies the Special Pool chance"
+	)
+	_close(
+		spawner.get_golden_spawn_chance(), base_golden * luck,
+		"운 multiplies the Golden Pool chance"
+	)
+
+	spawner.queue_free()
+
+
+## A monster that runs out of lifetime leaves quietly: no gold, and the spawner
+## stops counting it so the field refills. Doc v0.3 section 9.3.
+func _test_golden_leaves_without_paying_gold() -> void:
+	_reset()
+	var spawner := _make_spawner()
+	var golden := _spawn_for_test(spawner.spawn_root, GOLDEN_HIEUT_SCENE)
+	golden.died.connect(spawner._on_monster_died)
+	spawner._alive.append(golden)
+
+	var gold_before := GameState.gold
+	# One oversized step burns the whole lifetime without waiting in real time.
+	golden._physics_process(golden.monster_data.lifetime_seconds + 0.1)
+	_check(not golden.is_alive(), "the golden individual should leave when its time is up")
+	_close(GameState.gold, gold_before, "a monster that left on its own pays no gold")
+	_check(spawner._alive.is_empty(), "the spawner should free the slot it left behind")
+
+	spawner.queue_free()

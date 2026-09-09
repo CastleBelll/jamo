@@ -13,5 +13,7 @@ hp_growth_per_day = 1.035
 base_monster_gold = 2.0
 gold_growth_per_day = 1.025
 base_monster_capacity = 8
+special_spawn_chance = 0.02
+golden_spawn_chance = 0.02
 base_jamo_candidates = 2
 day_end_settle_seconds = 0.8

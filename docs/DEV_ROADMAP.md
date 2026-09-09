@@ -58,22 +58,23 @@
 - [x] S8 `WordEffectData.EffectType` 신규 타입 추가 (BURN_TICK_BONUS / BURN_SPREAD / CRIT_CHANCE / UNLOCK_GOLDEN / LUCK)
 - [x] QA 확인: 선행 잠금 동작 / 각 단어 완성 시 실제 규칙 변화 관측 / 총 단어 10개
 
-## F4. 특수 몬스터  `[~]`
+## F4. 특수 몬스터  `[x]`
 
 근거: v0.3 §9 §28 §32
 
-- [ ] S1 `JamoMonsterData` 에 special_type / spawn_weight / 배율 export 정리
-- [ ] S2 `황금 ㅎ` — 단어 `금` 해금 후 등장, 확률 2%, Gold ×5, 체류시간 단축, 금속 머티리얼
-- [ ] S3 `큰 ㅁ` — HP ×3, 속도 ×0.6, Gold ×3, 강한 착지
-- [ ] S4 `빠른 ㅇ` — HP ×0.75, 속도 ×1.8, Gold ×2, 턴 빈도 증가
-- [ ] S5 `SpawnManager` Pool 분리 (Normal / Special / Golden) + 동일 자모 연속 패널티
-- [ ] S6 특수 개체 전용 씬 상속 (.tscn) — 신규 메시 제작 금지, Scale/Material/Profile 로 차별화
-- [ ] QA 확인: 금 미해금 시 황금 미등장 / 해금 후 등장 / 각 배율 실측 / 20마리 60FPS
+- [x] S1 `JamoMonsterData` 에 special_type / spawn_weight / 배율 export 정리
+- [x] S2 `황금 ㅎ` — 단어 `금` 해금 후 등장, 확률 2%, Gold ×5, 체류시간 단축, 금속 머티리얼
+- [x] S3 `큰 ㅁ` — HP ×3, 속도 ×0.6, Gold ×3, 강한 착지
+- [x] S4 `빠른 ㅇ` — HP ×0.75, 속도 ×1.8, Gold ×2, 턴 빈도 증가
+- [x] S5 `SpawnManager` Pool 분리 (Normal / Special / Golden) + 동일 자모 연속 패널티
+- [x] S6 특수 개체 전용 씬 상속 (.tscn) — 신규 메시 제작 금지, Scale/Material/Profile 로 차별화
+- [x] QA 확인: 금 미해금 시 황금 미등장 / 해금 후 등장 / 각 배율 실측 / 20마리 60FPS
 
-## F5. 단어 트리 UI  `[ ]`
+## F5. 단어 트리 UI  `[~]`
 
 근거: v0.3 §15 §23.5 / Phase 6
 
+- [ ] S0 이월: 큰 ㅁ 가 20마리 밀집 시 아레나 가장자리를 시각적으로 넘음 (F4 QA INFO)
 - [ ] S0 F3 이월: 도감 패널이 HUD 상단바와 겹침 (스크롤 컨테이너 없음)
 - [ ] S1 `scenes/ui/word_tree.tscn` 신규 (Control 기반, 에디터 편집 가능 구조)
 - [ ] S2 노드 상태 4종 표시 — 해금 / 제작 가능 / 선행 잠금 / 미발견

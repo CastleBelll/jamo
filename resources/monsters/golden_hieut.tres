@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="JamoMonsterData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/jamo_monster_data.gd" id="1_script"]
+[ext_resource type="Resource" path="res://resources/motion_profiles/glide.tres" id="2_profile"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"golden_hieut"
+jamo = "ㅎ"
+hp_multiplier = 1.0
+gold_multiplier = 5.0
+base_speed = 1.2
+speed_multiplier = 1.0
+motion_profile = ExtResource("2_profile")
+visual_scale = 1.6
+click_radius = 0.8
+special_type = 2
+spawn_weight = 1.0
+lifetime_seconds = 8.0

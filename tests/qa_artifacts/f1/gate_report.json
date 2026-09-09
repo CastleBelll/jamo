@@ -52,6 +52,8 @@
 			"base_monster_gold",
 			"gold_growth_per_day",
 			"base_monster_capacity",
+			"special_spawn_chance",
+			"golden_spawn_chance",
 			"base_jamo_candidates",
 			"day_end_settle_seconds"
 		]
