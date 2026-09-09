@@ -10,6 +10,10 @@ enum Availability {
 	MAXED,
 	## Day requirement not reached yet, so it should not even be listed.
 	LOCKED_BY_DAY,
+	## The track is unlocked but the *next* level waits for a later day.
+	## Only tracks with a per-level day table reach this, e.g. 리롤 Lv.2 on
+	## Day 25. growth_balance v0.2 section 10.2.
+	LOCKED_BY_NEXT_DAY,
 	## A prerequisite word is still missing.
 	LOCKED_BY_WORD,
 	## A prerequisite upgrade track is not high enough yet.
@@ -37,6 +41,8 @@ static func get_availability(upgrade: UpgradeData) -> Availability:
 	var level := GameState.get_upgrade_level(upgrade.id)
 	if level >= upgrade.max_level():
 		return Availability.MAXED
+	if GameState.day < upgrade.unlock_day_for_level(level + 1):
+		return Availability.LOCKED_BY_NEXT_DAY
 	if GameState.gold < float(upgrade.cost_for_next(level)):
 		return Availability.TOO_EXPENSIVE
 	return Availability.AVAILABLE

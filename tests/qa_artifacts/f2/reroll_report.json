@@ -1,0 +1,495 @@
+{
+	"accessibility": {
+		"button_text": "리롤",
+		"focus_mode": 2,
+		"grab_focus_works": true,
+		"label_text": "리롤 1/1"
+	},
+	"candidate_quality": {
+		"filler_jamo": [],
+		"max_overlap": 0,
+		"needed_pool": [
+			"ㅂ",
+			"ㅜ",
+			"ㄹ",
+			"ㅎ",
+			"ㅣ",
+			"ㅁ",
+			"ㄷ",
+			"ㅗ",
+			"ㄴ",
+			"ㅏ"
+		],
+		"off_pool_draws": [],
+		"overlap_counts": [
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		"pool_size": 10
+	},
+	"day4_hidden": {
+		"choice": {
+			"button_disabled": false,
+			"candidates": [
+				"ㅁ",
+				"ㅏ"
+			],
+			"label_text": "리롤 0/0",
+			"max_rerolls": 0,
+			"rerolls_left": 0,
+			"row_visible": false
+		},
+		"shop": {
+			"day": 4,
+			"row_visible": false
+		}
+	},
+	"day5_buy": {
+		"choice": {
+			"button_disabled": false,
+			"candidates": [
+				"ㅜ",
+				"ㅗ"
+			],
+			"label_text": "리롤 1/1",
+			"max_rerolls": 1,
+			"rerolls_left": 1,
+			"row_visible": true
+		},
+		"gold_after": 99000.0,
+		"level": 1,
+		"max_rerolls": 1,
+		"shop_after": {
+			"button_disabled": true,
+			"button_text": "잠김",
+			"cost_text": "Day 25 필요",
+			"day": 5,
+			"name_text": "리롤  Lv.1",
+			"row_visible": true,
+			"value_text": "1 회"
+		},
+		"shop_before": {
+			"button_disabled": false,
+			"button_text": "구매",
+			"cost_text": "1000 G",
+			"day": 5,
+			"name_text": "리롤  Lv.0",
+			"row_visible": true,
+			"value_text": "0 회 → 1 회"
+		}
+	},
+	"empty_pool_panel": {
+		"button_disabled": true,
+		"candidates": [],
+		"empty_label_visible": true,
+		"label_text": "리롤 1/1  ·  다시 뽑을 후보가 없습니다",
+		"rerolls_left_after_forced_signal": 0,
+		"rerolls_left_after_real_click": 1,
+		"row_visible": true,
+		"skip_visible": true
+	},
+	"exhausted": {
+		"button_disabled": true,
+		"focus_moved_off_button": true,
+		"label_text": "리롤 0/1  ·  오늘 리롤을 모두 썼습니다",
+		"rerolls_left": 0,
+		"row_visible": true
+	},
+	"inspector": {
+		"costs": [
+			1000,
+			7500,
+			50000
+		],
+		"editor_properties": [
+			"resource_local_to_scene",
+			"resource_path",
+			"resource_name",
+			"script",
+			"id",
+			"display_name",
+			"category",
+			"description",
+			"costs",
+			"values",
+			"value_display_scale",
+			"value_suffix",
+			"unlock_day",
+			"level_unlock_days",
+			"required_word",
+			"required_upgrade",
+			"required_level"
+		],
+		"in_database": true,
+		"level_unlock_days": [
+			5,
+			25,
+			60
+		],
+		"unlock_day": 5,
+		"values": [
+			1.0,
+			2.0,
+			3.0
+		]
+	},
+	"legacy_save": {
+		"clamped_from_absurd_value": 1,
+		"level": 1,
+		"max": 1,
+		"restored_from_missing_key": 1
+	},
+	"level2_gate": {
+		"day10": {
+			"button_disabled": true,
+			"button_text": "잠김",
+			"cost_text": "Day 25 필요",
+			"day": 10,
+			"name_text": "리롤  Lv.1",
+			"row_visible": true,
+			"value_text": "1 회"
+		},
+		"day25": {
+			"button_disabled": false,
+			"button_text": "구매",
+			"cost_text": "7500 G",
+			"day": 25,
+			"name_text": "리롤  Lv.1",
+			"row_visible": true,
+			"value_text": "1 회 → 2 회"
+		}
+	},
+	"next_day_refill": {
+		"choice": {
+			"button_disabled": false,
+			"candidates": [
+				"ㄴ",
+				"ㅣ"
+			],
+			"label_text": "리롤 1/1",
+			"max_rerolls": 1,
+			"rerolls_left": 1,
+			"row_visible": true
+		},
+		"day": 6,
+		"rerolls_left": 1
+	},
+	"pick_final": {
+		"candidates_after_late_reroll": [
+			"ㄷ",
+			"ㅜ"
+		],
+		"candidates_at_pick": [
+			"ㄷ",
+			"ㅜ"
+		],
+		"panel_hidden_after_pick": true,
+		"rerolls_left_after_late_reroll": 1
+	},
+	"reroll_changes": {
+		"max_overlap": 0,
+		"real_click_used_for_screenshot_pair": true,
+		"screenshot_after": [
+			"ㄹ",
+			"ㅂ"
+		],
+		"screenshot_before": [
+			"ㄷ",
+			"ㅗ"
+		],
+		"trials": [
+			{
+				"after": [
+					"ㄴ",
+					"ㅎ"
+				],
+				"before": [
+					"ㅣ",
+					"ㅂ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅎ",
+					"ㅜ"
+				],
+				"before": [
+					"ㅁ",
+					"ㄹ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅎ",
+					"ㅜ"
+				],
+				"before": [
+					"ㄷ",
+					"ㅂ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅏ",
+					"ㅂ"
+				],
+				"before": [
+					"ㅎ",
+					"ㅜ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅎ",
+					"ㄷ"
+				],
+				"before": [
+					"ㄴ",
+					"ㅂ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㄷ",
+					"ㅎ"
+				],
+				"before": [
+					"ㅜ",
+					"ㅂ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅜ",
+					"ㅗ"
+				],
+				"before": [
+					"ㅁ",
+					"ㄷ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅜ",
+					"ㄹ"
+				],
+				"before": [
+					"ㄴ",
+					"ㅂ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅣ",
+					"ㅁ"
+				],
+				"before": [
+					"ㅂ",
+					"ㄹ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅜ",
+					"ㅣ"
+				],
+				"before": [
+					"ㅂ",
+					"ㅎ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅏ",
+					"ㅣ"
+				],
+				"before": [
+					"ㅂ",
+					"ㅎ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅣ",
+					"ㅏ"
+				],
+				"before": [
+					"ㅁ",
+					"ㅎ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㄷ",
+					"ㅁ"
+				],
+				"before": [
+					"ㅂ",
+					"ㅣ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅏ",
+					"ㄷ"
+				],
+				"before": [
+					"ㅎ",
+					"ㅂ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅂ",
+					"ㅗ"
+				],
+				"before": [
+					"ㄷ",
+					"ㄴ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅗ",
+					"ㅂ"
+				],
+				"before": [
+					"ㄹ",
+					"ㄴ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅗ",
+					"ㅂ"
+				],
+				"before": [
+					"ㅣ",
+					"ㅏ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅣ",
+					"ㅂ"
+				],
+				"before": [
+					"ㅁ",
+					"ㄴ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㄷ",
+					"ㅂ"
+				],
+				"before": [
+					"ㅎ",
+					"ㅏ"
+				],
+				"overlap": 0
+			},
+			{
+				"after": [
+					"ㅣ",
+					"ㅂ"
+				],
+				"before": [
+					"ㅁ",
+					"ㅗ"
+				],
+				"overlap": 0
+			}
+		]
+	},
+	"save_round_trip": {
+		"path": "C:/Users/sjkim/AppData/Roaming/Godot/app_userdata/JAMO/jamo_save.json",
+		"raw_rerolls_left": 0.0,
+		"restored_day": 6,
+		"restored_level": 1,
+		"restored_rerolls_left": 0,
+		"spent_before_save": 0
+	},
+	"small_pool": [
+		{
+			"case": "pool_empty",
+			"hand": [],
+			"reroll": []
+		},
+		{
+			"case": "pool_one",
+			"hand": [
+				"ㅂ"
+			],
+			"reroll": [
+				"ㅂ"
+			]
+		}
+	]
+}

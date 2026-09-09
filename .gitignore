@@ -14,3 +14,6 @@ Thumbs.db
 # QA screenshot evidence (reports and logs stay tracked)
 tests/qa_artifacts/**/*.png
 tests/qa_artifacts/**/*.png.import
+
+# ziva-godot MCP editor bridge (installed per-machine by the tool)
+/addons/ziva_agent/

@@ -32,19 +32,19 @@
 - [x] S7 세이브/로드 후 치명 레벨 유지
 - [x] QA 확인: 상점 게이트 동작 / 크리 발생 시 숫자·shake / 헤드리스 테스트 통과 / Day1→Day2 회귀
 
-## F2. Reroll 시스템  `[~]`
+## F2. Reroll 시스템  `[x]`
 
 근거: v0.3 §13.1 §13.2 / growth_balance v0.2 자모 연구
 
-- [ ] S1 `resources/upgrades/reroll.tres` — Lv1 1회/Day5/1,000G, Lv2 2회/Day25/7,500G, Lv3 3회/Day60/50,000G
-- [ ] S2 `GameState` 에 Day 당 리롤 잔여 횟수 (Day Start 시 충전)
-- [ ] S3 `CandidateGenerator` 재추출 API — 직전 후보 제외 가중 처리
-- [ ] S4 `jamo_choice.tscn` 에 리롤 버튼 노드 추가 (코드 생성 금지, 씬 편집) + 잔여 횟수 표시
-- [ ] S5 잔여 0 / 미해금 시 버튼 disabled 상태 처리 (loading·empty·disabled 상태 누락 금지)
-- [ ] S6 리롤 잔여 횟수 세이브 포함
-- [ ] QA 확인: Day5 이전 미노출 / 구매 후 노출 / 리롤 시 후보 변경 / 횟수 소진 후 disabled
+- [x] S1 `resources/upgrades/reroll.tres` — Lv1 1회/Day5/1,000G, Lv2 2회/Day25/7,500G, Lv3 3회/Day60/50,000G
+- [x] S2 `GameState` 에 Day 당 리롤 잔여 횟수 (Day Start 시 충전)
+- [x] S3 `CandidateGenerator` 재추출 API — 직전 후보 제외 가중 처리
+- [x] S4 `jamo_choice.tscn` 에 리롤 버튼 노드 추가 (코드 생성 금지, 씬 편집) + 잔여 횟수 표시
+- [x] S5 잔여 0 / 미해금 시 버튼 disabled 상태 처리 (loading·empty·disabled 상태 누락 금지)
+- [x] S6 리롤 잔여 횟수 세이브 포함
+- [x] QA 확인: Day5 이전 미노출 / 구매 후 노출 / 리롤 시 후보 변경 / 횟수 소진 후 disabled
 
-## F3. 단어 확장 tier-2  `[ ]`
+## F3. 단어 확장 tier-2  `[~]`
 
 근거: v0.3 §14 §15 §33 / word_tree v0.1
 

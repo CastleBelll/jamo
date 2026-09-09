@@ -16,6 +16,7 @@ const UPGRADE_CLICK_DAMAGE := &"click_damage"
 const UPGRADE_CRITICAL_CLICK := &"critical_click"
 const UPGRADE_GOLD_BONUS := &"gold_bonus"
 const UPGRADE_MONSTER_CAPACITY := &"monster_capacity"
+const UPGRADE_REROLL := &"reroll"
 
 var database: GameDatabase
 var balance: GameBalance
@@ -33,6 +34,8 @@ var jamo_inventory: Dictionary = {}
 var energy: int = 0
 var kills_today: int = 0
 var gold_earned_today: float = 0.0
+## Day-end candidate rerolls still available today. Refilled by begin_day().
+var rerolls_left: int = 0
 
 # --- Cached word bonuses, refreshed by _recalculate_word_bonuses() ---------
 var _word_flat_click_damage: float = 0.0
@@ -128,6 +131,25 @@ func get_jamo_candidate_count() -> int:
 	return balance.base_jamo_candidates
 
 
+## Rerolls the 리롤 track grants per day, 0 while it is still locked.
+## growth_balance v0.2 section 10.2.
+func get_max_rerolls() -> int:
+	return int(get_upgrade_value(UPGRADE_REROLL, 0.0))
+
+
+func can_reroll() -> bool:
+	return rerolls_left > 0
+
+
+## Spends one reroll. Returns false when today has none left, so the caller can
+## skip the redraw entirely.
+func consume_reroll() -> bool:
+	if not can_reroll():
+		return false
+	rerolls_left -= 1
+	return true
+
+
 ## The burn effect granted by the word 불, or null while it is still locked.
 func get_burn_effect() -> WordEffectData:
 	return _burn_effect
@@ -176,6 +198,7 @@ func begin_day() -> void:
 	energy = get_max_energy()
 	kills_today = 0
 	gold_earned_today = 0.0
+	rerolls_left = get_max_rerolls()
 	SignalBus.energy_changed.emit(energy, get_max_energy())
 	SignalBus.day_started.emit(day)
 
@@ -308,6 +331,7 @@ func to_dict() -> Dictionary:
 		"upgrade_levels": upgrades,
 		"unlocked_words": words,
 		"jamo_inventory": jamo_inventory.duplicate(),
+		"rerolls_left": rerolls_left,
 	}
 
 
@@ -319,6 +343,12 @@ func from_dict(data: Dictionary) -> void:
 	var stored_upgrades: Dictionary = data.get("upgrade_levels", {})
 	for key: String in stored_upgrades:
 		upgrade_levels[StringName(key)] = int(stored_upgrades[key])
+
+	# Saves written before the 리롤 track existed have no key; those days start
+	# fully charged rather than with zero rerolls.
+	rerolls_left = clampi(
+		int(data.get("rerolls_left", get_max_rerolls())), 0, get_max_rerolls()
+	)
 
 	unlocked_word_ids.clear()
 	for word_id: String in data.get("unlocked_words", []):

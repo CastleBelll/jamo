@@ -16,7 +16,32 @@ const FILLER_WEIGHT := 1.0
 ## Returns up to `count` distinct jamo. May return fewer when the pool is
 ## smaller than `count`, for example once every word is complete.
 static func generate(count: int) -> PackedStringArray:
+	return _pick_distinct(_build_weights(), count)
+
+
+## Redraws the day's hand for the 리롤 upgrade. Same weighted pools as
+## generate(): the previous picks are dropped from the pool, so a reroll is
+## never the same hand again, but they are put back one at a time when the rest
+## of the pool is too small to fill `count`. Doc v0.3 section 13.4.
+static func regenerate(count: int, previous: PackedStringArray) -> PackedStringArray:
 	var weights := _build_weights()
+	var excluded: Dictionary = {}
+	for jamo: String in previous:
+		if weights.has(jamo):
+			excluded[jamo] = weights[jamo]
+			weights.erase(jamo)
+	# Small pool: readmit previous picks, weighted, until a full hand is possible.
+	while weights.size() < count and not excluded.is_empty():
+		var readmitted := _weighted_pick(excluded)
+		if readmitted.is_empty():
+			break
+		weights[readmitted] = excluded[readmitted]
+		excluded.erase(readmitted)
+	return _pick_distinct(weights, count)
+
+
+## Draws `count` distinct jamo from a jamo -> weight map, without replacement.
+static func _pick_distinct(weights: Dictionary, count: int) -> PackedStringArray:
 	var result := PackedStringArray()
 	for _i in count:
 		var picked := _weighted_pick(weights)

@@ -41,6 +41,14 @@ func refresh() -> void:
 		_buy_button.disabled = true
 		_buy_button.text = "잠김"
 		return
+	if availability == UpgradeManager.Availability.LOCKED_BY_NEXT_DAY:
+		# The track is owned, so the current value still shows; only the next
+		# level is out of reach, and the reason is spelled out in text.
+		_value_label.text = upgrade.format_value(level, base)
+		_cost_label.text = "Day %d 필요" % upgrade.unlock_day_for_level(level + 1)
+		_buy_button.disabled = true
+		_buy_button.text = "잠김"
+		return
 	if availability == UpgradeManager.Availability.MAXED:
 		_value_label.text = upgrade.format_value(level, base)
 		_cost_label.text = "최대"

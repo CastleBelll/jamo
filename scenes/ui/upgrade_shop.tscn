@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/upgrade_shop.gd" id="1_shop"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_row.tscn" id="2_row"]
@@ -7,6 +7,7 @@
 [ext_resource type="Resource" path="res://resources/upgrades/critical_click.tres" id="7_critical"]
 [ext_resource type="Resource" path="res://resources/upgrades/gold_bonus.tres" id="5_gold"]
 [ext_resource type="Resource" path="res://resources/upgrades/monster_capacity.tres" id="6_capacity"]
+[ext_resource type="Resource" path="res://resources/upgrades/reroll.tres" id="8_reroll"]
 
 [node name="UpgradeShop" type="Control"]
 layout_mode = 3
@@ -72,6 +73,11 @@ upgrade = ExtResource("5_gold")
 unique_name_in_owner = true
 layout_mode = 2
 upgrade = ExtResource("6_capacity")
+
+[node name="RowReroll" parent="Center/Panel/Box" instance=ExtResource("2_row")]
+unique_name_in_owner = true
+layout_mode = 2
+upgrade = ExtResource("8_reroll")
 
 [node name="NextDayButton" type="Button" parent="Center/Panel/Box"]
 unique_name_in_owner = true

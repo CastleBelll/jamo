@@ -33,6 +33,7 @@
 			"value_display_scale",
 			"value_suffix",
 			"unlock_day",
+			"level_unlock_days",
 			"required_word",
 			"required_upgrade",
 			"required_level"

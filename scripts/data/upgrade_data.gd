@@ -27,6 +27,10 @@ extends Resource
 @export_group("Unlock Conditions")
 ## Hidden until this day. Doc growth_balance v0.2 section 13.
 @export var unlock_day: int = 1
+## Day requirement of each level, ascending; entry i gates level i+1. Leave it
+## empty when every level shares unlock_day, which is the case for all tracks
+## except 리롤. Doc growth_balance v0.2 section 10.2.
+@export var level_unlock_days: PackedInt32Array = PackedInt32Array()
 ## Hidden until this word is completed. Empty means no requirement.
 @export var required_word: StringName = &""
 ## Hidden until another upgrade track reaches required_level. Empty means no
@@ -37,6 +41,14 @@ extends Resource
 
 func max_level() -> int:
 	return costs.size()
+
+
+## Day the given 1-based level becomes purchasable. Falls back to unlock_day
+## whenever the track has no per-level table.
+func unlock_day_for_level(level: int) -> int:
+	if level >= 1 and level <= level_unlock_days.size():
+		return level_unlock_days[level - 1]
+	return unlock_day
 
 
 ## Gold price to go from level to level + 1. Returns -1 when already maxed.

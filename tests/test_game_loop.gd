@@ -7,6 +7,8 @@ extends Node
 ## It runs as a scene rather than with --script because the autoload singletons
 ## are only registered as globals once a scene main loop starts.
 
+const CHOICE_SCENE := "res://scenes/ui/jamo_choice.tscn"
+
 var _failures: int = 0
 
 
@@ -22,7 +24,12 @@ func _ready() -> void:
 	_test_upgrade_blocked_when_poor()
 	_test_critical_click()
 	_test_candidates_are_useful()
+	_test_reroll_upgrade_gates()
+	_test_reroll_charges_and_blocks()
+	_test_reroll_redraws_candidates()
+	_test_reroll_panel_states()
 	_test_save_round_trip()
+	_test_reroll_save_round_trip()
 
 	if _failures == 0:
 		print("OK - all game loop checks passed.")
@@ -287,3 +294,194 @@ func _test_save_round_trip() -> void:
 	_check(GameState.get_burn_effect() != null, "loaded words should reapply their effects")
 
 	SaveManager.delete_save()
+
+
+## growth_balance v0.2 section 10.2: 리롤 unlocks on Day 5 and each further
+## level has its own day, so a rich player still waits for Day 25 / Day 60.
+func _test_reroll_upgrade_gates() -> void:
+	_reset()
+	var reroll: UpgradeData = GameState.database.find_upgrade(&"reroll")
+	_check(reroll != null, "reroll should be registered in the database")
+	if reroll == null:
+		return
+	_check(reroll.format_value(1, 0.0) == "1 회", "the shop should show 1 회")
+
+	GameState.gold = 100000.0
+	_check(
+		UpgradeManager.get_availability(reroll)
+			== UpgradeManager.Availability.LOCKED_BY_DAY,
+		"리롤 stays locked before Day 5"
+	)
+	_check(not UpgradeManager.is_visible(reroll), "a day-locked track is not listed")
+	_check(not UpgradeManager.purchase(reroll), "buying before Day 5 must fail")
+
+	GameState.day = 5
+	GameState.gold = 999.0
+	_check(
+		UpgradeManager.get_availability(reroll)
+			== UpgradeManager.Availability.TOO_EXPENSIVE,
+		"999G is not enough for the 1,000G Lv.1"
+	)
+	GameState.gold = 1000.0
+	_check(UpgradeManager.purchase(reroll), "Day 5 + 1,000G buys 리롤 Lv.1")
+	_check(GameState.get_max_rerolls() == 1, "리롤 Lv.1 grants 1 reroll per day")
+
+	GameState.gold = 100000.0
+	_check(
+		UpgradeManager.get_availability(reroll)
+			== UpgradeManager.Availability.LOCKED_BY_NEXT_DAY,
+		"Lv.2 waits for Day 25 no matter how much gold is held"
+	)
+	_check(UpgradeManager.is_visible(reroll), "an owned track stays listed")
+	_check(not UpgradeManager.purchase(reroll), "buying Lv.2 before Day 25 must fail")
+	_close(GameState.gold, 100000.0, "a refused purchase must not spend gold")
+
+	GameState.day = 25
+	_check(UpgradeManager.purchase(reroll), "Day 25 + 7,500G buys 리롤 Lv.2")
+	_check(GameState.get_max_rerolls() == 2, "리롤 Lv.2 grants 2 rerolls per day")
+	_check(
+		UpgradeManager.get_availability(reroll)
+			== UpgradeManager.Availability.LOCKED_BY_NEXT_DAY,
+		"Lv.3 waits for Day 60"
+	)
+	GameState.day = 60
+	_check(UpgradeManager.purchase(reroll), "Day 60 + 50,000G buys 리롤 Lv.3")
+	_check(GameState.get_max_rerolls() == 3, "리롤 Lv.3 grants 3 rerolls per day")
+	_check(
+		UpgradeManager.get_availability(reroll) == UpgradeManager.Availability.MAXED,
+		"리롤 tops out at Lv.3"
+	)
+
+	# The existing tracks must not have gained a per-level day gate.
+	var energy: UpgradeData = GameState.database.find_upgrade(&"max_energy")
+	_check(
+		energy.unlock_day_for_level(3) == energy.unlock_day,
+		"a track without a per-level table keeps one shared unlock day"
+	)
+
+
+## The count is a per-day allowance: begin_day refills it, spending drains it,
+## and zero blocks further rerolls.
+func _test_reroll_charges_and_blocks() -> void:
+	_reset()
+	_check(GameState.get_max_rerolls() == 0, "a locked 리롤 grants no rerolls")
+	_check(GameState.rerolls_left == 0, "Day 1 starts with no rerolls")
+	_check(not GameState.can_reroll(), "a locked 리롤 cannot be used")
+	_check(not GameState.consume_reroll(), "spending a reroll at 0 must fail")
+
+	GameState.day = 25
+	GameState.upgrade_levels[&"reroll"] = 2
+	_check(GameState.rerolls_left == 0, "buying does not refill the current day")
+	GameState.begin_day()
+	_check(GameState.rerolls_left == 2, "day start recharges to the maximum")
+
+	_check(GameState.consume_reroll(), "the first reroll should go through")
+	_check(GameState.rerolls_left == 1, "one reroll should be spent")
+	_check(GameState.consume_reroll(), "the second reroll should go through")
+	_check(GameState.rerolls_left == 0, "both rerolls should be spent")
+	_check(not GameState.can_reroll(), "no rerolls left today")
+	_check(not GameState.consume_reroll(), "a third reroll must be refused")
+	_check(GameState.rerolls_left == 0, "a refused reroll must not go negative")
+
+	GameState.advance_day()
+	_check(GameState.rerolls_left == 2, "the next day recharges again")
+
+
+## Doc v0.3 section 13.4: a reroll redraws from the same weighted pools, just
+## without the hand it replaces.
+func _test_reroll_redraws_candidates() -> void:
+	_reset()
+	var needed := PackedStringArray(["ㅂ", "ㅜ", "ㄹ", "ㅎ", "ㅣ", "ㅁ", "ㄷ", "ㅗ", "ㄴ", "ㅏ"])
+	for _attempt in 50:
+		var first := CandidateGenerator.generate(2)
+		var second := CandidateGenerator.regenerate(2, first)
+		_check(second.size() == 2, "a reroll should still offer two candidates")
+		_check(second[0] != second[1], "rerolled candidates should be distinct")
+		for jamo: String in second:
+			_check(needed.has(jamo), "rerolled %s should still be a needed jamo" % jamo)
+			_check(not first.has(jamo), "a reroll should avoid the previous hand")
+
+	# Edge case: only 밥 is left to craft, so the pool is exactly ㅂ and ㅏ and
+	# the reroll has to hand back the same two rather than return an empty hand.
+	for word_id in [&"fire_001", &"power_001", &"gold_001"]:
+		GameState.unlocked_word_ids.append(word_id)
+	var small := CandidateGenerator.generate(2)
+	_check(small.size() == 2, "the two-jamo pool should still fill a hand")
+	var rerolled := CandidateGenerator.regenerate(2, small)
+	_check(rerolled.size() == 2, "a pool too small to avoid repeats must still fill")
+	_check(rerolled[0] != rerolled[1], "the hand stays distinct even when repeated")
+
+
+## An old save has no reroll key, so it must start the day fully charged rather
+## than stuck at zero.
+func _test_reroll_save_round_trip() -> void:
+	_reset()
+	GameState.day = 25
+	GameState.upgrade_levels[&"reroll"] = 2
+	GameState.begin_day()
+	_check(GameState.consume_reroll(), "spend one reroll before saving")
+	_check(SaveManager.save_game(), "save should succeed")
+
+	GameState.rerolls_left = 0
+	GameState.upgrade_levels.clear()
+	_check(SaveManager.load_game(), "load should succeed")
+	_check(GameState.get_max_rerolls() == 2, "리롤 Lv.2 should persist")
+	_check(GameState.rerolls_left == 1, "the remaining reroll should survive")
+
+	var legacy: Dictionary = GameState.to_dict()
+	legacy.erase("rerolls_left")
+	GameState.from_dict(legacy)
+	_check(GameState.rerolls_left == 2, "a save without the key starts fully charged")
+
+	SaveManager.delete_save()
+
+
+## The reroll control in jamo_choice.tscn: hidden while locked, disabled with a
+## written reason once the day is spent, and dead after the pick is confirmed.
+func _test_reroll_panel_states() -> void:
+	_reset()
+	var panel: Control = (load(CHOICE_SCENE) as PackedScene).instantiate()
+	add_child(panel)
+
+	var row: Control = panel.get_node("%RerollRow")
+	var button: Button = panel.get_node("%RerollButton")
+	var count_label: Label = panel.get_node("%RerollCountLabel")
+
+	panel.open()
+	_check(not row.visible, "the reroll row stays hidden while 리롤 is locked")
+
+	GameState.day = 5
+	GameState.upgrade_levels[&"reroll"] = 1
+	GameState.begin_day()
+	panel.open()
+	_check(row.visible, "buying 리롤 shows the reroll row")
+	_check(not button.disabled, "one charge means the button is usable")
+	_check(button.focus_mode != Control.FOCUS_NONE, "the button must be focusable")
+	_check(count_label.text.begins_with("리롤 1/1"), "the count should read 리롤 1/1")
+
+	var before: String = panel.get_node("%Card0").jamo
+	button.pressed.emit()
+	_check(GameState.rerolls_left == 0, "pressing reroll spends the day's charge")
+	_check(panel.get_node("%Card0").jamo != before, "the candidates should change")
+	_check(button.disabled, "a spent reroll disables the button")
+	_check(
+		count_label.text.contains("모두 썼습니다"),
+		"the reason must be readable as text, not signalled by colour"
+	)
+
+	# Pressing a disabled button is impossible in the UI, but the guard must
+	# hold anyway so the count can never go negative.
+	button.pressed.emit()
+	_check(GameState.rerolls_left == 0, "a refused reroll must not go negative")
+
+	# Confirming the pick closes the panel, which is what makes the pick final.
+	GameState.begin_day()
+	panel.open()
+	panel.get_node("%Card0").get_node("%CardButton").pressed.emit()
+	_check(not panel.visible, "choosing a card closes the panel")
+	var picked_hand: String = panel.get_node("%Card0").jamo
+	button.pressed.emit()
+	_check(GameState.rerolls_left == 1, "no reroll may be spent after the pick")
+	_check(panel.get_node("%Card0").jamo == picked_hand, "the confirmed hand must not change")
+
+	panel.queue_free()
