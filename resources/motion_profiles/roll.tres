@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MotionProfile" format=3 uid="uid://dxyhjt72g30lo"]
+
+[ext_resource type="Script" uid="uid://bfgu8fh1jvjoo" path="res://scripts/data/motion_profile.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+profile_name = &"ROLL"
+walk_animation = &"walk_roll"
+move_speed_multiplier = 1.2
+step_frequency = 1.1
+turn_speed = 7.0
+idle_min = 0.4
+idle_max = 1.2
+avoidance_radius = 0.95

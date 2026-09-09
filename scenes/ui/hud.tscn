@@ -1,0 +1,170 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="Texture2D" path="res://art/ui/btn_dictionary.png" id="2_dict"]
+[ext_resource type="Texture2D" path="res://art/ui/btn_settings.png" id="3_set"]
+[ext_resource type="Texture2D" path="res://art/ui/btn_pause.png" id="4_pause"]
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 14.0
+offset_right = -16.0
+offset_bottom = 76.0
+grow_horizontal = 2
+theme_override_constants/separation = 10
+alignment = 0
+
+[node name="DayPanel" type="PanelContainer" parent="TopBar"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"HudPanel"
+
+[node name="DayLabel" type="Label" parent="TopBar/DayPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "DAY 1"
+
+[node name="EnergyPanel" type="PanelContainer" parent="TopBar"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"HudPanel"
+
+[node name="EnergyBox" type="VBoxContainer" parent="TopBar/EnergyPanel"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="EnergyLabel" type="Label" parent="TopBar/EnergyPanel/EnergyBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "ENERGY 20 / 20"
+
+[node name="EnergyBar" type="ProgressBar" parent="TopBar/EnergyPanel/EnergyBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 10)
+layout_mode = 2
+max_value = 20.0
+value = 20.0
+show_percentage = false
+
+[node name="GoldPanel" type="PanelContainer" parent="TopBar"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"HudPanel"
+
+[node name="GoldLabel" type="Label" parent="TopBar/GoldPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "0 G"
+
+[node name="KillsPanel" type="PanelContainer" parent="TopBar"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"HudPanel"
+
+[node name="KillsLabel" type="Label" parent="TopBar/KillsPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "처치 0"
+
+[node name="Spacer" type="Control" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Buttons" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="DictionaryButton" type="TextureButton" parent="TopBar/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+tooltip_text = "단어 도감"
+texture_normal = ExtResource("2_dict")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="SettingsButton" type="TextureButton" parent="TopBar/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+tooltip_text = "설정"
+texture_normal = ExtResource("3_set")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="PauseButton" type="TextureButton" parent="TopBar/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+tooltip_text = "일시정지"
+texture_normal = ExtResource("4_pause")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="WordProgressPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -132.0
+offset_right = 300.0
+offset_bottom = -16.0
+grow_vertical = 0
+theme_type_variation = &"HudPanel"
+
+[node name="WordBox" type="VBoxContainer" parent="WordProgressPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleLabel" type="Label" parent="WordProgressPanel/WordBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "제작 가능한 단어"
+
+[node name="WordRow0" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "불   ㅂ 0/1  ㅜ 0/1  ㄹ 0/1"
+
+[node name="WordRow1" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "힘   ㅎ 0/1  ㅣ 0/1  ㅁ 0/1"
+
+[node name="WordRow2" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "돈   ㄷ 0/1  ㅗ 0/1  ㄴ 0/1"
+
+[node name="WordRow3" type="Label" parent="WordProgressPanel/WordBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "밥   ㅂ 0/2  ㅏ 0/1"

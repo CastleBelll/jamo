@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1_word"]
+[ext_resource type="Script" path="res://scripts/data/word_effect_data.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Resource_flat"]
+script = ExtResource("2_effect")
+effect_type = 0
+base_value = 1.0
+duration = 0.0
+tick_interval = 1.0
+proc_chance = 1.0
+max_stack = 1
+
+[resource]
+script = ExtResource("1_word")
+id = &"power_001"
+word = "힘"
+category = &"power"
+required_jamo = PackedStringArray("ㅎ", "ㅣ", "ㅁ")
+prerequisites = Array[StringName]([])
+effects = Array[Resource]([SubResource("Resource_flat")])
+tier = 1
+description = "클릭 피해 +1. (덮어쓰기가 아니라 가산이다 - 문서 v0.3 42-5)"

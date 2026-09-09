@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; Arena floor - warm paper sheet.
+[resource]
+resource_name = "ArenaPaper"
+albedo_color = Color(0.914, 0.859, 0.741, 1)
+roughness = 0.95

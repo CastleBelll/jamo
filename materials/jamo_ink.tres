@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; Shared glyph material - matte ink on paper. Doc v0.3 section 3.2.
+[resource]
+resource_name = "JamoInk"
+albedo_color = Color(0.227, 0.18, 0.133, 1)
+roughness = 0.85

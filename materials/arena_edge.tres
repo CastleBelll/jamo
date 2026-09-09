@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; Side and underside of the arena slab - a shade darker than the paper top so
+; the thickness reads even when the light is flat.
+[resource]
+resource_name = "ArenaEdge"
+albedo_color = Color(0.741, 0.655, 0.518, 1)
+roughness = 0.95

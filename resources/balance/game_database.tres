@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="GameDatabase" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/game_database.gd" id="1_script"]
+[ext_resource type="Resource" path="res://resources/balance/game_balance.tres" id="2_balance"]
+[ext_resource type="Resource" path="res://resources/words/bul.tres" id="3_bul"]
+[ext_resource type="Resource" path="res://resources/words/him.tres" id="4_him"]
+[ext_resource type="Resource" path="res://resources/words/don.tres" id="5_don"]
+[ext_resource type="Resource" path="res://resources/words/bap.tres" id="6_bap"]
+[ext_resource type="Resource" path="res://resources/upgrades/max_energy.tres" id="7_energy"]
+[ext_resource type="Resource" path="res://resources/upgrades/click_damage.tres" id="8_damage"]
+[ext_resource type="Resource" path="res://resources/upgrades/gold_bonus.tres" id="9_gold"]
+[ext_resource type="Resource" path="res://resources/upgrades/monster_capacity.tres" id="10_capacity"]
+
+[resource]
+script = ExtResource("1_script")
+balance = ExtResource("2_balance")
+words = Array[Resource]([ExtResource("3_bul"), ExtResource("4_him"), ExtResource("5_don"), ExtResource("6_bap")])
+upgrades = Array[Resource]([ExtResource("7_energy"), ExtResource("8_damage"), ExtResource("9_gold"), ExtResource("10_capacity")])
+filler_jamo = PackedStringArray()

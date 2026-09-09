@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GameBalance" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/game_balance.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+start_max_energy = 20
+click_energy_cost = 1
+base_click_damage = 1.0
+base_monster_hp = 3.0
+hp_growth_per_day = 1.035
+base_monster_gold = 2.0
+gold_growth_per_day = 1.025
+base_monster_capacity = 8
+base_jamo_candidates = 2
+day_end_settle_seconds = 0.8

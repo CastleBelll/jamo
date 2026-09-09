@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; Desk surface the paper sheet sits on.
+[resource]
+resource_name = "ArenaWood"
+albedo_color = Color(0.376, 0.267, 0.176, 1)
+roughness = 0.9

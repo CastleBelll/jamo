@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="JamoMonsterData" format=3 uid="uid://1effw0t7adfy"]
+
+[ext_resource type="Script" uid="uid://bqfahgisaqsb8" path="res://scripts/data/jamo_monster_data.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bxcb0jqlk2xbh" path="res://resources/motion_profiles/bounce.tres" id="2_profile"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"mieum"
+jamo = "ㅁ"
+motion_profile = ExtResource("2_profile")
+visual_scale = 1.9
+click_radius = 0.83

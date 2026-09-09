@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"monster_capacity"
+display_name = "동시 몬스터 수"
+category = &"field"
+description = "필드에 동시에 존재하는 자모 몬스터 수."
+costs = PackedInt64Array(200, 500, 1200, 3000, 7500, 18000)
+values = PackedFloat32Array(10, 12, 14, 16, 18, 20)
+value_display_scale = 1.0
+value_suffix = ""
+unlock_day = 1
+required_word = &""

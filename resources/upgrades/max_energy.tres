@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"max_energy"
+display_name = "최대 에너지"
+category = &"activity"
+description = "하루에 사용할 수 있는 클릭 횟수."
+costs = PackedInt64Array(50, 90, 160, 280, 500, 900, 1600, 2800, 5000, 9000)
+values = PackedFloat32Array(21, 22, 23, 24, 25, 26, 27, 28, 29, 30)
+value_display_scale = 1.0
+value_suffix = ""
+unlock_day = 1
+required_word = &""

@@ -1,0 +1,75 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/jamo_choice.gd" id="1_choice"]
+[ext_resource type="PackedScene" path="res://scenes/ui/jamo_card.tscn" id="2_card"]
+
+[node name="JamoChoice" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_choice")
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+layout_mode = 2
+
+[node name="Box" type="VBoxContainer" parent="Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="TitleLabel" type="Label" parent="Center/Panel/Box"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "오늘의 자모를 하나 선택하세요"
+horizontal_alignment = 1
+
+[node name="EmptyLabel" type="Label" parent="Center/Panel/Box"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "지금 제작할 수 있는 단어가 없습니다."
+horizontal_alignment = 1
+
+[node name="CardRow" type="HBoxContainer" parent="Center/Panel/Box"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Card0" parent="Center/Panel/Box/CardRow" instance=ExtResource("2_card")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Card1" parent="Center/Panel/Box/CardRow" instance=ExtResource("2_card")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Card2" parent="Center/Panel/Box/CardRow" instance=ExtResource("2_card")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Card3" parent="Center/Panel/Box/CardRow" instance=ExtResource("2_card")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="SkipButton" type="Button" parent="Center/Panel/Box"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+text = "건너뛰기"

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MotionProfile" format=3 uid="uid://dewg0b7bj3aym"]
+
+[ext_resource type="Script" uid="uid://bfgu8fh1jvjoo" path="res://scripts/data/motion_profile.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+move_speed_multiplier = 0.8
+step_frequency = 0.75
+turn_speed = 4.0
+idle_min = 0.8
+idle_max = 2.2
+avoidance_radius = 1.35

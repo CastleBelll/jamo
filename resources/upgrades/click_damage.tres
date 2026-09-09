@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"click_damage"
+display_name = "클릭 피해"
+category = &"click"
+description = "클릭 1회의 기본 피해량."
+costs = PackedInt64Array(100, 250, 600, 1400, 3200, 7000, 15000, 32000, 70000)
+values = PackedFloat32Array(2, 3, 4, 5, 6, 7, 8, 9, 10)
+value_display_scale = 1.0
+value_suffix = ""
+unlock_day = 1
+required_word = &""
