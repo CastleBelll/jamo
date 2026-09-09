@@ -1,0 +1,127 @@
+extends Node
+
+## QA A/B for F5 / S0-2. Fills the field with 큰 ㅁ twice - once with the
+## margin forced to 0, which is how the build behaved before F5, and once with
+## the shipped arena_margin - and prints the worst body overhang for each, so
+## the effect of the new margin can be read as a number rather than guessed at.
+##
+## The margin is only overwritten on the in-memory JamoMonsterData of the live
+## monsters; no .tres on disk is touched.
+##
+##   godot --path . tests/qa_f5_margin_ab.tscn
+
+const MAIN_SCENE := "res://scenes/main/main.tscn"
+const BIG_MIEUM := "res://scenes/monsters/special/monster_big_mieum.tscn"
+## Half-extent of the paper in the slab's own frame (PaperTop is a 5.6 x 5.6
+## box). arena.tscn turns the slab 45 degrees, so overhang has to be measured
+## in that frame, not against a world-axis-aligned square.
+const SLAB_HALF := 2.8
+const FILL_FRAMES := 900
+const OBSERVE_FRAMES := 1500
+
+var _monster_root: Node3D
+var _spawn: SpawnManager
+## World space -> the rotated slab's own frame.
+var _to_slab: Transform3D = Transform3D.IDENTITY
+
+
+func _ready() -> void:
+	var main: Node = load(MAIN_SCENE).instantiate()
+	add_child(main)
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	var world: Node3D = main.get_node("World/GameWorld")
+	_monster_root = world.get_node("MonsterRoot")
+	_spawn = world.get_node("SpawnManager")
+	_to_slab = (world.get_node("Arena") as Node3D).global_transform.affine_inverse()
+	_spawn.monster_scenes = [load(BIG_MIEUM)]
+	_spawn.special_scenes = []
+	_spawn.golden_scenes = []
+
+	for margin: float in [0.0, 0.55]:
+		await _measure(margin)
+	get_tree().quit()
+
+
+func _measure(margin: float) -> void:
+	_spawn.clear_field()
+	GameState.upgrade_levels[GameState.UPGRADE_MONSTER_CAPACITY] = 20
+	GameState.begin_day()
+	for _frame in FILL_FRAMES:
+		await get_tree().process_frame
+		_force_margin(margin)
+		if _monster_root.get_child_count() >= GameState.get_monster_capacity():
+			break
+
+	var worst := 0.0
+	var worst_centre := 0.0
+	var over_samples := 0
+	var samples := 0
+	for _frame in OBSERVE_FRAMES:
+		await get_tree().process_frame
+		_force_margin(margin)
+		for monster: JamoMonster in _live():
+			samples += 1
+			var overhang := _overhang(monster)
+			if overhang > 0.001:
+				over_samples += 1
+			worst = maxf(worst, overhang)
+			worst_centre = maxf(
+				worst_centre,
+				maxf(absf(monster.global_position.x), absf(monster.global_position.z))
+			)
+	print(
+		"margin=%.2f worst_overhang=%.3f worst_centre=%.3f over_ratio=%.3f"
+		% [margin, worst, worst_centre, float(over_samples) / maxf(1.0, float(samples))]
+	)
+
+
+func _force_margin(margin: float) -> void:
+	for monster: JamoMonster in _live():
+		if monster.monster_data != null:
+			monster.monster_data.arena_margin = margin
+
+
+## Measured in the slab's own frame; see SLAB_HALF.
+func _overhang(monster: JamoMonster) -> float:
+	var box := _world_aabb(monster)
+	if box.size == Vector3.ZERO:
+		return 0.0
+	var worst := 0.0
+	for corner_index in 8:
+		var corner: Vector3 = _to_slab * box.get_endpoint(corner_index)
+		worst = maxf(worst, maxf(absf(corner.x), absf(corner.z)) - SLAB_HALF)
+	return maxf(0.0, worst)
+
+
+func _world_aabb(root: Node) -> AABB:
+	var result := AABB()
+	var seeded := false
+	for node: Node in _walk(root):
+		var mesh := node as MeshInstance3D
+		if mesh == null or mesh.mesh == null or not mesh.visible:
+			continue
+		var box: AABB = mesh.global_transform * mesh.get_aabb()
+		if not seeded:
+			result = box
+			seeded = true
+		else:
+			result = result.merge(box)
+	return result
+
+
+func _walk(root: Node) -> Array[Node]:
+	var found: Array[Node] = [root]
+	for child: Node in root.get_children():
+		found.append_array(_walk(child))
+	return found
+
+
+func _live() -> Array[JamoMonster]:
+	var alive: Array[JamoMonster] = []
+	for child: Node in _monster_root.get_children():
+		var monster := child as JamoMonster
+		if monster != null and monster.is_alive():
+			alive.append(monster)
+	return alive

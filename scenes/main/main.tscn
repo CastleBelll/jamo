@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/jamo_choice.tscn" id="5_choice"]
 [ext_resource type="PackedScene" path="res://scenes/ui/word_complete.tscn" id="6_word"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_shop.tscn" id="7_shop"]
-[ext_resource type="PackedScene" path="res://scenes/ui/word_dex.tscn" id="8_dex"]
+[ext_resource type="PackedScene" path="res://scenes/ui/word_tree.tscn" id="8_tree"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="9_pause"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings.tscn" id="10_settings"]
 [ext_resource type="Environment" path="res://resources/environment/jamo_env.tres" id="11_env"]
@@ -48,7 +48,7 @@ visible = false
 [node name="UpgradeShop" parent="UI" unique_id=743570974 instance=ExtResource("7_shop")]
 visible = false
 
-[node name="WordDex" parent="UI" unique_id=62054543 instance=ExtResource("8_dex")]
+[node name="WordTree" parent="UI" unique_id=62054543 instance=ExtResource("8_tree")]
 visible = false
 
 [node name="PauseMenu" parent="UI" unique_id=322146930 instance=ExtResource("9_pause")]

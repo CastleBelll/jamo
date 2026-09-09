@@ -25,9 +25,11 @@ const SPAWN_PLACEMENT_ATTEMPTS := 12
 @export_group("Field")
 ## Node the spawned monsters are parented to.
 @export var spawn_root: Node3D
-## Half-diagonals of the diamond arena footprint, in metres. See
-## JamoMonster.random_point_in_arena.
-@export var arena_half_extents: Vector2 = Vector2(3.4, 3.4)
+## Half-diagonals of the paper slab, in metres. arena.tscn turns a 5.6 x 5.6
+## square by 45 degrees, so both are 2.8 * sqrt(2). Each monster insets this by
+## its own body footprint, so keep it matching the slab rather than shrinking
+## it here. See JamoMonster.get_walkable_half_extents.
+@export var arena_half_extents: Vector2 = Vector2(3.95, 3.95)
 ## Seconds between spawns while the field is refilling.
 @export_range(0.0, 3.0, 0.05) var spawn_interval: float = 0.25
 ## Y position monsters are placed at.
@@ -102,7 +104,9 @@ func _spawn_one() -> void:
 	monster.arena_half_extents = arena_half_extents
 	monster.died.connect(_on_monster_died)
 	spawn_root.add_child(monster)
-	monster.global_position = _random_spawn_point()
+	# Placed with the monster's own walkable diamond, so a big glyph never
+	# starts life hanging over the slab edge. Doc v0.3 section 27.
+	monster.global_position = _random_spawn_point(monster.get_walkable_half_extents())
 
 	if monster.monster_data != null:
 		_last_spawned_id = monster.monster_data.id
@@ -111,15 +115,15 @@ func _spawn_one() -> void:
 
 ## Picks a spot with some breathing room. Falls back to the emptiest candidate
 ## found rather than looping forever, which matters once the field is crowded.
-func _random_spawn_point() -> Vector3:
-	var best := JamoMonster.random_point_in_arena(arena_half_extents, spawn_height)
+func _random_spawn_point(half_extents: Vector2) -> Vector3:
+	var best := JamoMonster.random_point_in_arena(half_extents, spawn_height)
 	if min_spawn_distance <= 0.0:
 		return best
 	var best_clearance := _clearance_at(best)
 	for _attempt in SPAWN_PLACEMENT_ATTEMPTS:
 		if best_clearance >= min_spawn_distance:
 			return best
-		var candidate := JamoMonster.random_point_in_arena(arena_half_extents, spawn_height)
+		var candidate := JamoMonster.random_point_in_arena(half_extents, spawn_height)
 		var clearance := _clearance_at(candidate)
 		if clearance > best_clearance:
 			best = candidate

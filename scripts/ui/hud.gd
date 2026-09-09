@@ -7,6 +7,8 @@ extends Control
 ## Below this much energy the bar warns the player the day is nearly over.
 ## Doc v0.3 section 23.3.
 const LOW_ENERGY_WARNING := 3
+## Shown while no target word is set. Doc v0.3 section 23.1.
+const TARGET_NONE_TEXT := "TARGET: 없음  (트리에서 지정)"
 
 signal dictionary_pressed()
 signal settings_pressed()
@@ -25,6 +27,8 @@ signal pause_pressed()
 ]
 @onready var _word_overflow_label: Label = %WordOverflowLabel
 @onready var _word_empty_label: Label = %WordEmptyLabel
+@onready var _target_word_label: Label = %TargetWordLabel
+@onready var _target_slots_label: Label = %TargetSlotsLabel
 
 
 func _ready() -> void:
@@ -34,12 +38,33 @@ func _ready() -> void:
 	SignalBus.monster_killed.connect(_on_monster_killed)
 	SignalBus.jamo_collected.connect(_on_inventory_changed)
 	SignalBus.word_completed.connect(_on_word_completed)
+	SignalBus.target_word_changed.connect(_on_target_word_changed)
 
 	%DictionaryButton.pressed.connect(dictionary_pressed.emit)
 	%SettingsButton.pressed.connect(settings_pressed.emit)
 	%PauseButton.pressed.connect(pause_pressed.emit)
 
 	refresh()
+
+
+## Tab does nothing while no control holds focus, which is how the game starts
+## and how it comes back from a panel that hid its own focused button. Seeding
+## the top bar here is what lets the player reach the tree without a mouse.
+## Doc v0.3 section 27.
+func _unhandled_input(event: InputEvent) -> void:
+	var next_pressed := event.is_action_pressed(&"ui_focus_next")
+	if not next_pressed and not event.is_action_pressed(&"ui_focus_prev"):
+		return
+	if get_viewport().gui_get_focus_owner() != null:
+		return
+	focus_first_button()
+	get_viewport().set_input_as_handled()
+
+
+## Puts keyboard focus on the first top bar button. Public so a panel can hand
+## focus back to the HUD when it closes instead of dropping it on the floor.
+func focus_first_button() -> void:
+	%DictionaryButton.grab_focus()
 
 
 ## Repaints every field from GameState. Called on load and after the day ends.
@@ -49,6 +74,7 @@ func refresh() -> void:
 	_on_gold_changed(GameState.gold)
 	_update_kills()
 	_refresh_word_progress()
+	_refresh_target()
 
 
 func _on_day_started(day: int) -> void:
@@ -76,10 +102,16 @@ func _on_monster_killed(_jamo: String, _gold: float, _position: Vector3) -> void
 
 func _on_inventory_changed(_jamo: String) -> void:
 	_refresh_word_progress()
+	_refresh_target()
 
 
 func _on_word_completed(_word: WordData) -> void:
 	_refresh_word_progress()
+	_refresh_target()
+
+
+func _on_target_word_changed(_word: WordData) -> void:
+	_refresh_target()
 
 
 func _update_kills() -> void:
@@ -118,6 +150,35 @@ func _refresh_word_progress() -> void:
 	_word_overflow_label.visible = overflow > 0
 	if overflow > 0:
 		_word_overflow_label.text = "외 %d개 더" % overflow
+
+
+## The small bottom readout: the word being aimed at and how much of it is
+## already in the inventory, as "TARGET: 불" over "[ㅂ][ㅜ][ ]".
+## Doc v0.3 section 23.1.
+func _refresh_target() -> void:
+	var target := GameState.get_target_word()
+	if target == null:
+		_target_word_label.text = TARGET_NONE_TEXT
+		_target_slots_label.visible = false
+		return
+	_target_word_label.text = "TARGET: %s" % target.word
+	_target_slots_label.visible = true
+	_target_slots_label.text = _target_slot_text(target)
+
+
+## One bracket per required jamo, in the word's own order so a doubled jamo
+## fills one slot at a time. A slot the inventory cannot pay for stays blank.
+func _target_slot_text(word: WordData) -> String:
+	var remaining: Dictionary = {}
+	var slots := PackedStringArray()
+	for jamo: String in word.required_jamo:
+		var held: int = GameState.get_jamo_count(jamo) - int(remaining.get(jamo, 0))
+		if held > 0:
+			remaining[jamo] = int(remaining.get(jamo, 0)) + 1
+			slots.append("[%s]" % jamo)
+		else:
+			slots.append("[ ]")
+	return "".join(slots)
 
 
 func _describe_progress(word: WordData) -> String:

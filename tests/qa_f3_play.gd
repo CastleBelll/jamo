@@ -47,7 +47,7 @@ func _ready() -> void:
 	_monster_root = world.get_node("MonsterRoot")
 	_fx_root = world.get_node("FXRoot")
 	_spawn = world.get_node("SpawnManager")
-	_dex = _main.get_node("UI/WordDex")
+	_dex = _main.get_node("UI/WordTree")
 
 	SignalBus.damage_dealt.connect(_on_damage_dealt)
 	SignalBus.monster_killed.connect(_on_monster_killed)
@@ -81,7 +81,7 @@ func _capture_fresh_start() -> void:
 	var overlays: Dictionary = {}
 	for overlay_name: String in [
 		"Dim", "DayEnd", "JamoChoice", "WordComplete", "UpgradeShop",
-		"WordDex", "PauseMenu", "Settings",
+		"WordTree", "PauseMenu", "Settings",
 	]:
 		overlays[overlay_name] = (_main.get_node("UI/%s" % overlay_name) as CanvasItem).visible
 	_report["overlays_visible_on_day1"] = overlays
@@ -104,13 +104,14 @@ func _capture_dex(label: String, word_ids: Array) -> void:
 	await get_tree().process_frame
 
 
+## Word rows of the tree panel, one entry per visible slot button.
 func _read_dex_rows() -> Array[String]:
 	var rows: Array[String] = []
-	var box: Node = _dex.get_node("Center/Panel/Box")
-	for child in box.get_children():
-		var label := child as Label
-		if label != null and label.visible:
-			rows.append(label.text)
+	for column: Node in _dex.get_node("%Columns").get_children():
+		for child: Node in column.get_children():
+			var slot := child as Button
+			if slot != null and slot.visible:
+				rows.append(slot.text)
 	return rows
 
 

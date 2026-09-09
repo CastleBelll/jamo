@@ -16,7 +16,7 @@ const FILLER_WEIGHT := 1.0
 ## Returns up to `count` distinct jamo. May return fewer when the pool is
 ## smaller than `count`, for example once every word is complete.
 static func generate(count: int) -> PackedStringArray:
-	return _pick_distinct(_build_weights(), count)
+	return _pick_distinct(build_weights(), count)
 
 
 ## Redraws the day's hand for the 리롤 upgrade. Same weighted pools as
@@ -24,7 +24,7 @@ static func generate(count: int) -> PackedStringArray:
 ## never the same hand again, but they are put back one at a time when the rest
 ## of the pool is too small to fill `count`. Doc v0.3 section 13.4.
 static func regenerate(count: int, previous: PackedStringArray) -> PackedStringArray:
-	var weights := _build_weights()
+	var weights := build_weights()
 	var excluded: Dictionary = {}
 	for jamo: String in previous:
 		if weights.has(jamo):
@@ -53,7 +53,8 @@ static func _pick_distinct(weights: Dictionary, count: int) -> PackedStringArray
 
 
 ## jamo -> weight, built from what the craftable words are still missing.
-static func _build_weights() -> Dictionary:
+## Public so a test can read the pool without drawing from it.
+static func build_weights() -> Dictionary:
 	var weights: Dictionary = {}
 	for word: WordData in GameState.get_craftable_words():
 		var needed: Dictionary = word.required_counts()
@@ -66,7 +67,24 @@ static func _build_weights() -> Dictionary:
 	for jamo: String in GameState.database.filler_jamo:
 		if not weights.has(jamo):
 			weights[jamo] = FILLER_WEIGHT
+	_apply_focus_bonus(weights)
 	return weights
+
+
+## Pool A: the jamo the Target word is still missing weigh more than the same
+## jamo would on their own. The bonus scales the weight it already has, so the
+## pool keeps its shape and the jamo never becomes a certainty.
+## Doc v0.3 sections 13.3 and 13.4.
+static func _apply_focus_bonus(weights: Dictionary) -> void:
+	var target: WordData = GameState.get_target_word()
+	if target == null:
+		return
+	var bonus: float = GameState.get_focus_weight_bonus()
+	if bonus <= 0.0:
+		return
+	for jamo: String in target.required_counts():
+		if weights.has(jamo):
+			weights[jamo] = float(weights[jamo]) * (1.0 + bonus)
 
 
 static func _weighted_pick(weights: Dictionary) -> String:

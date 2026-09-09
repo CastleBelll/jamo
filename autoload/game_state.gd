@@ -18,6 +18,10 @@ const UPGRADE_GOLD_BONUS := &"gold_bonus"
 const UPGRADE_MONSTER_CAPACITY := &"monster_capacity"
 const UPGRADE_REROLL := &"reroll"
 
+## How one word reads in the word tree. Every UI asks for this instead of
+## re-deriving the four states on its own. Doc v0.3 section 23.5.
+enum WordState { UNLOCKED, CRAFTABLE, PREREQUISITE_LOCKED, UNDISCOVERED }
+
 var database: GameDatabase
 var balance: GameBalance
 
@@ -29,6 +33,9 @@ var upgrade_levels: Dictionary = {}
 var unlocked_word_ids: Array[StringName] = []
 ## jamo character -> how many are held.
 var jamo_inventory: Dictionary = {}
+## Word the player is aiming for, or &"" when none is set. Only ever holds a
+## craftable word. Doc v0.3 section 13.3.
+var target_word_id: StringName = &""
 
 # --- Per-day state ---------------------------------------------------------
 var energy: int = 0
@@ -265,6 +272,75 @@ func can_complete_word(word: WordData) -> bool:
 	return true
 
 
+## Where a word sits in the tree. The four states are derived here and nowhere
+## else, so the HUD, the tree and any future panel cannot disagree about a word.
+## Doc v0.3 section 23.5.
+##
+## A word one step away - every unmet prerequisite is itself craftable right now
+## - reads as 선행 잠금. Anything deeper down the chain is still 미발견.
+func get_word_state(word: WordData) -> WordState:
+	if word == null:
+		return WordState.UNDISCOVERED
+	if is_word_unlocked(word.id):
+		return WordState.UNLOCKED
+	if are_prerequisites_met(word):
+		return WordState.CRAFTABLE
+	for prerequisite: StringName in word.prerequisites:
+		if is_word_unlocked(prerequisite):
+			continue
+		var parent: WordData = database.find_word(prerequisite)
+		if parent == null or not are_prerequisites_met(parent):
+			return WordState.UNDISCOVERED
+	return WordState.PREREQUISITE_LOCKED
+
+
+## The word the day-end focus is aiming at, or null when none is set.
+func get_target_word() -> WordData:
+	if target_word_id == &"":
+		return null
+	return database.find_word(target_word_id)
+
+
+## Points the focus at `word_id`. Only a craftable word is accepted, so a word
+## behind a prerequisite - or one that is already complete - can never become
+## the target. Returns false when the word was refused. Doc v0.3 section 13.3.
+func set_target_word(word_id: StringName) -> bool:
+	var word: WordData = database.find_word(word_id)
+	if word == null or get_word_state(word) != WordState.CRAFTABLE:
+		return false
+	if target_word_id == word_id:
+		return true
+	target_word_id = word_id
+	SignalBus.target_word_changed.emit(word)
+	return true
+
+
+func clear_target_word() -> void:
+	if target_word_id == &"":
+		return
+	target_word_id = &""
+	SignalBus.target_word_changed.emit(null)
+
+
+## Extra weight the day-end candidate pool gives the jamo the target word still
+## needs, 0.0 with no target. A bonus only - never a guaranteed appearance.
+## Doc v0.3 section 13.3.
+func get_focus_weight_bonus() -> float:
+	if get_target_word() == null:
+		return 0.0
+	return balance.focus_weight_bonus_at(balance.base_focus_level)
+
+
+## Drops a target that stopped being craftable, for example once it is
+## completed or once a save is loaded over it.
+func _validate_target() -> void:
+	if target_word_id == &"":
+		return
+	var word: WordData = get_target_word()
+	if word == null or get_word_state(word) != WordState.CRAFTABLE:
+		clear_target_word()
+
+
 ## Words whose prerequisites are met and that are not unlocked yet.
 func get_craftable_words() -> Array[WordData]:
 	var result: Array[WordData] = []
@@ -294,6 +370,7 @@ func complete_ready_words() -> Array[WordData]:
 			progressed = true
 	if not completed.is_empty():
 		_recalculate_word_bonuses()
+		_validate_target()
 		for word: WordData in completed:
 			SignalBus.word_completed.emit(word)
 	return completed
@@ -374,6 +451,7 @@ func to_dict() -> Dictionary:
 		"unlocked_words": words,
 		"jamo_inventory": jamo_inventory.duplicate(),
 		"rerolls_left": rerolls_left,
+		"target_word": String(target_word_id),
 	}
 
 
@@ -401,4 +479,9 @@ func from_dict(data: Dictionary) -> void:
 	for key: String in stored_jamo:
 		jamo_inventory[key] = int(stored_jamo[key])
 
+	# Saves written before the target existed have no key, which reads as "no
+	# target". A stored target that is no longer craftable is dropped.
+	target_word_id = StringName(data.get("target_word", ""))
+
 	_recalculate_word_bonuses()
+	_validate_target()

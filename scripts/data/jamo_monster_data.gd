@@ -27,6 +27,11 @@ enum SpecialType { NORMAL, SPECIAL, GOLDEN }
 ## profile. Doc v0.3 section 9.
 @export_range(0.1, 4.0, 0.05) var speed_multiplier: float = 1.0
 @export var motion_profile: MotionProfile
+## Extra breathing room between the glyph and the slab edge, in metres of
+## half-diagonal. The body footprint itself is measured from the meshes and
+## taken off automatically, so 0 already keeps the whole letter on the paper;
+## raise this only to make a monster turn around further in. Doc v0.3 §27.
+@export_range(0.0, 3.0, 0.05) var arena_margin: float = 0.0
 
 @export_group("Visual / Click")
 ## Uniform scale applied to the glyph. Smaller jamo are harder to click.

@@ -17,6 +17,9 @@ const ARRIVAL_DISTANCE := 0.18
 const AVOIDANCE_SCAN_INTERVAL := 0.25
 ## Strength of the separation nudge relative to move speed.
 const AVOIDANCE_PUSH := 0.6
+## Floor for the walkable half-extents, so an oversized arena_margin still
+## leaves the monster somewhere to stand instead of pinning it to the centre.
+const MIN_WALKABLE_HALF_EXTENT := 0.5
 
 @export_group("Data")
 ## Stats and visuals for this jamo. Edit the .tres to rebalance.
@@ -25,11 +28,13 @@ const AVOIDANCE_PUSH := 0.6
 @export var motion_profile_override: MotionProfile
 
 @export_group("Field")
-## Half-diagonals of the walkable area, in metres. The arena is a square slab
-## turned 45 degrees, so its footprint in world space is the diamond
-## abs(x) / half_extents.x + abs(z) / half_extents.y <= 1.
+## Half-diagonals of the paper slab itself, in metres. arena.tscn turns a
+## 5.6 x 5.6 square by 45 degrees, so its world footprint is the diamond
+## abs(x) / half_extents.x + abs(z) / half_extents.y <= 1 with 2.8 * sqrt(2)
+## on both axes. This is the slab, not the walkable area: each monster insets
+## it by its own body footprint in get_walkable_half_extents().
 ## SpawnManager overwrites this at spawn time.
-@export var arena_half_extents: Vector2 = Vector2(3.4, 3.4)
+@export var arena_half_extents: Vector2 = Vector2(3.95, 3.95)
 
 @onready var _visual_root: Node3D = $VisualRoot
 @onready var _click_shape: CollisionShape3D = $ClickArea/CollisionShape3D
@@ -46,6 +51,15 @@ var burn_chain_depth: int = 0
 ## Whether this monster was still burning when it died. Read by SpawnManager
 ## after death, because _die() clears the status container.
 var died_burning: bool = false
+
+## Visual meshes of the glyph, cached so measuring the footprint never has to
+## walk the node tree again.
+var _body_meshes: Array[MeshInstance3D] = []
+## Widest horizontal half-extents the glyph has reached, in metres, measured
+## around the monster origin. Kept as a running maximum because the walk
+## animations lean, turn and squash the letter, so the rest pose alone would
+## under-measure the footprint the arena clamp has to respect.
+var _body_extent: Vector2 = Vector2.ZERO
 
 var _state: State = State.SPAWN
 var _profile: MotionProfile
@@ -76,6 +90,8 @@ func _ready() -> void:
 		* monster_data.speed_multiplier
 	_lifetime_left = monster_data.lifetime_seconds
 	_visual_root.scale = Vector3.ONE * monster_data.visual_scale
+	_collect_body_meshes()
+	_measure_body()
 	_apply_click_radius(monster_data.click_radius)
 	_roll_stats()
 
@@ -100,6 +116,16 @@ func _apply_click_radius(radius: float) -> void:
 		_click_shape.shape = sphere
 
 
+## The AnimationPlayer poses the glyph in the idle frame, after the physics
+## clamp has already run, so a pose that just got wider would be drawn hanging
+## over the paper for a frame. Re-clamping here closes that gap; the scene sets
+## process_priority so this runs after the AnimationPlayer has posed the body.
+func _process(_delta: float) -> void:
+	if _state == State.DEAD or _body_meshes.is_empty():
+		return
+	_clamp_to_arena()
+
+
 func _physics_process(delta: float) -> void:
 	if _lifetime_left > 0.0:
 		_lifetime_left -= delta
@@ -122,6 +148,7 @@ func _process_idle(delta: float) -> void:
 	_update_separation(delta)
 	velocity = _separation * _speed * AVOIDANCE_PUSH
 	move_and_slide()
+	_clamp_to_arena()
 	_state_timer -= delta
 	if _state_timer <= 0.0:
 		_begin_turn()
@@ -137,6 +164,7 @@ func _process_walk(delta: float) -> void:
 	var direction := (to_target.normalized() + _separation * AVOIDANCE_PUSH).normalized()
 	velocity = direction * _speed
 	move_and_slide()
+	_clamp_to_arena()
 
 
 ## Neighbour separation, rescanned on a timer rather than every frame.
@@ -181,7 +209,68 @@ func _begin_walk() -> void:
 
 
 func _pick_target() -> Vector3:
-	return random_point_in_arena(arena_half_extents, global_position.y)
+	return random_point_in_arena(get_walkable_half_extents(), global_position.y)
+
+
+## Widest horizontal half-extents of the glyph seen so far, in metres.
+func get_body_half_extents() -> Vector2:
+	return _body_extent
+
+
+## The arena diamond this monster's centre may walk in: the slab with its own
+## body footprint and arena_margin taken off, so no part of the glyph hangs
+## over the paper whatever its visual_scale is.
+##
+## The slab is a square turned 45 degrees, so in world space it is the diamond
+## abs(x) + abs(z) <= half_extent. A body that stays axis aligned while the
+## slab does not raises that sum by half its width plus half its depth
+## wherever its centre stands, which is why both are subtracted rather than
+## just the larger one. Read by SpawnManager as well, so spawning and
+## wandering agree. Doc v0.3 section 27.
+func get_walkable_half_extents() -> Vector2:
+	var margin: float = monster_data.arena_margin if monster_data != null else 0.0
+	var inset := _body_extent.x + _body_extent.y + margin
+	return Vector2(
+		maxf(MIN_WALKABLE_HALF_EXTENT, arena_half_extents.x - inset),
+		maxf(MIN_WALKABLE_HALF_EXTENT, arena_half_extents.y - inset)
+	)
+
+
+func _collect_body_meshes() -> void:
+	for node: Node in _visual_root.find_children("*", "MeshInstance3D", true, false):
+		_body_meshes.append(node as MeshInstance3D)
+
+
+## Grows the cached footprint to whatever the glyph occupies right now. Cheap
+## enough per frame: a letter is a handful of boxes and the list is cached.
+func _measure_body() -> void:
+	var origin := global_position
+	for mesh: MeshInstance3D in _body_meshes:
+		if not mesh.visible:
+			continue
+		var box: AABB = mesh.global_transform * mesh.get_aabb()
+		_body_extent.x = maxf(_body_extent.x, maxf(
+			absf(box.position.x - origin.x),
+			absf(box.position.x + box.size.x - origin.x)
+		))
+		_body_extent.y = maxf(_body_extent.y, maxf(
+			absf(box.position.z - origin.z),
+			absf(box.position.z + box.size.z - origin.z)
+		))
+
+
+## Pulls the body back onto its walkable diamond. Neighbour separation pushes
+## outward and a crowd of 20 can otherwise shove a big glyph past the slab edge
+## faster than it picks a new target. Doc v0.3 section 27.
+func _clamp_to_arena() -> void:
+	_measure_body()
+	var extents := get_walkable_half_extents()
+	var spill := absf(global_position.x) / extents.x + absf(global_position.z) / extents.y
+	if spill <= 1.0:
+		return
+	global_position = Vector3(
+		global_position.x / spill, global_position.y, global_position.z / spill
+	)
 
 
 ## Uniform random point inside the diamond footprint of the rotated arena slab.

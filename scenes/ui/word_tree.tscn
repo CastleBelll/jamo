@@ -1,0 +1,504 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/word_tree.gd" id="1_tree"]
+
+; One column per word category, one static Button per tree slot. The script
+; only fills text in and folds unused slots away, so the whole layout stays
+; editable here. Doc v0.3 sections 19.1, 23.5 and 37.
+
+[node name="WordTree" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tree")
+column_categories = Array[StringName]([&"fire", &"power", &"gold", &"energy", &"luck", &""])
+
+[node name="Frame" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 88.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Frame"]
+layout_mode = 2
+
+[node name="Box" type="VBoxContainer" parent="Frame/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="Frame/Panel/Box"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "단어 트리"
+
+[node name="SummaryLabel" type="Label" parent="Frame/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "완성한 단어  0 / 10"
+
+[node name="TargetLabel" type="Label" parent="Frame/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "목표 단어: 없음"
+
+[node name="LegendLabel" type="Label" parent="Frame/Panel/Box"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "[완성] 이미 만든 단어  ·  [제작 가능] 지금 목표로 지정 가능  ·  [선행 잠금] 선행 단어 필요  ·  [미발견] 더 깊은 선행 필요"
+autowrap_mode = 3
+
+[node name="Scroll" type="ScrollContainer" parent="Frame/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+follow_focus = true
+
+[node name="Columns" type="HBoxContainer" parent="Frame/Panel/Box/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Col0" type="VBoxContainer" parent="Frame/Panel/Box/Scroll/Columns"]
+custom_minimum_size = Vector2(185, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col0"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "화염"
+
+[node name="Slot0" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col0"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "[제작 가능] 불"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot1" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col0"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "  └ [선행 잠금] 화염"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot2" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col0"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "  └ [선행 잠금] 불꽃"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot3" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col0"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot4" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col0"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Overflow" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col0"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "칸이 모자라 0개를 감췄습니다"
+autowrap_mode = 3
+
+[node name="Col1" type="VBoxContainer" parent="Frame/Panel/Box/Scroll/Columns"]
+custom_minimum_size = Vector2(185, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "힘"
+
+[node name="Slot0" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col1"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "[제작 가능] 힘"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot1" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col1"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "  └ [선행 잠금] 강타"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot2" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col1"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot3" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col1"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot4" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col1"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Overflow" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col1"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "칸이 모자라 0개를 감췄습니다"
+autowrap_mode = 3
+
+[node name="Col2" type="VBoxContainer" parent="Frame/Panel/Box/Scroll/Columns"]
+custom_minimum_size = Vector2(185, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "경제"
+
+[node name="Slot0" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col2"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "[제작 가능] 돈"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot1" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col2"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "  └ [선행 잠금] 금"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot2" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col2"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot3" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col2"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot4" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col2"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Overflow" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col2"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "칸이 모자라 0개를 감췄습니다"
+autowrap_mode = 3
+
+[node name="Col3" type="VBoxContainer" parent="Frame/Panel/Box/Scroll/Columns"]
+custom_minimum_size = Vector2(185, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "에너지"
+
+[node name="Slot0" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col3"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "[제작 가능] 밥"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot1" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col3"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "  └ [선행 잠금] 체력"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot2" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col3"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot3" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col3"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot4" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col3"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Overflow" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col3"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "칸이 모자라 0개를 감췄습니다"
+autowrap_mode = 3
+
+[node name="Col4" type="VBoxContainer" parent="Frame/Panel/Box/Scroll/Columns"]
+custom_minimum_size = Vector2(185, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col4"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "행운"
+
+[node name="Slot0" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col4"]
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = "[제작 가능] 운"
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot1" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col4"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot2" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col4"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot3" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col4"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot4" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col4"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Overflow" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col4"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "칸이 모자라 0개를 감췄습니다"
+autowrap_mode = 3
+
+[node name="Col5" type="VBoxContainer" parent="Frame/Panel/Box/Scroll/Columns"]
+custom_minimum_size = Vector2(185, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col5"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "기타"
+
+[node name="Slot0" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col5"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot1" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col5"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot2" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col5"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot3" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col5"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Slot4" type="Button" parent="Frame/Panel/Box/Scroll/Columns/Col5"]
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"TreeSlot"
+theme_override_font_sizes/font_size = 16
+text = ""
+alignment = 0
+autowrap_mode = 3
+
+[node name="Overflow" type="Label" parent="Frame/Panel/Box/Scroll/Columns/Col5"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "칸이 모자라 0개를 감췄습니다"
+autowrap_mode = 3
+
+[node name="DetailLabel" type="Label" parent="Frame/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "단어를 선택하면 필요한 자모와 선행 단어가 여기에 보입니다."
+autowrap_mode = 3
+
+[node name="StatusLabel" type="Label" parent="Frame/Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = ""
+autowrap_mode = 3
+
+[node name="Footer" type="HBoxContainer" parent="Frame/Panel/Box"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ClearTargetButton" type="Button" parent="Frame/Panel/Box/Footer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "목표 해제"
+
+[node name="Spacer" type="Control" parent="Frame/Panel/Box/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="CloseButton" type="Button" parent="Frame/Panel/Box/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "닫기"

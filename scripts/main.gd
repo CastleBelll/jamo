@@ -18,7 +18,7 @@ extends Node
 @onready var _jamo_choice: Control = $UI/JamoChoice
 @onready var _word_complete: Control = $UI/WordComplete
 @onready var _upgrade_shop: Control = $UI/UpgradeShop
-@onready var _word_dex: Control = $UI/WordDex
+@onready var _word_tree: Control = $UI/WordTree
 @onready var _pause_menu: Control = $UI/PauseMenu
 @onready var _settings: Control = $UI/Settings
 
@@ -27,7 +27,10 @@ var _day_end_running: bool = false
 
 func _ready() -> void:
 	SignalBus.energy_depleted.connect(_on_energy_depleted)
-	_hud.dictionary_pressed.connect(_word_dex.open)
+	_hud.dictionary_pressed.connect(_word_tree.open)
+	# The tree hides the button that had focus, so hand focus back to the HUD
+	# rather than leaving the keyboard with nothing selected.
+	_word_tree.closed.connect(_hud.focus_first_button)
 	_hud.settings_pressed.connect(_settings.open)
 	_hud.pause_pressed.connect(_pause_menu.open)
 	_pause_menu.settings_requested.connect(_settings.open)

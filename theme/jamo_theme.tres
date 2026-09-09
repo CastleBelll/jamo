@@ -64,6 +64,55 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxFlat" id="SB_icon_normal"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.906, 0.843, 0.714, 0)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_icon_hover"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.906, 0.843, 0.714, 0.22)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_icon_pressed"]
+content_margin_left = 4.0
+content_margin_top = 5.0
+content_margin_right = 4.0
+content_margin_bottom = 3.0
+bg_color = Color(0.906, 0.843, 0.714, 0.38)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_icon_focus"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.2, 0.161, 0.118, 0.55)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.949, 0.902, 0.808, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [sub_resource type="StyleBoxFlat" id="SB_hud_panel"]
 content_margin_left = 14.0
 content_margin_top = 8.0
@@ -96,6 +145,38 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="SB_slot_focus"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.855, 0.757, 0.573, 0)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.2, 0.161, 0.118, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_slot_normal"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.851, 0.776, 0.627, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.42, 0.357, 0.271, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [sub_resource type="StyleBoxFlat" id="SB_bar_bg"]
 bg_color = Color(0.694, 0.6, 0.443, 1)
 corner_radius_top_left = 4
@@ -120,6 +201,11 @@ Button/styles/disabled = SubResource("SB_btn_disabled")
 Button/styles/hover = SubResource("SB_btn_hover")
 Button/styles/normal = SubResource("SB_btn_normal")
 Button/styles/pressed = SubResource("SB_btn_pressed")
+HudIconButton/base_type = &"Button"
+HudIconButton/styles/focus = SubResource("SB_icon_focus")
+HudIconButton/styles/hover = SubResource("SB_icon_hover")
+HudIconButton/styles/normal = SubResource("SB_icon_normal")
+HudIconButton/styles/pressed = SubResource("SB_icon_pressed")
 HudPanel/base_type = &"PanelContainer"
 HudPanel/styles/panel = SubResource("SB_hud_panel")
 Label/colors/font_color = Color(0.2, 0.161, 0.118, 1)
@@ -127,4 +213,7 @@ Label/colors/font_outline_color = Color(0.949, 0.902, 0.808, 1)
 Panel/styles/panel = SubResource("SB_panel")
 PanelContainer/styles/panel = SubResource("SB_panel")
 ProgressBar/styles/background = SubResource("SB_bar_bg")
+TreeSlot/base_type = &"Button"
+TreeSlot/styles/focus = SubResource("SB_slot_focus")
+TreeSlot/styles/normal = SubResource("SB_slot_normal")
 ProgressBar/styles/fill = SubResource("SB_bar_fill")

@@ -1,0 +1,53 @@
+{
+	"big_mieum": {
+		"furthest_centre_from_origin_m": 2.73083329200745,
+		"offenders": {
+			"big_mieum": 0.700366926193237
+		},
+		"peak_monster_count": 20,
+		"worst_body_overhang_m": 0.700366926193237,
+		"worst_centre_axis_m": 2.728111743927
+	},
+	"mixed": {
+		"furthest_centre_from_origin_m": 2.97300553321838,
+		"offenders": {
+			"big_mieum": 0.587952566146851,
+			"digeut": 0.598717641830445,
+			"giyeok": 0.614873600006104,
+			"ieung": 0.571224880218506,
+			"siot": 0.338787031173706
+		},
+		"peak_monster_count": 20,
+		"worst_body_overhang_m": 0.614873600006104,
+		"worst_centre_axis_m": 2.97276997566223
+	},
+	"normal_jamo": {
+		"furthest_centre_from_origin_m": 2.85451817512512,
+		"offenders": {
+			"digeut": 0.60493106842041,
+			"i": 0.0991456031799318,
+			"ieung": 0.372599077224732,
+			"mieum": 0.505210828781128,
+			"siot": 0.0103706836700441
+		},
+		"peak_monster_count": 20,
+		"worst_body_overhang_m": 0.60493106842041,
+		"worst_centre_axis_m": 2.84731292724609
+	},
+	"slab_half_extent": 2.8,
+	"spawn_arena_half_extents": [
+		3.40000009536743,
+		3.40000009536743
+	],
+	"worst_case_corner": {
+		"body_overhang_m": 0.611441802978516,
+		"position": [
+			2.85000014305115,
+			0.0
+		],
+		"walkable_half_extents": [
+			2.85000014305115,
+			2.85000014305115
+		]
+	}
+}

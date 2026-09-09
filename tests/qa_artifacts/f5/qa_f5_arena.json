@@ -1,0 +1,40 @@
+{
+	"big_mieum": {
+		"furthest_centre_from_origin_m": 2.49006199836731,
+		"offenders": {},
+		"peak_monster_count": 20,
+		"worst_body_overhang_m": 0.0,
+		"worst_centre_axis_m": 2.48352527618408
+	},
+	"mixed": {
+		"furthest_centre_from_origin_m": 3.02963519096375,
+		"offenders": {},
+		"peak_monster_count": 20,
+		"worst_body_overhang_m": 0.0,
+		"worst_centre_axis_m": 3.02754306793213
+	},
+	"normal_jamo": {
+		"furthest_centre_from_origin_m": 2.85474157333374,
+		"offenders": {},
+		"peak_monster_count": 20,
+		"worst_body_overhang_m": 0.0,
+		"worst_centre_axis_m": 2.85255742073059
+	},
+	"slab_half_extent": 2.8,
+	"slab_rotation_y_rad": 0.785399973392487,
+	"spawn_arena_half_extents": [
+		3.95000004768372,
+		3.95000004768372
+	],
+	"worst_case_corner": {
+		"body_overhang_m": 0.0,
+		"position": [
+			2.5727014541626,
+			0.000117752075311728
+		],
+		"walkable_half_extents": [
+			2.77701711654663,
+			2.77701711654663
+		]
+	}
+}

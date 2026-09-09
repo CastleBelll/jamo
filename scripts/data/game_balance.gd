@@ -41,6 +41,17 @@ extends Resource
 ## Jamo candidates offered at day end, upgrade level 0. Doc v0.3 section 13.
 @export var base_jamo_candidates: int = 2
 
+@export_group("Target Focus")
+## Extra candidate weight the target word's missing jamo receive, one entry per
+## focus level. Doc v0.3 section 13.3: +5 / +10 / +15 / +20 %. Raising a step
+## must never reach 1.0, which would make the jamo a certainty.
+@export var focus_weight_steps: PackedFloat32Array = PackedFloat32Array(
+	[0.05, 0.10, 0.15, 0.20]
+)
+## Focus level in play before any gold upgrade track raises it. 0 turns the
+## focus bonus off entirely.
+@export_range(0, 8) var base_focus_level: int = 1
+
 @export_group("Day End")
 ## Seconds to let lingering damage-over-time resolve before the day-end UI.
 ## Doc v0.3 section 12 recommends 0.5~1.0s.
@@ -56,3 +67,11 @@ func monster_hp_for_day(day: int) -> float:
 ## purpose; only the HUD rounds it. Doc v0.3 section 4.
 func monster_gold_for_day(day: int) -> float:
 	return base_monster_gold * pow(gold_growth_per_day, day - 1)
+
+
+## Focus weight bonus at `level`. 0.0 at level 0, and a level past the last
+## defined step stays on that step rather than growing without a limit.
+func focus_weight_bonus_at(level: int) -> float:
+	if level <= 0 or focus_weight_steps.is_empty():
+		return 0.0
+	return focus_weight_steps[mini(level, focus_weight_steps.size()) - 1]

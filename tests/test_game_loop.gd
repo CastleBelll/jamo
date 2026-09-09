@@ -9,6 +9,31 @@ extends Node
 
 const CHOICE_SCENE := "res://scenes/ui/jamo_choice.tscn"
 const HUD_SCENE := "res://scenes/ui/hud.tscn"
+const TREE_SCENE := "res://scenes/ui/word_tree.tscn"
+const WORLD_SCENE := "res://scenes/world/game_world.tscn"
+## Every monster the spawner can put on the field, plain and special.
+const MONSTER_SCENES := [
+	"res://scenes/monsters/monster_giyeok.tscn",
+	"res://scenes/monsters/monster_digeut.tscn",
+	"res://scenes/monsters/monster_mieum.tscn",
+	"res://scenes/monsters/monster_siot.tscn",
+	"res://scenes/monsters/monster_ieung.tscn",
+	"res://scenes/monsters/monster_i.tscn",
+	"res://scenes/monsters/special/monster_big_mieum.tscn",
+	"res://scenes/monsters/special/monster_fast_ieung.tscn",
+	"res://scenes/monsters/special/monster_golden_hieut.tscn",
+]
+## Half-extent of the paper in the slab's own frame: arena.tscn draws a
+## 5.6 x 5.6 PaperTop, so nothing may pass 2.8 in the slab local x or z.
+const SLAB_HALF := 2.8
+## Frames a monster is left alone first, so the lean, turn and squash of a walk
+## have all reached their widest pose before the footprint is trusted.
+const ARENA_WARMUP_FRAMES := 300
+## Positions sampled around the rim of the walkable diamond.
+const ARENA_RIM_SAMPLES := 96
+## A deliberately oversized individual, to prove the clamp follows the scale
+## rather than a value hand-tuned for the letters that exist today.
+const OVERSIZED_VISUAL_SCALE := 5.0
 
 var _failures: int = 0
 
@@ -45,6 +70,12 @@ func _ready() -> void:
 	_test_golden_leaves_without_paying_gold()
 	_test_save_round_trip()
 	_test_reroll_save_round_trip()
+	_test_word_states_come_from_the_database()
+	_test_target_refuses_uncraftable_words()
+	_test_target_focus_raises_candidate_weight()
+	_test_hud_and_tree_show_the_same_words()
+	await _test_no_monster_size_leaves_the_slab()
+	await _test_hud_buttons_take_keyboard_focus()
 
 	if _failures == 0:
 		print("OK - all game loop checks passed.")
@@ -71,6 +102,7 @@ func _reset() -> void:
 	GameState.upgrade_levels.clear()
 	GameState.unlocked_word_ids.clear()
 	GameState.jamo_inventory.clear()
+	GameState.target_word_id = &""
 	GameState.from_dict(GameState.to_dict())
 	GameState.begin_day()
 
@@ -1030,3 +1062,333 @@ func _test_golden_leaves_without_paying_gold() -> void:
 	_check(spawner._alive.is_empty(), "the spawner should free the slot it left behind")
 
 	spawner.queue_free()
+
+
+# --- F5 word tree ----------------------------------------------------------
+
+## Doc v0.3 section 23.5: the four tree states are derived from the database,
+## never stored, so a save can never disagree with the word list.
+func _test_word_states_come_from_the_database() -> void:
+	_reset()
+	var bul: WordData = GameState.database.find_word(&"fire_001")
+	var hwayeom: WordData = GameState.database.find_word(&"fire_002")
+	_check(
+		GameState.get_word_state(bul) == GameState.WordState.CRAFTABLE,
+		"불 has no prerequisite, so Day 1 offers it"
+	)
+	_check(
+		GameState.get_word_state(hwayeom) == GameState.WordState.PREREQUISITE_LOCKED,
+		"화염 sits one step behind 불"
+	)
+
+	_unlock([&"fire_001"])
+	_check(
+		GameState.get_word_state(bul) == GameState.WordState.UNLOCKED,
+		"a completed word reads as 완성"
+	)
+	_check(
+		GameState.get_word_state(hwayeom) == GameState.WordState.CRAFTABLE,
+		"unlocking 불 opens 화염"
+	)
+
+	# 미발견 needs a word two prerequisite hops deep. The shipped database only
+	# goes one deep, so the rule is proven against a probe database instead of
+	# by editing balance data.
+	var original: GameDatabase = GameState.database
+	var probe := GameDatabase.new()
+	probe.balance = original.balance
+	probe.filler_jamo = original.filler_jamo
+	probe.upgrades = original.upgrades
+	var deep := WordData.new()
+	deep.id = &"fire_probe"
+	deep.word = "고열"
+	deep.category = &"fire"
+	deep.required_jamo = PackedStringArray(["ㄱ", "ㅗ"])
+	deep.prerequisites = [&"fire_002"]
+	var words: Array[WordData] = original.words.duplicate()
+	words.append(deep)
+	probe.words = words
+
+	GameState.database = probe
+	_reset()
+	_check(
+		GameState.get_word_state(deep) == GameState.WordState.UNDISCOVERED,
+		"a word two steps behind an unmet prerequisite reads as 미발견"
+	)
+	_unlock([&"fire_001"])
+	_check(
+		GameState.get_word_state(deep) == GameState.WordState.PREREQUISITE_LOCKED,
+		"once 화염 is craftable, the word behind it is only 선행 잠금"
+	)
+	GameState.database = original
+	_reset()
+
+
+## Doc v0.3 section 13.3: only a craftable word can be the Target.
+func _test_target_refuses_uncraftable_words() -> void:
+	_reset()
+	_check(
+		not GameState.set_target_word(&"fire_002"),
+		"a prerequisite-locked word must be refused as the target"
+	)
+	_check(GameState.target_word_id == &"", "a refused target leaves the target unset")
+	_check(not GameState.set_target_word(&"not_a_word"), "an unknown id is refused")
+
+	_check(GameState.set_target_word(&"fire_001"), "a craftable word is accepted")
+	_check(GameState.target_word_id == &"fire_001", "the accepted target is stored")
+	_check(GameState.get_target_word() != null, "the stored target resolves to its word")
+
+	# Completing the target retires it rather than leaving a stale pointer.
+	_grant(["ㅂ", "ㅜ", "ㄹ"])
+	GameState.complete_ready_words()
+	_check(GameState.is_word_unlocked(&"fire_001"), "the target word completed")
+	_check(GameState.target_word_id == &"", "completing the target clears it")
+	_check(
+		not GameState.set_target_word(&"fire_001"),
+		"an already completed word cannot be re-targeted"
+	)
+
+	# A save carrying a target that is no longer craftable drops it on load.
+	GameState.target_word_id = &"fire_001"
+	GameState.from_dict(GameState.to_dict())
+	_check(GameState.target_word_id == &"", "a stale saved target is dropped on load")
+
+
+## Doc v0.3 section 13.3: the target's jamo weigh more in the candidate pool,
+## by +5~20 %, and never enough to be a certainty.
+func _test_target_focus_raises_candidate_weight() -> void:
+	_reset()
+	var balance: GameBalance = GameState.balance
+	_close(balance.focus_weight_bonus_at(0), 0.0, "focus level 0 gives no bonus")
+	_close(balance.focus_weight_bonus_at(1), 0.05, "focus level 1 is +5%")
+	_close(
+		balance.focus_weight_bonus_at(99),
+		balance.focus_weight_steps[balance.focus_weight_steps.size() - 1],
+		"a level past the last step stays on the last step"
+	)
+
+	var before: Dictionary = CandidateGenerator.build_weights()
+	_check(GameState.set_target_word(&"gold_001"), "돈 is craftable on Day 1")
+	var bonus: float = GameState.get_focus_weight_bonus()
+	_check(bonus > 0.0, "a target must actually raise its jamo")
+	_check(bonus < 1.0, "the focus bonus must never make a jamo certain")
+
+	var after: Dictionary = CandidateGenerator.build_weights()
+	for jamo: String in ["ㄷ", "ㅗ", "ㄴ"]:
+		_close(
+			float(after[jamo]),
+			float(before[jamo]) * (1.0 + bonus),
+			"%s is a target jamo, so it weighs more" % jamo
+		)
+	_close(
+		float(after["ㅂ"]),
+		float(before["ㅂ"]),
+		"a jamo no target needs keeps its weight"
+	)
+
+	# Pool A/B/C still hold: every candidate is a jamo some craftable word needs.
+	var needed := _craftable_jamo()
+	var misses := 0
+	for _attempt in 200:
+		var candidates := CandidateGenerator.generate(2)
+		for jamo: String in candidates:
+			_check(needed.has(jamo), "candidate %s should still come from the pools" % jamo)
+		if not candidates.has("ㄷ"):
+			misses += 1
+	_check(misses > 0, "focus must not guarantee the target jamo shows up")
+	GameState.clear_target_word()
+
+
+## The F3 failure was two panels disagreeing about the same word list. Both now
+## read GameState, so they are checked against each other.
+func _test_hud_and_tree_show_the_same_words() -> void:
+	_reset()
+	var hud: Control = (load(HUD_SCENE) as PackedScene).instantiate()
+	add_child(hud)
+	var tree: Control = (load(TREE_SCENE) as PackedScene).instantiate()
+	add_child(tree)
+	hud.refresh()
+	tree.refresh()
+
+	var craftable := GameState.get_craftable_words()
+	var slot_texts := _tree_slot_texts(tree)
+	_check(
+		slot_texts.size() == GameState.database.words.size(),
+		"the tree shows every word once (%d slots for %d words)"
+			% [slot_texts.size(), GameState.database.words.size()]
+	)
+	for word: WordData in GameState.database.words:
+		var listed := false
+		for text: String in slot_texts:
+			if text.ends_with(word.word):
+				listed = true
+		_check(listed, "the tree should list %s" % word.word)
+
+	var hud_names := PackedStringArray()
+	for text: String in _visible_word_texts(_hud_word_rows(hud)):
+		hud_names.append(text.split(" ")[0])
+	for word: WordData in craftable:
+		_check(hud_names.has(word.word), "the HUD craft list should show %s" % word.word)
+		var tagged := false
+		for text: String in slot_texts:
+			if text.ends_with("[제작 가능] %s" % word.word):
+				tagged = true
+		_check(tagged, "the tree should tag %s as 제작 가능 too" % word.word)
+	_check(
+		hud_names.size() == craftable.size(),
+		"the HUD lists exactly the craftable words"
+	)
+
+	# The HUD target readout follows the tree choice.
+	_check(GameState.set_target_word(&"fire_001"), "불 can be targeted")
+	var target_label: Label = hud.get_node("%TargetWordLabel")
+	_check(
+		target_label.text.contains("불"),
+		"the HUD TARGET line should name the target (got %s)" % target_label.text
+	)
+	GameState.clear_target_word()
+
+	hud.queue_free()
+	tree.queue_free()
+
+
+## Text of every visible tree slot, read off the scene so the slot count is
+## never guessed.
+func _tree_slot_texts(tree: Control) -> PackedStringArray:
+	var texts := PackedStringArray()
+	for column: Node in tree.get_node("%Columns").get_children():
+		for child: Node in column.get_children():
+			if child is Button and String(child.name).begins_with("Slot") and child.visible:
+				texts.append((child as Button).text)
+	return texts
+
+
+## No glyph may hang over the paper, whatever its visual_scale is. The walkable
+## diamond is the slab inset by each monster's own measured body footprint, so
+## this pins every monster to the rim of that diamond - the furthest the clamp
+## lets it stand - and checks the meshes against the slab in the slab's own
+## frame, because arena.tscn turns the slab 45 degrees.
+func _test_no_monster_size_leaves_the_slab() -> void:
+	_reset()
+	var world: Node3D = (load(WORLD_SCENE) as PackedScene).instantiate()
+	add_child(world)
+	var spawn: SpawnManager = world.get_node("SpawnManager")
+	# This test places its own monsters; a refilling field would fight it.
+	spawn.set_process(false)
+	var arena: Node3D = world.get_node("Arena")
+	var to_slab := arena.global_transform.affine_inverse()
+	var monster_root: Node3D = world.get_node("MonsterRoot")
+
+	for path: String in MONSTER_SCENES:
+		await _check_stays_on_slab(path, 0.0, spawn, monster_root, to_slab)
+	await _check_stays_on_slab(
+		BIG_MIEUM_SCENE, OVERSIZED_VISUAL_SCALE, spawn, monster_root, to_slab
+	)
+	world.queue_free()
+
+
+## Walks one monster around the rim of its walkable diamond and reports the
+## worst overhang it produced. `visual_scale_override` of 0 keeps the authored
+## scale.
+func _check_stays_on_slab(
+	path: String,
+	visual_scale_override: float,
+	spawn: SpawnManager,
+	monster_root: Node3D,
+	to_slab: Transform3D
+) -> void:
+	var monster: JamoMonster = (load(path) as PackedScene).instantiate()
+	var label := path.get_file()
+	if visual_scale_override > 0.0:
+		# Duplicated so resizing this probe never resizes the shared .tres.
+		monster.monster_data = monster.monster_data.duplicate()
+		monster.monster_data.visual_scale = visual_scale_override
+		label = "%s at scale %.1f" % [label, visual_scale_override]
+	monster.arena_half_extents = spawn.arena_half_extents
+	monster_root.add_child(monster)
+
+	for _frame in ARENA_WARMUP_FRAMES:
+		await get_tree().process_frame
+
+	var worst := 0.0
+	var worst_at := Vector2.ZERO
+	for sample in ARENA_RIM_SAMPLES:
+		await get_tree().process_frame
+		var extents := monster.get_walkable_half_extents()
+		var angle := TAU * float(sample) / float(ARENA_RIM_SAMPLES)
+		var direction := Vector2(cos(angle), sin(angle))
+		var rim := absf(direction.x) / extents.x + absf(direction.y) / extents.y
+		if rim <= 0.0:
+			continue
+		monster.global_position = Vector3(direction.x / rim, 0.0, direction.y / rim)
+		var overhang := _slab_overhang(monster, to_slab)
+		if overhang > worst:
+			worst = overhang
+			worst_at = Vector2(monster.global_position.x, monster.global_position.z)
+	_check(
+		worst <= 0.0,
+		"%s hangs %.3f m over the slab at (%.2f, %.2f)"
+			% [label, worst, worst_at.x, worst_at.y]
+	)
+	monster.queue_free()
+
+
+## How far the glyph pokes past the paper, in metres. The corners of each mesh
+## box are carried into the slab's frame one by one, because re-bounding the
+## whole box in a rotated frame would inflate it and cry wolf.
+func _slab_overhang(monster: JamoMonster, to_slab: Transform3D) -> float:
+	var worst := 0.0
+	for node: Node in monster.find_children("*", "MeshInstance3D", true, false):
+		var mesh := node as MeshInstance3D
+		if not mesh.visible or mesh.mesh == null:
+			continue
+		var box: AABB = mesh.global_transform * mesh.get_aabb()
+		for corner_index in 8:
+			var corner: Vector3 = to_slab * box.get_endpoint(corner_index)
+			worst = maxf(worst, maxf(absf(corner.x), absf(corner.z)) - SLAB_HALF)
+	return worst
+
+
+## The word tree can only be reached without a mouse if the top bar can hold
+## focus, shows that it has it, and if Tab has somewhere to start from. F5 QA
+## found all three missing: twelve Tab presses focused nothing at all.
+func _test_hud_buttons_take_keyboard_focus() -> void:
+	_reset()
+	var hud: Control = (load(HUD_SCENE) as PackedScene).instantiate()
+	add_child(hud)
+
+	var project_theme := ThemeDB.get_project_theme()
+	for button_name: String in ["DictionaryButton", "SettingsButton", "PauseButton"]:
+		var button: Button = hud.get_node("%" + button_name)
+		_check(
+			button.focus_mode == Control.FOCUS_ALL,
+			"%s must accept keyboard focus" % button_name
+		)
+		_check(
+			project_theme != null
+				and project_theme.has_stylebox(&"focus", button.theme_type_variation),
+			"%s needs a focus style from the theme, not from code" % button_name
+		)
+
+	hud.focus_first_button()
+	_check(
+		get_viewport().gui_get_focus_owner() == hud.get_node("%DictionaryButton"),
+		"the HUD should be able to put focus on its first button"
+	)
+
+	# The regression itself: with focus dropped, Tab has to find the HUD again.
+	get_viewport().gui_release_focus()
+	await get_tree().process_frame
+	var tab := InputEventKey.new()
+	tab.keycode = KEY_TAB
+	tab.physical_keycode = KEY_TAB
+	tab.pressed = true
+	Input.parse_input_event(tab)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(
+		get_viewport().gui_get_focus_owner() != null,
+		"Tab must reach the top bar while nothing else holds focus"
+	)
+
+	hud.queue_free()

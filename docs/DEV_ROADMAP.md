@@ -70,23 +70,24 @@
 - [x] S6 특수 개체 전용 씬 상속 (.tscn) — 신규 메시 제작 금지, Scale/Material/Profile 로 차별화
 - [x] QA 확인: 금 미해금 시 황금 미등장 / 해금 후 등장 / 각 배율 실측 / 20마리 60FPS
 
-## F5. 단어 트리 UI  `[~]`
+## F5. 단어 트리 UI  `[x]`
 
 근거: v0.3 §15 §23.5 / Phase 6
 
-- [ ] S0 이월: 큰 ㅁ 가 20마리 밀집 시 아레나 가장자리를 시각적으로 넘음 (F4 QA INFO)
-- [ ] S0 F3 이월: 도감 패널이 HUD 상단바와 겹침 (스크롤 컨테이너 없음)
-- [ ] S1 `scenes/ui/word_tree.tscn` 신규 (Control 기반, 에디터 편집 가능 구조)
-- [ ] S2 노드 상태 4종 표시 — 해금 / 제작 가능 / 선행 잠금 / 미발견
-- [ ] S3 노드 클릭 → 목표 단어(Target) 지정, HUD 하단 `TARGET: 불 [ㅂ][ㅜ][ ]` 연동
-- [ ] S4 목표 집중(Focus) 가중치 적용 — 확정 출현 금지, +5~20%
-- [ ] S5 키보드 네비게이션 / 포커스 표시 / 색 대비 WCAG AA
-- [ ] QA 확인: 4상태 시각 구분 / Target 지정 후 후보 가중 변화 / 키보드만으로 조작 가능
+- [x] S0 이월: 큰 ㅁ 가 20마리 밀집 시 아레나 가장자리를 시각적으로 넘음 (F4 QA INFO)
+- [x] S0 F3 이월: 도감 패널이 HUD 상단바와 겹침 (스크롤 컨테이너 없음)
+- [x] S1 `scenes/ui/word_tree.tscn` 신규 (Control 기반, 에디터 편집 가능 구조)
+- [x] S2 노드 상태 4종 표시 — 해금 / 제작 가능 / 선행 잠금 / 미발견
+- [x] S3 노드 클릭 → 목표 단어(Target) 지정, HUD 하단 `TARGET: 불 [ㅂ][ㅜ][ ]` 연동
+- [x] S4 목표 집중(Focus) 가중치 적용 — 확정 출현 금지, +5~20%
+- [x] S5 키보드 네비게이션 / 포커스 표시 / 색 대비 WCAG AA
+- [x] QA 확인: 4상태 시각 구분 / Target 지정 후 후보 가중 변화 / 키보드만으로 조작 가능
 
-## F6. Juice / Polish  `[ ]`
+## F6. Juice / Polish  `[~]`
 
 근거: v0.3 §23 §24 §25 / Phase 9
 
+- [ ] S0 이월: word_tree.gd:191 shadowing 경고, 책 아이콘 툴팁이 아직 "단어 도감"
 - [ ] S1 클릭 피드백 4종 완비 — squash / 파티클 / Damage Number / SFX
 - [ ] S2 상태이상 VFX — burn ember, golden sparkle (과도한 Bloom 금지)
 - [ ] S3 에너지 피드백 — 게이지 pulse, 잔여 3 이하 경고, 0 에서 Day End 트랜지션
