@@ -3,7 +3,8 @@
 `docs/ORCHESTRATION_RULES.md` 의 사이클 규칙에 따라 **위에서 아래로 한 칸씩** 진행한다.
 한 Feature 의 모든 Step 이 체크되고 QA PASS 를 받아야 다음 Feature 로 넘어간다.
 
-기준 문서 우선순위: `JAMO_total_project_development_plan_v0.3.md` > `hangul_idle_growth_balance_v0.2.md` > `hangul_idle_word_tree_v0.1.md`
+기준 문서 우선순위: `JAMO_total_project_development_plan_v0.4.md` > `hangul_idle_growth_balance_v0.2.md` > `hangul_idle_word_tree_v0.1.md`
+(`..._v0.3.md` 는 이력으로만 보존한다. v0.3 → v0.4 변경 내역은 v0.4 §43.)
 
 범례: `[ ]` 미착수 · `[~]` 진행중 · `[x]` QA PASS 후 커밋 완료
 
@@ -139,11 +140,15 @@ F8 은 코드가 기준 문서를 앞서간 상태로 끝났다. 아래는 **DEV
 - [ ] growth_balance v0.2 §8.1 클릭 피해 표를 Lv26 값으로 교체 (BALANCE_NOTES 3-2)
 - [ ] growth_balance v0.2 §3 HP 표의 Day 100/150/200 반올림 오차 정정 (BALANCE_NOTES 1장)
 
-### F8 이월 (사용자 판단 대상)
-- [ ] MEDIUM-3: `docs/BALANCE_NOTES.md:314` 가 134행에서 철회한 §42 주장을 반복 (한 줄 정정)
-- [ ] MEDIUM-4: 포커스 링 제거 부작용 — 키보드 포커스와 마우스 호버가 다른 버튼이면 밝은 판때기 2개
-- [ ] `art/ui/focus_ring.png` 미참조 에셋 (파일 보존됨)
-- [ ] v0.3 §8.1 골드 상수 v0.4 개정 (코드는 1.035, 문서는 1.025)
+### F8 이월 (F9 에서 정리 완료)
+- [x] MEDIUM-3: `docs/BALANCE_NOTES.md:314` 가 134행에서 철회한 §42 주장을 반복 (한 줄 정정)
+- [x] MEDIUM-4: 포커스 링 제거 부작용 — 키보드 포커스와 마우스 호버가 다른 버튼이면 밝은 판때기 2개
+- [x] `art/ui/focus_ring.png` 미참조 에셋 → `art/_reference/` 로 이동 (`.gdignore`, 파일 보존)
+- [x] v0.3 §8.1 골드 상수 v0.4 개정 — `JAMO_total_project_development_plan_v0.4.md` §8.1 · §43
+
+### F9 에서 확인만 하고 남긴 것 (사용자 판단 대상)
+- [ ] `art/ui/game_bg.png` 미참조 확인됨 (2.3 MB). 이동 여부는 사용자 판단
+- [ ] `art/ui/btn_shop.png` 미참조 확인됨 (483 KB). 이동 여부는 사용자 판단
 
 ---
 

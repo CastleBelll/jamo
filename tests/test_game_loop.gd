@@ -98,6 +98,7 @@ func _ready() -> void:
 	await _test_new_game_keeps_the_volume_settings()
 	await _test_hidden_continue_leaves_the_focus_chain()
 	await _test_title_plates_keep_one_size_without_a_save()
+	await _test_title_lights_one_plate_at_a_time()
 
 	if _failures == 0:
 		print("OK - all game loop checks passed.")
@@ -2007,6 +2008,72 @@ func _test_title_plates_keep_one_size_without_a_save() -> void:
 	title.queue_free()
 	await get_tree().process_frame
 	SaveManager.delete_save()
+
+
+## Exactly one plate may look selected. Dropping the focus outline left the
+## plate art as the whole of the selection cue, and the pointer's hover art is
+## bright too, so keyboard focus on one plate with the pointer on another used
+## to light both and hide where Enter would go. Doc v0.3 section 31 Phase 11.
+func _test_title_lights_one_plate_at_a_time() -> void:
+	SaveManager.delete_save()
+	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
+	add_child(title)
+	await _settle_layout()
+	_check_one_plate_looks_selected(title, "without a save")
+
+	# With a run on disk 이어하기 joins the column and has to obey the same rule.
+	_reset()
+	GameState.day = 3
+	_check(SaveManager.save_game(), "the test needs a save file on disk")
+	title.refresh()
+	await _settle_layout()
+	_check(title.get_node("%ContinueButton").visible, "the save case needs 이어하기 on screen")
+	_check_one_plate_looks_selected(title, "with a save")
+
+	title.queue_free()
+	await get_tree().process_frame
+	SaveManager.delete_save()
+
+
+## Walks every (focused plate, hovered plate) pair, including the mixed ones a
+## headless run cannot make with a real pointer, and counts the plates that
+## would be painted with the selected art. A button draws its hover stylebox
+## while the pointer is on it and its normal one otherwise, so reading those two
+## back per button is the same thing the windowed harness measures in pixels.
+func _check_one_plate_looks_selected(title: Control, state: String) -> void:
+	var plates: Array[Button] = []
+	for plate: String in ["NewGameButton", "ContinueButton", "SettingsButton", "QuitButton"]:
+		var button: Button = title.get_node("%%%s" % plate)
+		if button.visible and button.focus_mode != Control.FOCUS_NONE:
+			plates.append(button)
+	_check(plates.size() >= 3, "%s: the title should offer at least three plates" % state)
+	var selected: StyleBox = plates[0].get_theme_stylebox("selected", "TitleButton")
+	for focused: Button in plates:
+		focused.grab_focus()
+		# The pointer parked off every plate (index -1), then on each in turn.
+		for index: int in range(-1, plates.size()):
+			var hovered: Button = null if index < 0 else plates[index]
+			var lit: Array[String] = []
+			for button: Button in plates:
+				var drawn: StyleBox = button.get_theme_stylebox(
+					"hover" if button == hovered else "normal", "TitleButton"
+				)
+				if _plate_art_of(drawn) == _plate_art_of(selected):
+					lit.append(String(button.name))
+			var pointer: String = "nothing" if hovered == null else String(hovered.name)
+			_check(
+				lit.size() == 1 and lit[0] == String(focused.name),
+				"%s: focus on %s with the pointer on %s should light %s alone, lit %s"
+					% [state, focused.name, pointer, focused.name, str(lit)]
+			)
+
+
+## Which of the two plate textures a stylebox paints. Comparing the texture
+## rather than the stylebox itself is what makes the hover and pressed variants,
+## which only differ by a modulate, count as the same plate art.
+func _plate_art_of(style: StyleBox) -> Texture2D:
+	var textured := style as StyleBoxTexture
+	return null if textured == null else textured.texture
 
 
 ## Containers only re-sort on the frame after a minimum size changes, and the

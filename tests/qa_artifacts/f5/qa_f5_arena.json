@@ -1,24 +1,24 @@
 {
 	"big_mieum": {
-		"furthest_centre_from_origin_m": 2.42244911193848,
+		"furthest_centre_from_origin_m": 2.43972754478455,
 		"offenders": {},
 		"peak_monster_count": 20,
 		"worst_body_overhang_m": 0.0,
-		"worst_centre_axis_m": 2.42244410514832
+		"worst_centre_axis_m": 2.43588137626648
 	},
 	"mixed": {
-		"furthest_centre_from_origin_m": 2.97764158248901,
+		"furthest_centre_from_origin_m": 2.96827077865601,
 		"offenders": {},
 		"peak_monster_count": 20,
 		"worst_body_overhang_m": 0.0,
-		"worst_centre_axis_m": 2.97734999656677
+		"worst_centre_axis_m": 2.96799087524414
 	},
 	"normal_jamo": {
-		"furthest_centre_from_origin_m": 2.83326458930969,
+		"furthest_centre_from_origin_m": 3.03009843826294,
 		"offenders": {},
 		"peak_monster_count": 20,
 		"worst_body_overhang_m": 0.0,
-		"worst_centre_axis_m": 2.8328914642334
+		"worst_centre_axis_m": 3.01874470710754
 	},
 	"slab_half_extent": 2.8,
 	"slab_rotation_y_rad": 0.785399973392487,
@@ -29,8 +29,8 @@
 	"worst_case_corner": {
 		"body_overhang_m": 0.0,
 		"position": [
-			2.57281923294067,
-			0.0
+			2.57263112068176,
+			0.000188001882634126
 		],
 		"walkable_half_extents": [
 			2.77701711654663,

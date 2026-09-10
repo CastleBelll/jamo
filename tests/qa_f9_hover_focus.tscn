@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/qa_f9_hover_focus.gd" id="1_hover"]
+
+[node name="QaF9HoverFocus" type="Node"]
+script = ExtResource("1_hover")

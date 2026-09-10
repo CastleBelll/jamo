@@ -1,7 +1,14 @@
 {
-	"burn_tick_bul": [],
-	"burn_tick_hwayeom": [],
-	"burn_tick_hwayeom_reloaded": [],
+	"burn_tick_bul": [
+		1.0,
+		1.0
+	],
+	"burn_tick_hwayeom": [
+		2.0
+	],
+	"burn_tick_hwayeom_reloaded": [
+		2.0
+	],
 	"dex_all": [
 		"[완성] 불",
 		"  └ [완성] 화염",
@@ -28,7 +35,7 @@
 	],
 	"energy_after_click": 19,
 	"energy_before_click": 20,
-	"kills_with_bulkkot": 1,
+	"kills_with_bulkkot": 2,
 	"kills_without_bulkkot": 1,
 	"max_energy_all_words": 25,
 	"overlays_visible_on_day1": {

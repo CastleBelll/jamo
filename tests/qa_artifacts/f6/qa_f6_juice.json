@@ -16,20 +16,20 @@
 		"emitting_before": false,
 		"emitting_during": true,
 		"env_glow_enabled": false,
-		"seconds_until_off": 2.19166533333333
+		"seconds_until_off": 2.200097
 	},
 	"burn_ember_monster": {
-		"jamo": "@CharacterBody3D@35",
-		"screen": "(693.7339, 455.7359)"
+		"jamo": "@CharacterBody3D@33",
+		"screen": "(735.5988, 399.0066)"
 	},
 	"burst_pooling": {
 		"clicks_attempted": 20,
 		"clicks_that_hit": 20,
 		"fps_during_burst": {
-			"average_fps": 59.9983800437387,
+			"average_fps": 60.2571978059685,
 			"engine_fps": 60.0,
 			"frames": 120,
-			"worst_frame_ms": 37.1166666666667
+			"worst_frame_ms": 31.7116666666666
 		},
 		"pool_after": {
 			"death_pool": 8,
@@ -39,7 +39,7 @@
 			"death_pool": 8,
 			"hit_pool": 10
 		},
-		"worst_click_frame_ms": 50.501
+		"worst_click_frame_ms": 51.099
 	},
 	"click_feedback": {
 		"animation_after_click": "hit",
@@ -54,9 +54,9 @@
 			"spent": true,
 			"warn_visible_at_zero": false
 		},
-		"day_end_after_ms": 756,
+		"day_end_after_ms": 754,
 		"dim_visible_at_day_end": true,
-		"gold_earned_delta": 4.07867701630874,
+		"gold_earned_delta": 2.2,
 		"kills_delta": 1,
 		"settle_seconds_setting": 0.8
 	},
@@ -66,7 +66,7 @@
 			"warn_visible": false
 		},
 		"at_threshold": {
-			"bar_self_modulate": "(1.0, 0.5512, 0.4514, 1.0)",
+			"bar_self_modulate": "(1.0, 0.551, 0.4512, 1.0)",
 			"energy": 3,
 			"pulse_anim_name": "pulse",
 			"warn_anim_name": "warn",
@@ -180,12 +180,12 @@
 			"ring_spread_px": 240.0
 		},
 		"stage_2_midway": {
-			"spread_px": 261.390930175781
+			"spread_px": 261.196868896484
 		},
 		"stage_3_reveal": {
 			"camera_size_after_zoom_out": 9.60000038146973,
 			"camera_size_at_reveal": 9.60000038146973,
-			"camera_size_at_zoom_peak": 8.16959953308105,
+			"camera_size_at_zoom_peak": 8.17860794067383,
 			"camera_size_before": 9.60000038146973,
 			"effect_text": "화상 해금. 클릭한 몬스터가 3초 동안 1초마다 1 피해를 받는다.",
 			"fly_layer_visible": false,

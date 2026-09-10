@@ -27,6 +27,14 @@ extends Control
 ## The four plates, in the order the column draws them.
 var _plates: Array[Button] = []
 
+## The two plate styleboxes and the label colour that goes with the plain one,
+## read from the theme once so a later stylebox override cannot be read back as
+## if it were the theme's own value. Doc v0.3 section 38: authored in
+## theme/jamo_theme.tres, never built here.
+var _plate_plain: StyleBox
+var _plate_selected: StyleBox
+var _plate_plain_font_color: Color
+
 
 func _ready() -> void:
 	_new_game_button.pressed.connect(_on_new_game_pressed)
@@ -41,6 +49,9 @@ func _ready() -> void:
 
 	# Wired before the first refresh(), which is what grabs the entry focus.
 	_plates.assign([_new_game_button, _continue_button, %SettingsButton, %QuitButton])
+	_plate_plain = _new_game_button.get_theme_stylebox("normal", "TitleButton")
+	_plate_selected = _new_game_button.get_theme_stylebox("selected", "TitleButton")
+	_plate_plain_font_color = _new_game_button.get_theme_color("font_color", "TitleButton")
 	for button: Button in _plates:
 		_bind_selection_plate(button)
 
@@ -93,25 +104,55 @@ func refresh() -> void:
 
 
 ## The plate art comes in two versions, unselected and selected, and the menu
-## must only ever show one selected plate. The mouse gets that from the hover
-## style, but Godot has no focused draw mode: the focus stylebox is painted
-## over whatever the base state already drew. So the base style is swapped
-## while the button holds focus, which is now the whole of the selection cue -
-## the title draws no focus outline on top of it. Both styleboxes are authored
-## in theme/jamo_theme.tres; none is built here.
+## must only ever show one selected plate. Godot has no focused draw mode: the
+## focus stylebox is painted over whatever the base state already drew. So the
+## base style is swapped while the button holds focus, which is now the whole of
+## the selection cue - the title draws no focus outline on top of it.
+##
+## The pointer used to light a second plate of its own, because the hover style
+## is bright too and hover state is independent of focus: keyboard on 설정 with
+## the pointer on 종료 showed two selected plates and no way to tell where Enter
+## would go. Two rules keep it to one. Hovering hands the button the keyboard
+## focus, so the pointer moves the one selection rather than adding a second;
+## and while a button is unfocused its hover style is muted to the plain plate,
+## so a pointer left behind when the keyboard walks away stops looking selected.
+## The bright plate therefore always follows whichever input was used last.
 func _bind_selection_plate(button: Button) -> void:
 	button.focus_entered.connect(_on_button_focus_entered.bind(button))
 	button.focus_exited.connect(_on_button_focus_exited.bind(button))
+	button.mouse_entered.connect(_on_button_mouse_entered.bind(button))
+	_mute_hover(button)
 
 
 func _on_button_focus_entered(button: Button) -> void:
-	button.add_theme_stylebox_override(
-		"normal", button.get_theme_stylebox("selected", "TitleButton")
-	)
+	button.add_theme_stylebox_override("normal", _plate_selected)
+	# The theme's own hover art matches the selected plate, so the focused
+	# button keeps looking selected with the pointer resting on it.
+	button.remove_theme_stylebox_override("hover")
+	button.remove_theme_color_override("font_hover_color")
 
 
 func _on_button_focus_exited(button: Button) -> void:
 	button.remove_theme_stylebox_override("normal")
+	_mute_hover(button)
+
+
+## The pointer takes the keyboard focus with it, so hovering lights the plate up
+## and Enter always goes where the player is pointing. The settings panel and the
+## overwrite dialog run their own focus, so the title does not pull it back while
+## either is open.
+func _on_button_mouse_entered(button: Button) -> void:
+	if button.focus_mode == Control.FOCUS_NONE or button.has_focus():
+		return
+	if _settings.visible or _overwrite_confirm.visible:
+		return
+	button.grab_focus()
+
+
+## Paints an unfocused plate the same way whether the pointer rests on it or not.
+func _mute_hover(button: Button) -> void:
+	button.add_theme_stylebox_override("hover", _plate_plain)
+	button.add_theme_color_override("font_hover_color", _plate_plain_font_color)
 
 
 ## Entry focus, so the keyboard always has somewhere to start and the focus
