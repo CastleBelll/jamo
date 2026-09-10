@@ -2,8 +2,10 @@
 class_name WordEffectData
 extends Resource
 
-## A single rule change granted by a completed word.
-## Doc v0.3 section 22.4 / word_tree v0.1 section 18.
+## A single rule change granted by a word. Doc v0.4 section 21.
+##
+## The change only applies while the word sits in RunState.equipped_words:
+## a word in the codex grants nothing on its own. Doc v0.4 section 38.
 
 enum EffectType {
 	## Adds to FlatWordBonus in the click damage formula. Word: 힘.

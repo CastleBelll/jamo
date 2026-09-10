@@ -1,21 +1,21 @@
 extends Control
 
-## In-game HUD. Deliberately limited to Day, Energy, Gold, today kills, the
-## current word progress and three buttons - no timer, no player HP, no skill
-## bar. Doc v0.3 section 23.1.
+## In-game HUD. Doc v0.4 section 30: Wave, 문장핵 HP, Energy, Gold, kills and the
+## top-bar buttons. The equipped-word and synergy readouts also belong here, but
+## there is nothing to equip until the slot board arrives in Phase 2, so the
+## rows are authored in hud.tscn and simply report an empty build for now.
 
-## Shown while no target word is set. Doc v0.3 section 23.1.
-const TARGET_NONE_TEXT := "TARGET: 없음  (트리에서 지정)"
-
-signal dictionary_pressed()
+signal codex_pressed()
 signal settings_pressed()
 signal pause_pressed()
 
-@onready var _day_label: Label = %DayLabel
+@onready var _wave_label: Label = %WaveLabel
+@onready var _core_label: Label = %CoreLabel
+@onready var _core_bar: ProgressBar = %CoreBar
 @onready var _energy_label: Label = %EnergyLabel
 @onready var _energy_bar: ProgressBar = %EnergyBar
 ## The low-energy warning: a label that appears and blinks, so the cue is text
-## plus motion and not colour alone. Doc v0.3 section 23.3.
+## plus motion and not colour alone.
 @onready var _energy_warn_label: Label = %EnergyWarnLabel
 ## Punch on every energy change; the warning loop lives in its own player
 ## because one AnimationPlayer cannot run both at once.
@@ -23,28 +23,24 @@ signal pause_pressed()
 @onready var _energy_warn_anim: AnimationPlayer = %EnergyWarnAnim
 @onready var _gold_label: Label = %GoldLabel
 @onready var _kills_label: Label = %KillsLabel
-## One static row per word in the database; the script only shows, hides and
-## fills them, it never creates nodes. Doc v0.3 section 19.1.
+## One static row per equipped word slot; the script only shows, hides and fills
+## them, it never creates nodes. Doc v0.4 section 46.
 @onready var _word_rows: Array[Label] = [
 	%WordRow0, %WordRow1, %WordRow2, %WordRow3, %WordRow4,
 	%WordRow5, %WordRow6, %WordRow7, %WordRow8, %WordRow9,
 ]
-@onready var _word_overflow_label: Label = %WordOverflowLabel
 @onready var _word_empty_label: Label = %WordEmptyLabel
-@onready var _target_word_label: Label = %TargetWordLabel
-@onready var _target_slots_label: Label = %TargetSlotsLabel
 
 
 func _ready() -> void:
-	SignalBus.day_started.connect(_on_day_started)
+	SignalBus.wave_started.connect(_on_wave_started)
+	SignalBus.core_hp_changed.connect(_on_core_hp_changed)
 	SignalBus.energy_changed.connect(_on_energy_changed)
 	SignalBus.gold_changed.connect(_on_gold_changed)
 	SignalBus.monster_killed.connect(_on_monster_killed)
-	SignalBus.jamo_collected.connect(_on_inventory_changed)
 	SignalBus.word_completed.connect(_on_word_completed)
-	SignalBus.target_word_changed.connect(_on_target_word_changed)
 
-	%DictionaryButton.pressed.connect(dictionary_pressed.emit)
+	%CodexButton.pressed.connect(codex_pressed.emit)
 	%SettingsButton.pressed.connect(settings_pressed.emit)
 	%PauseButton.pressed.connect(pause_pressed.emit)
 
@@ -53,8 +49,7 @@ func _ready() -> void:
 
 ## Tab does nothing while no control holds focus, which is how the game starts
 ## and how it comes back from a panel that hid its own focused button. Seeding
-## the top bar here is what lets the player reach the tree without a mouse.
-## Doc v0.3 section 27.
+## the top bar here is what lets the player reach the buttons without a mouse.
 func _unhandled_input(event: InputEvent) -> void:
 	var next_pressed := event.is_action_pressed(&"ui_focus_next")
 	if not next_pressed and not event.is_action_pressed(&"ui_focus_prev"):
@@ -68,23 +63,32 @@ func _unhandled_input(event: InputEvent) -> void:
 ## Puts keyboard focus on the first top bar button. Public so a panel can hand
 ## focus back to the HUD when it closes instead of dropping it on the floor.
 func focus_first_button() -> void:
-	%DictionaryButton.grab_focus()
+	%CodexButton.grab_focus()
 
 
-## Repaints every field from GameState. Called on load and after the day ends.
+## Repaints every field from the two state singletons. Called on load and
+## whenever a wave boundary is crossed.
 func refresh() -> void:
-	_on_day_started(GameState.day)
-	_on_energy_changed(GameState.energy, GameState.get_max_energy())
-	_on_gold_changed(GameState.gold)
+	_on_wave_started(RunState.current_wave)
+	_on_core_hp_changed(RunState.core_hp, RunState.core_max_hp)
+	_on_energy_changed(RunState.current_energy, RunState.get_max_energy())
+	_on_gold_changed(MetaState.gold)
 	_update_kills()
-	_refresh_word_progress()
-	_refresh_target()
+	_refresh_equipped_words()
 
 
-func _on_day_started(day: int) -> void:
-	_day_label.text = "DAY %d" % day
+func _on_wave_started(wave: int) -> void:
+	_wave_label.text = "WAVE %d" % wave
 	_update_kills()
-	_refresh_word_progress()
+	_refresh_equipped_words()
+
+
+## The 문장핵 readout. The number is always spelled out, so the bar is a
+## reinforcement rather than the only cue. Doc v0.4 section 6.1.
+func _on_core_hp_changed(current: float, maximum: float) -> void:
+	_core_label.text = "문장핵 %d / %d" % [int(ceilf(current)), int(ceilf(maximum))]
+	_core_bar.max_value = maxf(1.0, maximum)
+	_core_bar.value = current
 
 
 func _on_energy_changed(current: int, maximum: int) -> void:
@@ -92,7 +96,7 @@ func _on_energy_changed(current: int, maximum: int) -> void:
 	_energy_bar.max_value = maxi(1, maximum)
 	_energy_bar.value = current
 	# Colour is a reinforcement, never the only cue: the number is always there.
-	var low := current <= GameState.balance.low_energy_warning and current > 0
+	var low := current <= MetaState.balance.low_energy_warning and current > 0
 	_energy_label.modulate = Color(0.72, 0.27, 0.18) if low else Color.WHITE
 	_set_low_energy_warning(low)
 	# Stopped first so a fast click streak restarts the punch every time
@@ -101,8 +105,8 @@ func _on_energy_changed(current: int, maximum: int) -> void:
 	_energy_pulse_anim.play(&"pulse")
 
 
-## Runs the blinking warning while the day is nearly out of energy, and puts
-## the bar back to its normal tint when it is not.
+## Runs the blinking warning while manual clicks are nearly out, and puts the
+## bar back to its normal tint when they are not.
 func _set_low_energy_warning(low: bool) -> void:
 	_energy_warn_label.visible = low
 	if low:
@@ -122,22 +126,12 @@ func _on_monster_killed(_jamo: String, _gold: float, _position: Vector3) -> void
 	_update_kills()
 
 
-func _on_inventory_changed(_jamo: String) -> void:
-	_refresh_word_progress()
-	_refresh_target()
-
-
 func _on_word_completed(_word: WordData) -> void:
-	_refresh_word_progress()
-	_refresh_target()
-
-
-func _on_target_word_changed(_word: WordData) -> void:
-	_refresh_target()
+	_refresh_equipped_words()
 
 
 func _update_kills() -> void:
-	_kills_label.text = "처치 %d" % GameState.kills_today
+	_kills_label.text = "처치 %d" % int(RunState.get_run_statistic("kills"))
 
 
 static func _format_gold(amount: float) -> String:
@@ -153,60 +147,26 @@ static func _format_gold(amount: float) -> String:
 	return grouped
 
 
-## Shows how far each craftable word has come. Jamo are collected into an
-## unordered inventory, so progress reads as "held / needed" per jamo.
-func _refresh_word_progress() -> void:
-	var craftable := GameState.get_craftable_words()
+## The words carried by the current run, with their run rank. A word in the
+## codex but not equipped is deliberately absent: only equipped words do
+## anything. Doc v0.4 section 38.
+func _refresh_equipped_words() -> void:
+	var equipped := RunState.equipped_words
 	for i in _word_rows.size():
 		var row := _word_rows[i]
-		if i >= craftable.size():
+		if i >= equipped.size():
 			row.visible = false
 			continue
 		row.visible = true
-		row.text = _describe_progress(craftable[i])
+		row.text = _describe_equipped(equipped[i])
 
-	# Nothing left to craft still has to say so; an empty box reads as a bug.
-	_word_empty_label.visible = craftable.is_empty()
-	# More words than rows must not fail silently: say how many are hidden.
-	var overflow := craftable.size() - _word_rows.size()
-	_word_overflow_label.visible = overflow > 0
-	if overflow > 0:
-		_word_overflow_label.text = "외 %d개 더" % overflow
+	# An empty list still has to say so; a blank box reads as a bug.
+	_word_empty_label.visible = equipped.is_empty()
 
 
-## The small bottom readout: the word being aimed at and how much of it is
-## already in the inventory, as "TARGET: 불" over "[ㅂ][ㅜ][ ]".
-## Doc v0.3 section 23.1.
-func _refresh_target() -> void:
-	var target := GameState.get_target_word()
-	if target == null:
-		_target_word_label.text = TARGET_NONE_TEXT
-		_target_slots_label.visible = false
-		return
-	_target_word_label.text = "TARGET: %s" % target.word
-	_target_slots_label.visible = true
-	_target_slots_label.text = _target_slot_text(target)
-
-
-## One bracket per required jamo, in the word's own order so a doubled jamo
-## fills one slot at a time. A slot the inventory cannot pay for stays blank.
-func _target_slot_text(word: WordData) -> String:
-	var remaining: Dictionary = {}
-	var slots := PackedStringArray()
-	for jamo: String in word.required_jamo:
-		var held: int = GameState.get_jamo_count(jamo) - int(remaining.get(jamo, 0))
-		if held > 0:
-			remaining[jamo] = int(remaining.get(jamo, 0)) + 1
-			slots.append("[%s]" % jamo)
-		else:
-			slots.append("[ ]")
-	return "".join(slots)
-
-
-func _describe_progress(word: WordData) -> String:
-	var parts: PackedStringArray = []
-	var needed: Dictionary = word.required_counts()
-	for jamo: String in needed:
-		var have: int = mini(GameState.get_jamo_count(jamo), int(needed[jamo]))
-		parts.append("%s %d/%d" % [jamo, have, int(needed[jamo])])
-	return "%s   %s" % [word.word, "  ".join(parts)]
+func _describe_equipped(word_id: StringName) -> String:
+	var word: WordData = MetaState.database.find_word(word_id)
+	if word == null:
+		return String(word_id)
+	var rank := RunState.get_word_rank(word_id)
+	return "%s  R%d" % [word.get_display_name(), maxi(1, rank)]

@@ -41,7 +41,7 @@ theme_override_constants/separation = 10
 [node name="TitleLabel" type="Label" parent="Center/Panel/Box"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "골드 업그레이드"
+text = "영구 업그레이드"
 
 [node name="ShopGoldLabel" type="Label" parent="Center/Panel/Box"]
 unique_name_in_owner = true
@@ -79,9 +79,9 @@ unique_name_in_owner = true
 layout_mode = 2
 upgrade = ExtResource("8_reroll")
 
-[node name="NextDayButton" type="Button" parent="Center/Panel/Box"]
+[node name="CloseButton" type="Button" parent="Center/Panel/Box"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 20
-text = "다음 DAY 시작"
+text = "닫기"

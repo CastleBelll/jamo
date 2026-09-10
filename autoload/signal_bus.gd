@@ -1,18 +1,20 @@
 extends Node
 
-## Global signal hub. UI listens here instead of reaching into GameState,
-## which keeps the scene tree free of hard references between panels.
+## Global signal hub. UI listens here instead of reaching into MetaState or
+## RunState, which keeps the scene tree free of hard references between panels.
 
-## Emitted whenever gold changes. `total` is the new balance.
+## Emitted whenever the permanent gold balance changes. `total` is the new value.
 signal gold_changed(total: float)
-## Emitted whenever energy changes, including the day-start refill.
+## Emitted whenever energy changes, including the wave-start refill.
 signal energy_changed(current: int, maximum: int)
-## Emitted when the day counter advances. Fired after the refill.
-signal day_started(day: int)
-## Energy hit zero. The main scene waits out the settle delay, then ends the day.
+## Emitted when a wave begins. Fired after the refill. Doc v0.4 section 5.
+signal wave_started(wave: int)
+## Energy hit zero. Damage-over-time and automatic effects keep running.
 signal energy_depleted()
-## The day-end sequence finished its last panel and play resumed.
-signal day_ended(day: int, kills: int, gold_earned: float)
+## The 문장핵 took damage. Doc v0.4 section 6.1.
+signal core_hp_changed(current: float, maximum: float)
+## The run ended. RunState is already inactive; the result screen reads these.
+signal run_failed(wave: int, kills: int, gold_earned: float)
 
 ## A monster died. `gold` is the amount already granted to the player.
 signal monster_killed(jamo: String, gold: float, world_position: Vector3)
@@ -20,14 +22,12 @@ signal monster_killed(jamo: String, gold: float, world_position: Vector3)
 ## `is_critical` only ever comes from a click; status ticks never crit.
 signal damage_dealt(world_position: Vector3, amount: float, is_critical: bool)
 
-## The player picked a jamo at day end.
-signal jamo_collected(jamo: String)
-## A word finished. Its effects are already active.
+## A word was crafted and equipped for the current run. Its effects are active.
 signal word_completed(word: WordData)
+## A word entered the codex for the first time. Permanent. Doc v0.4 section 2.7.
+signal codex_word_registered(word_id: StringName)
 ## The word completion panel reached its reveal beat. The camera listens for
-## this to run the word-complete zoom. Doc v0.3 sections 14.2 and 26.
+## this to run the word-complete zoom.
 signal word_revealed()
-## The target word changed. `word` is null when the target was cleared.
-signal target_word_changed(word: WordData)
-## An upgrade level was bought.
+## A permanent upgrade level was bought.
 signal upgrade_purchased(upgrade_id: StringName, level: int)

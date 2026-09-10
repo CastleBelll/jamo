@@ -12,5 +12,4 @@ costs = PackedInt64Array(12, 28, 60, 140, 310, 690, 1500, 3250, 6900, 15000)
 values = PackedFloat32Array(0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5)
 value_display_scale = 100.0
 value_suffix = "%"
-unlock_day = 1
 required_word = &""

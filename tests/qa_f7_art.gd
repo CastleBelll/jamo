@@ -39,7 +39,7 @@ func _ready() -> void:
 	# Overwrite dialog drawn over the art.
 	DisplayServer.window_set_size(Vector2i(1280, 720))
 	await _settle()
-	_title._on_new_game_pressed()
+	_title._on_new_run_pressed()
 	await _settle()
 	_shoot("dialog_1280x720")
 	_title._overwrite_confirm.hide()
@@ -99,25 +99,36 @@ func _report(tag: String, asked: Vector2i, actual: Vector2i, image: Image) -> vo
 		"NewGameButton", "ContinueButton", "ContinueInfoLabel", "SettingsButton", "QuitButton"
 	]
 	var rects: Array[Rect2] = []
+	var shown: Array[bool] = []
 	for node_name: String in names:
 		var control: Control = _title.get_node("%" + node_name)
 		var rect: Rect2 = control.get_global_rect()
 		rects.append(rect)
+		shown.append(control.is_visible_in_tree())
 		var pixels: Rect2i = _to_pixels(rect, image)
 		var inside: bool = visible.encloses(rect)
-		print("    %-18s canvas=%s px=%s inside_viewport=%s" % [
-			node_name, str(rect), str(pixels), str(inside)
+		print("    %-18s canvas=%s px=%s inside_viewport=%s shown=%s" % [
+			node_name, str(rect), str(pixels), str(inside),
+			str(control.is_visible_in_tree())
 		])
-		if not inside:
+		if control.is_visible_in_tree() and not inside:
 			printerr("  FAIL: %s leaves the viewport at %s" % [node_name, tag])
 	var logo: Rect2 = _title.get_node("Safe/Content/Logo").get_global_rect()
 	print("    Logo               canvas=%s inside_viewport=%s" % [
 		str(logo), str(visible.encloses(logo))
 	])
-	if logo.intersects(rects[0]):
+	if shown[0] and logo.intersects(rects[0]):
 		printerr("  FAIL: the logo overlaps the first button at %s" % tag)
+	# A hidden control keeps the rect it had when it was last laid out, so the
+	# overlap check has to skip it: the hub hides two rows when there is no run
+	# to continue, and their stale rects would read as a collision even though
+	# nothing is drawn there.
 	for i in range(rects.size()):
+		if not shown[i]:
+			continue
 		for j in range(i + 1, rects.size()):
+			if not shown[j]:
+				continue
 			if rects[i].intersects(rects[j]):
 				printerr("  FAIL: %s overlaps %s at %s" % [names[i], names[j], tag])
 	_check_edges(image, tag)
@@ -212,9 +223,15 @@ func _restore_save() -> void:
 	)
 
 
+## A v0.4 save with a run waiting, which is what makes RUN 이어하기 appear.
+## The hub keys off the run block now, not off permanent progress, so a meta
+## block alone would leave the plate hidden. Doc v0.4 section 44.
 func _write_fake_save() -> void:
 	var file := FileAccess.open(SaveManager.SAVE_PATH, FileAccess.WRITE)
 	file.store_string(JSON.stringify({
-		"save_version": 1, "day": 2, "gold": 137.0, "audio": {},
+		"save_version": SaveManager.SAVE_VERSION,
+		"meta": {"gold": 137.0, "highest_wave": 2},
+		"run": {"current_wave": 2, "core_hp": 14.0, "core_max_hp": 20.0},
+		"audio": {},
 	}, "\t"))
 	file.close()

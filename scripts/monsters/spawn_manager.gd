@@ -76,14 +76,14 @@ func _process(delta: float) -> void:
 	_spawn_timer -= delta
 	if _spawn_timer > 0.0:
 		return
-	if _alive.size() >= GameState.get_monster_capacity():
+	if _alive.size() >= MetaState.get_monster_capacity():
 		return
 	_spawn_timer = spawn_interval
 	_spawn_one()
 
 
 ## Removes every monster on the field without paying out gold. Used when a new
-## day starts so the field reflects the new day HP and gold values.
+## wave starts so the field reflects the new wave HP and gold values.
 func clear_field() -> void:
 	for monster: JamoMonster in _alive:
 		if is_instance_valid(monster):
@@ -140,13 +140,13 @@ func _clearance_at(point: Vector3) -> float:
 	return closest
 
 
-## Chance the next spawn is drawn from the Golden Pool. 0 while the word 금 is
-## still locked, and the word 운 multiplies it. Doc v0.3 section 9.3.
+## Chance the next spawn is drawn from the Golden Pool. 0 unless the word 금 is
+## equipped in the current run, and the word 운 multiplies it. Doc v0.4 §16, §38.
 func get_golden_spawn_chance() -> float:
-	if golden_scenes.is_empty() or not GameState.is_golden_monster_unlocked():
+	if golden_scenes.is_empty() or not RunState.is_golden_monster_unlocked():
 		return 0.0
-	var luck := GameState.get_special_spawn_multiplier()
-	return GameState.balance.golden_spawn_chance * luck
+	var luck := RunState.get_special_spawn_multiplier()
+	return MetaState.balance.golden_spawn_chance * luck
 
 
 ## Chance the next spawn is drawn from the Special Pool, also scaled by 운.
@@ -154,8 +154,8 @@ func get_golden_spawn_chance() -> float:
 func get_special_spawn_chance() -> float:
 	if special_scenes.is_empty():
 		return 0.0
-	var luck := GameState.get_special_spawn_multiplier()
-	return GameState.balance.special_spawn_chance * luck
+	var luck := RunState.get_special_spawn_multiplier()
+	return MetaState.balance.special_spawn_chance * luck
 
 
 ## One roll decides the pool: golden first, then special, then the plain jamo.
@@ -228,7 +228,7 @@ func _on_monster_died(monster: JamoMonster) -> void:
 ## Runs only on death and reads the cached _alive list, so no group scan and no
 ## per-frame neighbour search is added. Doc v0.3 section 36.
 func _spread_burn_from(source: JamoMonster) -> void:
-	var spread: WordEffectData = GameState.get_burn_spread_effect()
+	var spread: WordEffectData = RunState.get_burn_spread_effect()
 	if spread == null or not source.died_burning:
 		return
 	# A burn that already hopped its allowed number of times stops here, so a
@@ -236,7 +236,7 @@ func _spread_burn_from(source: JamoMonster) -> void:
 	var next_depth: int = source.burn_chain_depth + 1
 	if next_depth > spread.max_chain_depth:
 		return
-	var burn: WordEffectData = GameState.get_burn_effect()
+	var burn: WordEffectData = RunState.get_burn_effect()
 	if burn == null:
 		return
 	for target: JamoMonster in _nearest_alive(

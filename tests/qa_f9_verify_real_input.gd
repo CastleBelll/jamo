@@ -219,9 +219,15 @@ func _restore_save() -> void:
 	)
 
 
+## A v0.4 save with a run waiting, which is what makes RUN 이어하기 appear.
+## The hub keys off the run block now, not off permanent progress, so a meta
+## block alone would leave the plate hidden. Doc v0.4 section 44.
 func _write_fake_save() -> void:
 	var file := FileAccess.open(SaveManager.SAVE_PATH, FileAccess.WRITE)
 	file.store_string(JSON.stringify({
-		"save_version": 1, "day": 2, "gold": 137.0, "audio": {},
+		"save_version": SaveManager.SAVE_VERSION,
+		"meta": {"gold": 137.0, "highest_wave": 2},
+		"run": {"current_wave": 2, "core_hp": 14.0, "core_max_hp": 20.0},
+		"audio": {},
 	}, "\t"))
 	file.close()

@@ -1,8 +1,9 @@
 class_name UpgradeRow
 extends PanelContainer
 
-## One gold upgrade line in the shop. Assign `upgrade` in the Inspector - the
-## row reads every number from that .tres, so prices are never in code.
+## One permanent upgrade line in the shop. Assign `upgrade` in the Inspector -
+## the row reads every number from that .tres, so prices are never in code.
+## Doc v0.4 section 28.
 
 signal purchased(upgrade: UpgradeData)
 
@@ -27,7 +28,7 @@ func refresh() -> void:
 	if not visible:
 		return
 
-	var level := GameState.get_upgrade_level(upgrade.id)
+	var level := MetaState.get_upgrade_level(upgrade.id)
 	var base := _base_value_for(upgrade.id)
 	_name_label.text = "%s  Lv.%d" % [upgrade.display_name, level]
 
@@ -35,17 +36,9 @@ func refresh() -> void:
 	if availability == UpgradeManager.Availability.LOCKED_BY_UPGRADE \
 			or availability == UpgradeManager.Availability.LOCKED_BY_WORD:
 		# The missing requirement is spelled out in text, never signalled by
-		# colour alone. Day-locked tracks are not listed at all instead.
+		# colour alone.
 		_value_label.text = "잠김"
 		_cost_label.text = _lock_reason(availability)
-		_buy_button.disabled = true
-		_buy_button.text = "잠김"
-		return
-	if availability == UpgradeManager.Availability.LOCKED_BY_NEXT_DAY:
-		# The track is owned, so the current value still shows; only the next
-		# level is out of reach, and the reason is spelled out in text.
-		_value_label.text = upgrade.format_value(level, base)
-		_cost_label.text = "Day %d 필요" % upgrade.unlock_day_for_level(level + 1)
 		_buy_button.disabled = true
 		_buy_button.text = "잠김"
 		return
@@ -63,7 +56,7 @@ func refresh() -> void:
 	var cost := upgrade.cost_for_next(level)
 	_buy_button.text = "구매"
 	if availability == UpgradeManager.Availability.TOO_EXPENSIVE:
-		_cost_label.text = "보유 %d G / 필요 %d G" % [int(GameState.gold), cost]
+		_cost_label.text = "보유 %d G / 필요 %d G" % [int(MetaState.gold), cost]
 		_buy_button.disabled = true
 	else:
 		_cost_label.text = "%d G" % cost
@@ -73,10 +66,11 @@ func refresh() -> void:
 ## Text form of the unmet requirement, e.g. "클릭 피해 Lv.3 필요".
 func _lock_reason(availability: UpgradeManager.Availability) -> String:
 	if availability == UpgradeManager.Availability.LOCKED_BY_WORD:
-		var word: WordData = GameState.database.find_word(upgrade.required_word)
-		var word_text: String = word.word if word != null else String(upgrade.required_word)
-		return "단어 %s 필요" % word_text
-	var required: UpgradeData = GameState.database.find_upgrade(upgrade.required_upgrade)
+		var word: WordData = MetaState.database.find_word(upgrade.required_word)
+		var word_text: String = word.get_display_name() if word != null \
+			else String(upgrade.required_word)
+		return "단어 %s 도감 등록 필요" % word_text
+	var required: UpgradeData = MetaState.database.find_upgrade(upgrade.required_upgrade)
 	var required_name: String = required.display_name if required != null \
 		else String(upgrade.required_upgrade)
 	return "%s Lv.%d 필요" % [required_name, upgrade.required_level]
@@ -85,12 +79,12 @@ func _lock_reason(availability: UpgradeManager.Availability) -> String:
 ## Level 0 of each track shows the game base value, which lives in GameBalance.
 func _base_value_for(upgrade_id: StringName) -> float:
 	match upgrade_id:
-		GameState.UPGRADE_MAX_ENERGY:
-			return float(GameState.balance.start_max_energy)
-		GameState.UPGRADE_CLICK_DAMAGE:
-			return GameState.balance.base_click_damage
-		GameState.UPGRADE_MONSTER_CAPACITY:
-			return float(GameState.balance.base_monster_capacity)
+		MetaState.UPGRADE_MAX_ENERGY:
+			return float(MetaState.balance.start_max_energy)
+		MetaState.UPGRADE_CLICK_DAMAGE:
+			return MetaState.balance.base_click_damage
+		MetaState.UPGRADE_MONSTER_CAPACITY:
+			return float(MetaState.balance.base_monster_capacity)
 		_:
 			return 0.0
 

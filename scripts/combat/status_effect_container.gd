@@ -32,7 +32,7 @@ func _process(delta: float) -> void:
 
 
 ## Applies or refreshes an effect. Passing null is a no-op so callers can hand
-## over GameState.get_burn_effect() without checking it first.
+## over RunState.get_burn_effect() without checking it first.
 func apply(effect: WordEffectData) -> void:
 	if effect == null or effect.duration <= 0.0:
 		return

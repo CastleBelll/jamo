@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/qa_p0_plates_all.gd" id="1_plates"]
+
+[node name="QaP0PlatesAll" type="Node"]
+script = ExtResource("1_plates")

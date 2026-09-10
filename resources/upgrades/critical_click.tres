@@ -12,7 +12,6 @@ costs = PackedInt64Array(190, 500, 1250, 3100, 7500)
 values = PackedFloat32Array(0.02, 0.04, 0.06, 0.08, 0.1)
 value_display_scale = 100.0
 value_suffix = "%"
-unlock_day = 25
 required_word = &""
 required_upgrade = &"click_damage"
 required_level = 3

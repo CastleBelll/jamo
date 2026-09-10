@@ -1,54 +1,81 @@
 extends Control
 
-## Title screen: the first thing the game shows. It decides whether a run is
-## waiting to be continued and only then hands control to the game scene.
-## Doc v0.3 section 30 (save points) and section 31 Phase 11.
+## MAIN HUB. Doc v0.4 section 27.
 ##
-## The settings panel is the same packed scene the game uses, instanced here
-## with run_in_progress off so it neither writes progress nor offers to delete
-## a save the player has not started yet.
+## This is not a start button with a picture behind it: it is the permanent
+## growth space. It owns the entry to a run, the permanent upgrade shop, the
+## codex, the records screen and the settings, and it shows the four permanent
+## numbers - Gold, best wave, words discovered, bosses beaten - at a glance.
+##
+## The plate behaviour settled in F7-F9 is unchanged: exactly one bright plate
+## at a time, no focus outline drawn on top, the pointer takes focus with it,
+## and plate height is a fraction of the screen rather than a pixel count.
+##
+## The scene file still lives at scenes/ui/title_screen.tscn. Doc v0.4 section 43
+## sketches scenes/main_hub/main_hub.tscn; moving it would break the F7-F9 art
+## and regression tests that address this path, so the move is left to whichever
+## phase reorganises the scene tree.
 
-## Scene entered by 새 게임 and 이어하기. Exported so the entry point can be
+## Scene entered by RUN 시작 and RUN 이어하기. Exported so the entry point can be
 ## repointed in the Inspector instead of in code.
-@export_file("*.tscn") var game_scene_path: String = "res://scenes/main/main.tscn"
+@export_file("*.tscn") var run_scene_path: String = "res://scenes/main/main.tscn"
 
 ## Plate height as a fraction of the safe area's height. The plates are measured
 ## off the screen rather than off their own text, so they follow the window
-## instead of being pinned to a pixel count. Doc v0.3 section 31 Phase 11.
-@export_range(0.03, 0.25, 0.001) var plate_height_ratio: float = 0.093
+## instead of being pinned to a pixel count.
+@export_range(0.03, 0.25, 0.001) var plate_height_ratio: float = 0.068
 
 @onready var _new_game_button: Button = %NewGameButton
 @onready var _continue_button: Button = %ContinueButton
 @onready var _continue_info: Label = %ContinueInfoLabel
+@onready var _upgrade_button: Button = %UpgradeButton
+@onready var _codex_button: Button = %CodexButton
+@onready var _records_button: Button = %RecordsButton
 @onready var _settings: Control = %Settings
+@onready var _upgrade_shop: Control = %UpgradeShop
+@onready var _codex: Control = %Codex
+@onready var _records: Control = %Records
 @onready var _overwrite_confirm: ConfirmationDialog = %OverwriteConfirm
 @onready var _safe_area: Control = $Safe/Content
 
-## The four plates, in the order the column draws them.
+@onready var _gold_value: Label = %StatGoldValue
+@onready var _wave_value: Label = %StatWaveValue
+@onready var _words_value: Label = %StatWordsValue
+@onready var _boss_value: Label = %StatBossValue
+@onready var _migration_note: Label = %MigrationNoteLabel
+
+## The plates, in the order the column draws them.
 var _plates: Array[Button] = []
 
 ## The two plate styleboxes and the label colour that goes with the plain one,
 ## read from the theme once so a later stylebox override cannot be read back as
-## if it were the theme's own value. Doc v0.3 section 38: authored in
-## theme/jamo_theme.tres, never built here.
+## if it were the theme's own value. Authored in theme/jamo_theme.tres, never
+## built here. Doc v0.4 section 46.
 var _plate_plain: StyleBox
 var _plate_selected: StyleBox
 var _plate_plain_font_color: Color
 
 
 func _ready() -> void:
-	_new_game_button.pressed.connect(_on_new_game_pressed)
-	_continue_button.pressed.connect(_start_game)
-	%SettingsButton.pressed.connect(_settings.open)
+	_new_game_button.pressed.connect(_on_new_run_pressed)
+	_continue_button.pressed.connect(_on_continue_pressed)
+	_upgrade_button.pressed.connect(_open_panel.bind(_upgrade_shop))
+	_codex_button.pressed.connect(_open_panel.bind(_codex))
+	_records_button.pressed.connect(_on_records_pressed)
+	%SettingsButton.pressed.connect(_open_panel.bind(_settings))
 	%QuitButton.pressed.connect(_on_quit_pressed)
-	_settings.closed.connect(_on_settings_closed)
+	for panel: Control in [_settings, _upgrade_shop, _codex, _records]:
+		panel.closed.connect(_on_panel_closed)
 	_overwrite_confirm.confirmed.connect(_on_overwrite_confirmed)
 	# Dismissing the dialog leaves the keyboard with nothing selected unless the
-	# title takes focus back.
+	# hub takes focus back.
 	_overwrite_confirm.canceled.connect(focus_default_button)
 
 	# Wired before the first refresh(), which is what grabs the entry focus.
-	_plates.assign([_new_game_button, _continue_button, %SettingsButton, %QuitButton])
+	_plates.assign([
+		_new_game_button, _continue_button, _upgrade_button,
+		_codex_button, _records_button, %SettingsButton, %QuitButton,
+	])
 	_plate_plain = _new_game_button.get_theme_stylebox("normal", "TitleButton")
 	_plate_selected = _new_game_button.get_theme_stylebox("selected", "TitleButton")
 	_plate_plain_font_color = _new_game_button.get_theme_color("font_color", "TitleButton")
@@ -60,63 +87,80 @@ func _ready() -> void:
 	_safe_area.resized.connect(_apply_plate_height)
 	_apply_plate_height()
 
-	# Nothing has loaded progress yet, but the volume sliders in the settings
-	# panel still have to show what the player set on an earlier run.
-	SaveManager.load_audio_settings()
+	# The hub is where permanent progress is loaded; a run scene entered from
+	# here inherits an already-loaded MetaState. A defeated run left no run
+	# block on disk, so this also puts RunState back to empty.
+	SaveManager.load_game()
+	RunState.reset()
 	refresh()
 
 
-## Gives every plate the same height, whatever else is on the screen. The
-## column used to hand its leftover space to whichever rows were still visible,
-## so hiding 이어하기 grew the other three; a height taken from the safe area
-## instead is the same with a save and without one, and still scales with the
-## window. Doc v0.3 section 31 Phase 11.
+## Gives every plate the same height, whatever else is on the screen. A height
+## taken from the safe area is the same with a run to continue and without one,
+## and still scales with the window.
 func _apply_plate_height() -> void:
 	var height: float = roundf(_safe_area.size.y * plate_height_ratio)
 	for button: Button in _plates:
 		button.custom_minimum_size.y = height
 
 
-## Repaints the continue row from what is on disk. Public so a caller that
+## Repaints the continue row and the growth readout. Public so a caller that
 ## changed the save can ask for a refresh.
 func refresh() -> void:
-	var save: Dictionary = SaveManager.peek_save()
-	var has_progress: bool = save.has("day")
+	var run: Dictionary = SaveManager.peek_run()
+	var has_run: bool = not run.is_empty()
 	# An option that can never be taken is not shown at all: with no run on disk
-	# both 이어하기 and the line underneath it leave the screen rather than sit
-	# there greyed out. A hidden row is also the one state the keyboard cannot
-	# stop on, whatever the focus search does.
-	_continue_button.visible = has_progress
-	_continue_info.visible = has_progress
-	_continue_button.disabled = not has_progress
+	# both RUN 이어하기 and the line underneath it leave the screen rather than
+	# sit there greyed out. A hidden row is also the one state the keyboard
+	# cannot stop on, whatever the focus search does.
+	_continue_button.visible = has_run
+	_continue_info.visible = has_run
+	_continue_button.disabled = not has_run
 	# A disabled button still answers the geometric focus search, so the arrow
 	# keys would stop on a button that does nothing. Taking it out of the focus
 	# chain is what actually makes it skippable.
 	_continue_button.focus_mode = (
 		Control.FOCUS_NONE if _continue_button.disabled else Control.FOCUS_ALL
 	)
-	if has_progress:
-		_continue_info.text = "저장된 진행 — DAY %d · %d G" % [
-			maxi(1, int(save.get("day", 1))),
-			int(floorf(maxf(0.0, float(save.get("gold", 0.0))))),
+	if has_run:
+		_continue_info.text = "진행 중인 RUN — WAVE %d · 문장핵 %d" % [
+			maxi(1, int(run.get("current_wave", 1))),
+			int(ceilf(maxf(0.0, float(run.get("core_hp", 0.0))))),
 		]
+
+	_refresh_growth()
+	# A migrated v0.3 save loses its Day count, and saying nothing about that
+	# would look like the save was thrown away.
+	_migration_note.visible = SaveManager.migrated_from_v03
 	focus_default_button()
+
+
+## The four permanent numbers of doc v0.4 section 27. Every one of them comes
+## from MetaState, which is exactly the point: none of this lives on RunState.
+func _refresh_growth() -> void:
+	_gold_value.text = "%d G" % int(floorf(MetaState.gold))
+	_wave_value.text = "%d" % MetaState.highest_wave
+	_words_value.text = "%d / %d" % [MetaState.codex_words.size(), _total_word_count()]
+	_boss_value.text = "%d" % MetaState.defeated_word_bosses.size()
+
+
+func _total_word_count() -> int:
+	return MetaState.database.words.size() if MetaState.database != null else 0
 
 
 ## The plate art comes in two versions, unselected and selected, and the menu
 ## must only ever show one selected plate. Godot has no focused draw mode: the
 ## focus stylebox is painted over whatever the base state already drew. So the
-## base style is swapped while the button holds focus, which is now the whole of
-## the selection cue - the title draws no focus outline on top of it.
+## base style is swapped while the button holds focus, which is the whole of the
+## selection cue - the hub draws no focus outline on top of it.
 ##
 ## The pointer used to light a second plate of its own, because the hover style
-## is bright too and hover state is independent of focus: keyboard on 설정 with
-## the pointer on 종료 showed two selected plates and no way to tell where Enter
-## would go. Two rules keep it to one. Hovering hands the button the keyboard
-## focus, so the pointer moves the one selection rather than adding a second;
-## and while a button is unfocused its hover style is muted to the plain plate,
-## so a pointer left behind when the keyboard walks away stops looking selected.
-## The bright plate therefore always follows whichever input was used last.
+## is bright too and hover state is independent of focus. Two rules keep it to
+## one. Hovering hands the button the keyboard focus, so the pointer moves the
+## one selection rather than adding a second; and while a button is unfocused
+## its hover style is muted to the plain plate, so a pointer left behind when
+## the keyboard walks away stops looking selected. The bright plate therefore
+## always follows whichever input was used last.
 func _bind_selection_plate(button: Button) -> void:
 	button.focus_entered.connect(_on_button_focus_entered.bind(button))
 	button.focus_exited.connect(_on_button_focus_exited.bind(button))
@@ -138,15 +182,19 @@ func _on_button_focus_exited(button: Button) -> void:
 
 
 ## The pointer takes the keyboard focus with it, so hovering lights the plate up
-## and Enter always goes where the player is pointing. The settings panel and the
-## overwrite dialog run their own focus, so the title does not pull it back while
-## either is open.
+## and Enter always goes where the player is pointing. An open panel runs its own
+## focus, so the hub does not pull it back while one is up.
 func _on_button_mouse_entered(button: Button) -> void:
 	if button.focus_mode == Control.FOCUS_NONE or button.has_focus():
 		return
-	if _settings.visible or _overwrite_confirm.visible:
+	if _is_any_panel_open():
 		return
 	button.grab_focus()
+
+
+func _is_any_panel_open() -> bool:
+	return _settings.visible or _upgrade_shop.visible or _codex.visible \
+		or _records.visible or _overwrite_confirm.visible
 
 
 ## Paints an unfocused plate the same way whether the pointer rests on it or not.
@@ -155,8 +203,7 @@ func _mute_hover(button: Button) -> void:
 	button.add_theme_color_override("font_hover_color", _plate_plain_font_color)
 
 
-## Entry focus, so the keyboard always has somewhere to start and the focus
-## outline is visible from the first frame.
+## Entry focus, so the keyboard always has somewhere to start.
 func focus_default_button() -> void:
 	if _continue_button.disabled:
 		_new_game_button.grab_focus()
@@ -164,33 +211,60 @@ func focus_default_button() -> void:
 		_continue_button.grab_focus()
 
 
-## A new game overwrites the run on disk, so it asks first. The save is only
-## removed once the dialog is confirmed. Doc v0.3 section 30.
-func _on_new_game_pressed() -> void:
-	if SaveManager.has_save():
+## A new run overwrites the run waiting on disk, so it asks first. Permanent
+## progress is never at stake here - only the suspended run. Doc v0.4 section 35.
+func _on_new_run_pressed() -> void:
+	if SaveManager.has_run_save():
 		_overwrite_confirm.popup_centered()
 		# The dialog focuses its OK button on its own, but the destructive
 		# choice must never be the one Enter lands on.
 		_overwrite_confirm.get_cancel_button().grab_focus()
 		return
-	_start_game()
+	_start_new_run()
 
 
-## Only the run is dropped. Volumes are the player's setup, not run data, so
-## starting over must not silently reset the mixer.
 func _on_overwrite_confirmed() -> void:
-	SaveManager.clear_progress()
-	_start_game()
+	_start_new_run()
 
 
-func _start_game() -> void:
-	get_tree().change_scene_to_file(game_scene_path)
+func _start_new_run() -> void:
+	RunState.start_run()
+	SaveManager.save_run()
+	get_tree().change_scene_to_file(run_scene_path)
 
 
-## The settings panel takes focus while it is open, so hand it back on close
-## rather than leaving the keyboard with nothing selected.
-func _on_settings_closed() -> void:
-	focus_default_button()
+## Picks the suspended run back up. If the file turned out to be unusable the
+## hub stays put and repaints rather than dropping the player into a blank run.
+func _on_continue_pressed() -> void:
+	if not SaveManager.load_run():
+		refresh()
+		return
+	get_tree().change_scene_to_file(run_scene_path)
+
+
+func _open_panel(panel: Control) -> void:
+	panel.open()
+
+
+## The records screen quotes the permanent numbers it will one day break down,
+## so the placeholder says something true rather than nothing.
+func _on_records_pressed() -> void:
+	_records.body_text = (
+		"최고 WAVE %d · 발견 단어 %d / %d · 처치 보스 %d\n\n"
+		+ "RUN 이력과 상세 통계 화면은 이후 Phase 에서 추가된다."
+	) % [
+		MetaState.highest_wave,
+		MetaState.codex_words.size(),
+		_total_word_count(),
+		MetaState.defeated_word_bosses.size(),
+	]
+	_records.open()
+
+
+## Any panel can have changed gold or the run on disk, so the hub repaints when
+## one closes rather than trusting what it drew before.
+func _on_panel_closed() -> void:
+	refresh()
 
 
 func _on_quit_pressed() -> void:

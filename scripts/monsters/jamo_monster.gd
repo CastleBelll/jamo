@@ -103,9 +103,9 @@ func _ready() -> void:
 	_animation.play(&"spawn")
 
 
-## HP and gold both scale with the current day. Doc v0.3 section 8.1.
+## HP and gold both scale with the current wave. Doc v0.4 section 5.2.
 func _roll_stats() -> void:
-	max_hp = GameState.balance.monster_hp_for_day(GameState.day) \
+	max_hp = MetaState.balance.monster_hp_for_wave(RunState.current_wave) \
 		* monster_data.hp_multiplier
 	hp = max_hp
 
@@ -383,7 +383,7 @@ func _die() -> void:
 		return
 	died_burning = _status.has(WordEffectData.EffectType.UNLOCK_BURN)
 	_leave_field()
-	GameState.register_kill(
+	RunState.register_kill(
 		monster_data.jamo, _calculate_gold_reward(), global_position
 	)
 	died.emit(self)
@@ -413,9 +413,10 @@ func _leave_field() -> void:
 	_animation.play(&"death")
 
 
-## FinalGold = BaseGold * MonsterGoldMultiplier * PermanentGoldMultiplier.
-## Doc v0.3 section 8.1 and growth_balance v0.2 section 4.
+## FinalGold = BaseGold * MonsterGoldMultiplier * GoldMultiplier, where the
+## multiplier already folds the permanent track and the run words together.
+## Doc v0.4 section 8.
 func _calculate_gold_reward() -> float:
-	return GameState.balance.monster_gold_for_day(GameState.day) \
+	return MetaState.balance.monster_gold_for_wave(RunState.current_wave) \
 		* monster_data.gold_multiplier \
-		* GameState.get_gold_multiplier()
+		* RunState.get_gold_multiplier()

@@ -36,21 +36,42 @@ v0.4 는 장르 전환이다. 기존 코드를 전부 버리지 않고 다음과
 
 ---
 
-## P0. 프로젝트 정리 및 State 분리  `[ ]`
+## P0. 프로젝트 정리 및 State 분리  `[~]`
 
 근거: v0.4 §0, §3, §43, §44, §48 Phase 0
 
-- [ ] S1 `autoload/meta_state.gd` 신규 — Gold / 영구 업그레이드 / 도감 / 숙련 / 보스 / 최고 Wave / 통계
-- [ ] S2 `autoload/run_state.gd` 신규 — Wave / 문장핵 HP / 에너지 / 자모 덱 / 슬롯 / 장착 단어 / Run Rank / 시너지
-- [ ] S3 `GameState` 해체 — 두 State 로 이관, 영구/런 경계를 코드로 강제
-- [ ] S4 `current_day` → `current_wave` 전면 교체
-- [ ] S5 Day End / JamoChoice / 단어 트리 씬·스크립트 제거 또는 보류 폴더로 이동
-- [ ] S6 기존 단어 4~10개를 v0.4 `WordData` 스키마로 마이그레이션 (§21)
-- [ ] S7 `SaveManager` 재설계 — MetaState 영구 저장 / RunState 임시 저장 (§45)
-- [ ] S8 타이틀 → Main Hub 로 전환, RUN 진입/복귀 경로
-- [ ] 완료 기준: **Wave 1 을 시작하고 실패 후 Main Hub 로 돌아올 수 있다**
+- [~] S1 `autoload/meta_state.gd` 신규 — Gold / 영구 업그레이드 / 도감 / 숙련 / 보스 / 최고 Wave / 통계
+- [~] S2 `autoload/run_state.gd` 신규 — Wave / 문장핵 HP / 에너지 / 자모 덱 / 슬롯 / 장착 단어 / Run Rank / 시너지
+- [~] S3 `GameState` 해체 — 두 State 로 이관, 영구/런 경계를 코드로 강제
+- [~] S4 `current_day` → `current_wave` 전면 교체
+- [~] S5 Day End / JamoChoice / 단어 트리 씬·스크립트 제거 또는 보류 폴더로 이동
+- [~] S6 기존 단어 4~10개를 v0.4 `WordData` 스키마로 마이그레이션 (§21)
+- [~] S7 `SaveManager` 재설계 — MetaState 영구 저장 / RunState 임시 저장 (§45)
+- [~] S8 타이틀 → Main Hub 로 전환, RUN 진입/복귀 경로
+- [~] 완료 기준: **Wave 1 을 시작하고 실패 후 Main Hub 로 돌아올 수 있다**
 
-## P1. Wave 전투  `[ ]`
+### P0 에서 P1 으로 넘긴 임시 처리
+
+- **Wave 곡선**: HP `3 × 1.035^(Wave-1)`, Gold `2 × 1.035^(Wave-1)` — Day 곡선을
+  Wave 에 1:1 로 임시 매핑한 값이다. §5.2 가 요구하는 속도·동시 수·특수 비율·스폰 속도
+  상승은 아직 없다. P1 / P12 에서 재산출한다.
+- **RUN 실패 조건**: 문장핵은 P1 이라서, 지금은 **에너지 0 = RUN 실패** 로 대체돼 있다
+  (`scripts/main.gd`의 `end_run_when_energy_depleted`). §7.1 은 에너지 0 이 Wave 를
+  끝내면 안 된다고 명시하므로, P1 에서 이 플래그를 끄고 문장핵 HP 0 으로 옮겨야 한다.
+- **Wave Clear 없음**: Wave 2 이상으로 진행하는 경로는 P1 이다. `RunState.advance_wave()`
+  는 있지만 아직 호출하는 곳이 없다.
+- **Day 기반 업그레이드 해금 제거됨**: `critical_click` Day 25 게이트, `reroll` Day 5/25/60
+  게이트가 사라졌다. Gold 가격 곡선만 남았으므로 `reroll` 은 첫 Hub 방문부터 구매 가능하다.
+  P5 에서 가격 재산출 대상.
+
+### P0 이월 (P1 착수 전 처리)
+- [ ] HIGH: v0.3 세이브 마이그레이션 안내문이 크림 배경에 노란 글씨 — 측정 대비 1.04:1 로 안 읽힘
+- [ ] MEDIUM: F7~F9 하네스가 허브 판때기 7개 중 4개만 검사 (QA 가 `qa_p0_plates_all` 로 보완)
+- [ ] MEDIUM: `test_state_split` 의 필드 겹침 검사가 이름 denylist 라 미등록 이름은 놓침
+- [ ] MEDIUM: 결과 화면이 '문장핵이 무너졌다' 인데 HUD 는 문장핵 20/20 — 문장핵 미구현(P1) 탓
+- [x] 총지휘자 승인: Wave 곡선을 Day 곡선 1:1 임시 매핑한 것은 P0 한정으로 허용. P1/P12 에서 재산출
+
+## P1. Wave 전투  `[~]`
 
 근거: §5, §6, §7, §25, §48 Phase 1
 

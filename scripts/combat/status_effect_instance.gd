@@ -26,7 +26,7 @@ func _init(effect: WordEffectData) -> void:
 
 
 ## Re-applying refreshes the duration and adds a stack up to max_stack.
-## Doc word_tree v0.1 section 3: burn does not stack, re-application resets it.
+## Burn does not stack; re-application resets it. Doc v0.4 section 38.
 func refresh(effect: WordEffectData) -> void:
 	time_left = effect.duration
 	stacks = mini(stacks + 1, max_stack)
@@ -37,7 +37,8 @@ func is_expired() -> bool:
 
 
 ## Advances the timer and returns the damage owed this frame (0 when no tick
-## landed). Ticks still fire after the day ends, and their kills still pay out.
+## landed). Ticks still fire once manual energy is gone, and their kills still
+## pay out. Doc v0.4 section 7.1.
 ## Doc v0.3 section 12.
 func advance(delta: float) -> float:
 	if is_expired():

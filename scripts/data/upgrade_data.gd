@@ -2,11 +2,13 @@
 class_name UpgradeData
 extends Resource
 
-## One gold upgrade track. Doc v0.3 section 22.5; prices come from
-## growth_balance v0.2 sections 7-11.
+## One permanent gold upgrade track. Doc v0.4 sections 13 and 28.
 ##
 ## costs[i] and values[i] describe level i+1. Level 0 is the base game value,
 ## so costs and values must always have the same length.
+##
+## v0.4 dropped the Day unlock gates: the gold price curve is the only pacing
+## left. Doc v0.4 section 13.
 
 @export var id: StringName = &"max_energy"
 @export var display_name: String = "최대 에너지"
@@ -25,30 +27,18 @@ extends Resource
 @export var value_suffix: String = ""
 
 @export_group("Unlock Conditions")
-## Hidden until this day. Doc growth_balance v0.2 section 13.
-@export var unlock_day: int = 1
-## Day requirement of each level, ascending; entry i gates level i+1. Leave it
-## empty when every level shares unlock_day, which is the case for all tracks
-## except 리롤. Doc growth_balance v0.2 section 10.2.
-@export var level_unlock_days: PackedInt32Array = PackedInt32Array()
-## Hidden until this word is completed. Empty means no requirement.
+## Locked until this word is registered in the codex. Empty means no
+## requirement. The codex is permanent, so this is a permanent gate; a word
+## merely equipped in the current run does not open it. Doc v0.4 section 38.
 @export var required_word: StringName = &""
-## Hidden until another upgrade track reaches required_level. Empty means no
-## requirement. growth_balance v0.2 section 8.3 gates 치명 클릭 behind 클릭 피해 Lv.3.
+## Locked until another upgrade track reaches required_level. Empty means no
+## requirement.
 @export var required_upgrade: StringName = &""
 @export_range(0, 20, 1) var required_level: int = 0
 
 
 func max_level() -> int:
 	return costs.size()
-
-
-## Day the given 1-based level becomes purchasable. Falls back to unlock_day
-## whenever the track has no per-level table.
-func unlock_day_for_level(level: int) -> int:
-	if level >= 1 and level <= level_unlock_days.size():
-		return level_unlock_days[level - 1]
-	return unlock_day
 
 
 ## Gold price to go from level to level + 1. Returns -1 when already maxed.

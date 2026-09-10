@@ -68,13 +68,12 @@ func _observe(label: String, scene_paths: Array, forced_scale: float) -> void:
 	_spawn.monster_scenes = pool
 	_spawn.special_scenes = []
 	_spawn.golden_scenes = []
-	GameState.upgrade_levels[GameState.UPGRADE_MONSTER_CAPACITY] = 20
-	GameState.jamo_inventory.clear()
-	GameState.begin_day()
+	MetaState.permanent_upgrade_levels[MetaState.UPGRADE_MONSTER_CAPACITY] = 20
+	RunState.start_run()
 
 	for _frame in FILL_FRAMES:
 		await get_tree().process_frame
-		if _monster_root.get_child_count() >= GameState.get_monster_capacity():
+		if _monster_root.get_child_count() >= MetaState.get_monster_capacity():
 			break
 
 	if forced_scale > 0.0:

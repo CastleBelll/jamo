@@ -1,20 +1,17 @@
 class_name UpgradeManager
 
-## Purchase rules for gold upgrades. Doc growth_balance v0.2 sections 13 and 17:
-## both the gold price and the day requirement must be satisfied.
+## Purchase rules for permanent gold upgrades. Doc v0.4 sections 13 and 28.
+##
+## v0.4 removed the Day unlock gates entirely: the gold price curve is the only
+## pacing, so every track is listed from the first visit to the hub. Upgrades are
+## bought in the Main Hub only, never during a run.
 
 enum Availability {
 	## Buyable right now.
 	AVAILABLE,
 	## Already at the highest level.
 	MAXED,
-	## Day requirement not reached yet, so it should not even be listed.
-	LOCKED_BY_DAY,
-	## The track is unlocked but the *next* level waits for a later day.
-	## Only tracks with a per-level day table reach this, e.g. 리롤 Lv.2 on
-	## Day 25. growth_balance v0.2 section 10.2.
-	LOCKED_BY_NEXT_DAY,
-	## A prerequisite word is still missing.
+	## A prerequisite codex word is still missing.
 	LOCKED_BY_WORD,
 	## A prerequisite upgrade track is not high enough yet.
 	LOCKED_BY_UPGRADE,
@@ -23,27 +20,24 @@ enum Availability {
 }
 
 
-## Only the day gate hides a track completely (growth_balance v0.2 section 13:
-## not every upgrade is shown on Day 1). The other locks stay listed so the
-## shop can spell out which requirement is still missing.
+## Every real track is listed. The locks that remain are spelled out in the row
+## rather than hiding it, so the shop never looks shorter than it is.
 static func is_visible(upgrade: UpgradeData) -> bool:
-	return get_availability(upgrade) != Availability.LOCKED_BY_DAY
+	return upgrade != null
 
 
 static func get_availability(upgrade: UpgradeData) -> Availability:
-	if GameState.day < upgrade.unlock_day:
-		return Availability.LOCKED_BY_DAY
-	if upgrade.required_word != &"" and not GameState.is_word_unlocked(upgrade.required_word):
+	# The gate reads the codex, not the current run: a word that was known once
+	# stays known. Doc v0.4 section 38.
+	if upgrade.required_word != &"" and not MetaState.has_codex_word(upgrade.required_word):
 		return Availability.LOCKED_BY_WORD
 	if upgrade.required_upgrade != &"" \
-			and GameState.get_upgrade_level(upgrade.required_upgrade) < upgrade.required_level:
+			and MetaState.get_upgrade_level(upgrade.required_upgrade) < upgrade.required_level:
 		return Availability.LOCKED_BY_UPGRADE
-	var level := GameState.get_upgrade_level(upgrade.id)
+	var level := MetaState.get_upgrade_level(upgrade.id)
 	if level >= upgrade.max_level():
 		return Availability.MAXED
-	if GameState.day < upgrade.unlock_day_for_level(level + 1):
-		return Availability.LOCKED_BY_NEXT_DAY
-	if GameState.gold < float(upgrade.cost_for_next(level)):
+	if MetaState.gold < float(upgrade.cost_for_next(level)):
 		return Availability.TOO_EXPENSIVE
 	return Availability.AVAILABLE
 
@@ -52,11 +46,12 @@ static func get_availability(upgrade: UpgradeData) -> Availability:
 static func purchase(upgrade: UpgradeData) -> bool:
 	if get_availability(upgrade) != Availability.AVAILABLE:
 		return false
-	var level := GameState.get_upgrade_level(upgrade.id)
+	var level := MetaState.get_upgrade_level(upgrade.id)
 	var cost := upgrade.cost_for_next(level)
-	GameState.gold -= float(cost)
-	GameState.upgrade_levels[upgrade.id] = level + 1
-	SignalBus.gold_changed.emit(GameState.gold)
+	if not MetaState.spend_gold(float(cost)):
+		return false
+	MetaState.set_upgrade_level(upgrade.id, level + 1)
 	SignalBus.upgrade_purchased.emit(upgrade.id, level + 1)
-	SaveManager.save_game()
+	# An upgrade is a permanent settle point. Doc v0.4 section 45.
+	SaveManager.save_meta()
 	return true

@@ -92,13 +92,13 @@ func _on_delete_confirmed() -> void:
 
 
 ## Volumes are part of the save file, so closing the panel writes them out
-## instead of waiting for the next day end. From the title there is no run to
-## write, and a full save there would look like progress waiting to be
-## continued, so only the volumes are merged into the file.
+## instead of waiting for the next settle point. From the hub there is no run to
+## write, and writing one there would look like a run waiting to be continued,
+## so only the volumes are merged into the file.
 func _on_close_pressed() -> void:
 	hide()
 	if run_in_progress:
-		SaveManager.save_game()
+		SaveManager.save_run()
 	else:
 		SaveManager.save_settings()
 	closed.emit()

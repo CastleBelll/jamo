@@ -73,7 +73,8 @@ Orca orchestration으로 생성하고, 사이클이 끝나면 두 에이전트 �
    증거(스크린샷/로그)를 `tests/qa_artifacts/<feature>/` 에 남긴다.
 4. **에디터 가시성**: 같은 ziva-godot MCP 세션에서 새 씬/리소스를 Godot Editor 로 열어
    구조와 Inspector 값이 노출되는지 눈으로 확인한다(v0.4 §46).
-5. **회귀**: Day 1 -> Day 2 기본 루프가 여전히 동작한다.
+5. **회귀**: Main Hub -> RUN 시작 -> Wave 1 -> 실패 -> 결과 화면 -> Main Hub 경로가
+   실제 씬 전환까지 포함해 동작한다. (v0.3 의 "Day 1 -> Day 2" 를 대체한다)
 6. **DEV 주의사항 검증**: DEV 가 적은 하위 호환 위험·보류 사항이 실제로 문제를
    일으키지 않는지 확인하고, 항목별로 결과를 보고한다.
 
@@ -105,3 +106,20 @@ v0.3 기반으로 완료했던 F1~F9 이력은 `docs/DEV_ROADMAP_v03_archive.md`
   효과가 활성이라는 것은 다르다 (§38).
 - **Wave 기준**: `current_day` 를 쓰는 신규 코드는 금지한다.
 - **Day 시절 밸런스 수치를 재사용하지 않는다**: Wave 곡선은 새로 산출한다.
+
+### 7.1 P0 이후 QA 가 알아야 할 것 (P0 사이클에서 확정)
+
+- **회귀 항목 4번이 바뀌었다**: "Day 1 → Day 2 기본 루프" 는 더 이상 존재하지 않는다.
+  대신 **Main Hub → RUN 시작 → Wave 1 → 실패 → 결과 화면 → Main Hub** 를 확인한다.
+- **헤드리스로 돌 수 있는 테스트는 2개다**: `tests/test_state_split.tscn`,
+  `tests/test_run_flow.tscn`. 둘 다 `godot --headless --path . res://tests/<x>.tscn` 로
+  돌리고 exit 0 이어야 한다.
+- **스크린샷 하네스는 헤드리스에서 돌지 않는다**: `qa_f7_art` / `qa_f8_*` / `qa_f9_*` 는
+  `await RenderingServer.frame_post_draw` 를 쓰기 때문에 `--headless` 에서 영원히 멈춘다.
+  창 모드(`godot --path . res://tests/<x>.tscn`)로 돌려야 한다. 이는 P0 이전부터 그랬다.
+- **`qa_f7_live` / `qa_f5_*` 는 스스로 종료하지 않거나 수천 프레임을 관찰한다.**
+  타임아웃은 실패가 아니다.
+- **보류 테스트**: `tests/_deferred_v03/` 에 `.gdignore` 와 함께 있고, 무엇을 왜 보류했는지
+  같은 폴더 `README.md` 에 Phase 별로 적혀 있다. 삭제하지 말 것.
+- **폰트 누락 에러는 기존 이슈다**: `res://art/fonts/NotoSansKR-Regular.ttf` 없음.
+  P0 범위가 아니다.

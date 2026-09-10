@@ -46,12 +46,12 @@ func _ready() -> void:
 
 func _measure(margin: float) -> void:
 	_spawn.clear_field()
-	GameState.upgrade_levels[GameState.UPGRADE_MONSTER_CAPACITY] = 20
-	GameState.begin_day()
+	MetaState.permanent_upgrade_levels[MetaState.UPGRADE_MONSTER_CAPACITY] = 20
+	RunState.start_run()
 	for _frame in FILL_FRAMES:
 		await get_tree().process_frame
 		_force_margin(margin)
-		if _monster_root.get_child_count() >= GameState.get_monster_capacity():
+		if _monster_root.get_child_count() >= MetaState.get_monster_capacity():
 			break
 
 	var worst := 0.0

@@ -3,11 +3,7 @@
 [ext_resource type="Script" uid="uid://cd1iv72lxnaxb" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/game_world.tscn" id="2_world"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="3_hud"]
-[ext_resource type="PackedScene" path="res://scenes/ui/day_end.tscn" id="4_day_end"]
-[ext_resource type="PackedScene" path="res://scenes/ui/jamo_choice.tscn" id="5_choice"]
-[ext_resource type="PackedScene" path="res://scenes/ui/word_complete.tscn" id="6_word"]
-[ext_resource type="PackedScene" path="res://scenes/ui/upgrade_shop.tscn" id="7_shop"]
-[ext_resource type="PackedScene" path="res://scenes/ui/word_tree.tscn" id="8_tree"]
+[ext_resource type="PackedScene" path="res://scenes/ui/run_result.tscn" id="4_result"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="9_pause"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings.tscn" id="10_settings"]
 [ext_resource type="Environment" path="res://resources/environment/jamo_env.tres" id="11_env"]
@@ -36,19 +32,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.09, 0.07, 0.05, 0)
 
-[node name="DayEnd" parent="UI" unique_id=1722926676 instance=ExtResource("4_day_end")]
-visible = false
-
-[node name="JamoChoice" parent="UI" unique_id=225629450 instance=ExtResource("5_choice")]
-visible = false
-
-[node name="WordComplete" parent="UI" unique_id=1694761705 instance=ExtResource("6_word")]
-visible = false
-
-[node name="UpgradeShop" parent="UI" unique_id=743570974 instance=ExtResource("7_shop")]
-visible = false
-
-[node name="WordTree" parent="UI" unique_id=62054543 instance=ExtResource("8_tree")]
+[node name="RunResult" parent="UI" unique_id=1774920311 instance=ExtResource("4_result")]
 visible = false
 
 [node name="PauseMenu" parent="UI" unique_id=322146930 instance=ExtResource("9_pause")]

@@ -6,7 +6,7 @@ extends Control
 signal settings_requested()
 ## Raised after the run has been saved and the tree unpaused. The scene swap
 ## itself belongs to main.gd, which owns scene level flow.
-signal title_requested()
+signal hub_requested()
 
 @onready var _resume_button: Button = %ResumeButton
 
@@ -15,7 +15,7 @@ func _ready() -> void:
 	hide()
 	_resume_button.pressed.connect(close)
 	%PauseSettingsButton.pressed.connect(settings_requested.emit)
-	%TitleButton.pressed.connect(_on_title_pressed)
+	%HubButton.pressed.connect(_on_hub_pressed)
 	%QuitButton.pressed.connect(_on_quit_pressed)
 
 
@@ -30,15 +30,15 @@ func close() -> void:
 	get_tree().paused = false
 
 
-## Leaving for the title is a quit as far as the save file is concerned, so the
-## run is written out first. Doc v0.3 section 30.
-func _on_title_pressed() -> void:
-	SaveManager.save_game()
+## Leaving for the hub suspends the run rather than failing it: the run is
+## written out first so the hub can offer RUN 이어하기. Doc v0.4 section 44.
+func _on_hub_pressed() -> void:
+	SaveManager.save_run()
 	hide()
 	get_tree().paused = false
-	title_requested.emit()
+	hub_requested.emit()
 
 
 func _on_quit_pressed() -> void:
-	SaveManager.save_game()
+	SaveManager.save_run()
 	get_tree().quit()

@@ -1,0 +1,11 @@
+qa_f7_title exit=0
+qa_f8_labels exit=0
+qa_f8_focus exit=0
+qa_f8_focus_all exit=0
+qa_f8_hover_focus exit=0
+qa_f8_resize exit=0
+qa_f9_hover_focus exit=0
+qa_f7_art exit=0
+qa_f8_title_shots exit=0
+qa_f9_verify_real_input exit=0
+DONE

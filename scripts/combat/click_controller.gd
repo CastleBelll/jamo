@@ -20,20 +20,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	if camera == null:
 		push_error("ClickController has no Camera3D assigned.")
 		return
-	if not GameState.can_click():
+	if not RunState.can_click():
 		return
 
 	var monster := pick_monster_at(get_viewport().get_mouse_position())
 	if monster == null or not monster.is_alive():
 		return
-	if not GameState.spend_click_energy():
+	if not RunState.spend_click_energy():
 		return
 
 	# One critical roll per click, shared by the gold upgrade and the 강타 words.
 	# Doc v0.3 section 10.2.
-	var is_critical := GameState.roll_critical()
-	monster.take_click_damage(GameState.get_click_damage(is_critical), is_critical)
-	monster.apply_status_effect(GameState.get_burn_effect())
+	var is_critical := RunState.roll_critical()
+	monster.take_click_damage(RunState.get_click_damage(is_critical), is_critical)
+	monster.apply_status_effect(RunState.get_burn_effect())
 	AudioManager.play_sfx(_click_cue(monster, is_critical))
 	get_viewport().set_input_as_handled()
 
