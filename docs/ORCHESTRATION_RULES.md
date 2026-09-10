@@ -123,3 +123,32 @@ v0.3 기반으로 완료했던 F1~F9 이력은 `docs/DEV_ROADMAP_v03_archive.md`
   같은 폴더 `README.md` 에 Phase 별로 적혀 있다. 삭제하지 말 것.
 - **폰트 누락 에러는 기존 이슈다**: `res://art/fonts/NotoSansKR-Regular.ttf` 없음.
   P0 범위가 아니다.
+
+## 8. 애셋 작업 — 별도 워크트리
+
+애셋(3D 모델 / 텍스처 / 아이콘 / 오디오 등) 및 그에 준하는 제작 작업은
+메인 워크트리에서 하지 않는다. 전용 워크트리와 전용 에이전트를 쓴다.
+
+```text
+워크트리 : C:/Users/sjkim/orca/workspaces/JAMO/blender
+브랜치   : CastleBelll/blender
+에이전트 : codex-astra
+```
+
+디스패치 예:
+
+```bash
+orca orchestration worker-start --task <task_id>   --worktree b9ec09f0-b3f0-4d4a-94da-5ebb9a8b1616::C:/Users/sjkim/orca/workspaces/JAMO/blender   --agent codex-astra --json
+```
+
+### 규칙
+
+- **코드 작업은 메인 워크트리, 애셋 작업은 blender 워크트리.** 섞지 않는다.
+- 애셋 워커는 `art/`, `materials/`, `audio/` 등 애셋 경로만 건드린다.
+  게임 로직·씬 구조를 고쳐야 하면 그건 애셋 작업이 아니므로 메인 워크트리 태스크로 분리한다.
+- 애셋 워커도 DEV 규칙(3절)과 worker_done 3항목 보고 형식을 동일하게 따른다.
+- 애셋 결과물을 게임에 연결(씬 배치 / import 설정 / 테마 반영)하는 작업은
+  **메인 워크트리의 DEV 사이클**에서 한다. 애셋 워커는 파일을 만들어 브랜치에 남긴다.
+- **사용자 자산을 지우거나 리사이즈·재저장하지 않는다.** F7~F9 에서 확정한 원칙이다.
+- 애셋 브랜치가 main 보다 뒤처져 있으면, 애셋 태스크를 내기 전에 최신 main 을 반영할지
+  총지휘자가 먼저 판단한다. 뒤처진 브랜치에서 만든 결과물이 병합 충돌을 만들 수 있다.
