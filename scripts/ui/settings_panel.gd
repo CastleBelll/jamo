@@ -5,6 +5,11 @@ extends Control
 
 signal closed()
 
+## False when the panel is opened from the title, where no run exists yet.
+## There it persists only the volumes, and hides save deletion: the title
+## already offers 새 게임 with its own overwrite confirmation.
+@export var run_in_progress: bool = true
+
 @onready var _fullscreen_check: CheckButton = %FullscreenCheck
 @onready var _delete_confirm: ConfirmationDialog = %DeleteConfirm
 ## One row per audio bus: slider, the label showing its percentage, and the bus
@@ -24,8 +29,12 @@ func _ready() -> void:
 	for row: Array in _volume_rows:
 		var slider: HSlider = row[0]
 		slider.value_changed.connect(_on_volume_changed.bind(row[2] as StringName))
-	%DeleteSaveButton.pressed.connect(_delete_confirm.popup_centered)
+	%DeleteSaveButton.visible = run_in_progress
+	%DeleteSaveButton.pressed.connect(_on_delete_pressed)
 	_delete_confirm.confirmed.connect(_on_delete_confirmed)
+	# Dismissing the dialog would otherwise leave the keyboard with nothing
+	# selected inside the panel.
+	_delete_confirm.canceled.connect(%DeleteSaveButton.grab_focus)
 	%SettingsCloseButton.pressed.connect(_on_close_pressed)
 	_refresh_volumes()
 
@@ -66,17 +75,30 @@ func _on_fullscreen_toggled(enabled: bool) -> void:
 	)
 
 
-## Wipes the save and restarts, so the player is never left looking at state
-## that no longer exists on disk.
+func _on_delete_pressed() -> void:
+	_delete_confirm.popup_centered()
+	# The dialog focuses its OK button on its own, but the destructive choice
+	# must never be the one Enter lands on.
+	_delete_confirm.get_cancel_button().grab_focus()
+
+
+## Wipes the run and restarts, so the player is never left looking at state that
+## no longer exists on disk. The volumes stay: they are the player's setup, not
+## part of the run being thrown away.
 func _on_delete_confirmed() -> void:
-	SaveManager.delete_save()
+	SaveManager.clear_progress()
 	get_tree().paused = false
 	get_tree().reload_current_scene()
 
 
 ## Volumes are part of the save file, so closing the panel writes them out
-## instead of waiting for the next day end.
+## instead of waiting for the next day end. From the title there is no run to
+## write, and a full save there would look like progress waiting to be
+## continued, so only the volumes are merged into the file.
 func _on_close_pressed() -> void:
 	hide()
-	SaveManager.save_game()
+	if run_in_progress:
+		SaveManager.save_game()
+	else:
+		SaveManager.save_settings()
 	closed.emit()

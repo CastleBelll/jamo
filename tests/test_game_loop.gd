@@ -12,6 +12,8 @@ const HUD_SCENE := "res://scenes/ui/hud.tscn"
 const TREE_SCENE := "res://scenes/ui/word_tree.tscn"
 const WORD_COMPLETE_SCENE := "res://scenes/ui/word_complete.tscn"
 const SETTINGS_SCENE := "res://scenes/ui/settings.tscn"
+const TITLE_SCENE := "res://scenes/ui/title_screen.tscn"
+const PAUSE_SCENE := "res://scenes/ui/pause_menu.tscn"
 const WORLD_SCENE := "res://scenes/world/game_world.tscn"
 ## A path that is deliberately not in the project, to prove a missing audio
 ## file is skipped rather than raising a load error. Doc v0.3 section 25.
@@ -88,6 +90,11 @@ func _ready() -> void:
 	_test_step_sfx_paths_differ_per_motion_profile()
 	await _test_word_completion_can_be_skipped()
 	await _test_settings_sliders_drive_the_buses()
+	await _test_title_disables_continue_without_a_save()
+	await _test_new_game_asks_before_overwriting()
+	await _test_returning_to_the_title_saves()
+	await _test_new_game_keeps_the_volume_settings()
+	await _test_disabled_continue_leaves_the_focus_chain()
 
 	if _failures == 0:
 		print("OK - all game loop checks passed.")
@@ -1615,3 +1622,208 @@ func _test_settings_sliders_drive_the_buses() -> void:
 	AudioManager.from_dict(original)
 	panel.queue_free()
 	await get_tree().process_frame
+
+
+## Doc v0.3 section 30: with nothing on disk there is nothing to continue, and
+## the title has to say so in words rather than only greying the button out.
+func _test_title_disables_continue_without_a_save() -> void:
+	SaveManager.delete_save()
+	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
+	add_child(title)
+	await get_tree().process_frame
+
+	var continue_button: Button = title.get_node("%ContinueButton")
+	var info: Label = title.get_node("%ContinueInfoLabel")
+	_check(continue_button.disabled, "no save should leave 이어하기 disabled")
+	_check(
+		not info.text.strip_edges().is_empty(),
+		"the disabled 이어하기 needs a written reason, not just a colour"
+	)
+	_check(
+		title.get_node("%NewGameButton").has_focus(),
+		"the title should hold keyboard focus on entry"
+	)
+
+	# A save appears: the same screen has to offer it, with the run's day in it.
+	_reset()
+	GameState.day = 7
+	GameState.gold = 123.0
+	_check(SaveManager.save_game(), "the test needs a save file on disk")
+	title.refresh()
+	_check(not continue_button.disabled, "an existing save should enable 이어하기")
+	_check(
+		info.text.contains("7"),
+		"the continue line should name the saved day, got %s" % info.text
+	)
+	_check(
+		continue_button.has_focus(),
+		"with a save present, focus should start on 이어하기"
+	)
+
+	title.queue_free()
+	await get_tree().process_frame
+	SaveManager.delete_save()
+
+
+## 새 게임 over an existing run is not reversible, so it must only ask, never
+## delete on the press itself. Doc v0.3 section 30.
+func _test_new_game_asks_before_overwriting() -> void:
+	_reset()
+	GameState.day = 4
+	_check(SaveManager.save_game(), "the test needs a save file on disk")
+
+	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
+	add_child(title)
+	await get_tree().process_frame
+
+	var confirm: ConfirmationDialog = title.get_node("%OverwriteConfirm")
+	title.get_node("%NewGameButton").pressed.emit()
+	_check(confirm.visible, "새 게임 over a save should raise the overwrite dialog")
+	_check(
+		SaveManager.has_save(),
+		"pressing 새 게임 must not delete the save before the player confirms"
+	)
+	_check(
+		int(SaveManager.peek_save().get("day", 0)) == 4,
+		"the untouched save should still hold the day it was written with"
+	)
+
+	confirm.hide()
+	title.queue_free()
+	await get_tree().process_frame
+	SaveManager.delete_save()
+
+
+## Doc v0.3 section 30 counts leaving the game as a save point, so the run has
+## to be on disk before the title takes over. The pause menu only asks for the
+## swap; main.gd performs it, which is what keeps this checkable headlessly.
+func _test_returning_to_the_title_saves() -> void:
+	SaveManager.delete_save()
+	_reset()
+	GameState.day = 9
+	GameState.gold = 42.0
+
+	var pause: Control = (load(PAUSE_SCENE) as PackedScene).instantiate()
+	add_child(pause)
+	await get_tree().process_frame
+
+	var requested: Array[bool] = [false]
+	pause.title_requested.connect(func() -> void: requested[0] = true)
+	pause.open()
+	pause.get_node("%TitleButton").pressed.emit()
+
+	_check(requested[0], "타이틀로 should ask for the scene swap")
+	_check(not get_tree().paused, "leaving for the title should unpause the tree")
+	_check(SaveManager.has_save(), "타이틀로 should write the run to disk first")
+	var save: Dictionary = SaveManager.peek_save()
+	_check(
+		int(save.get("day", 0)) == 9,
+		"the save written on the way out should hold the day being played"
+	)
+
+	# And that save is exactly what the title then offers to continue.
+	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
+	add_child(title)
+	await get_tree().process_frame
+	_check(
+		not title.get_node("%ContinueButton").disabled,
+		"the run saved on the way out should be continuable from the title"
+	)
+
+	title.queue_free()
+	pause.queue_free()
+	await get_tree().process_frame
+	SaveManager.delete_save()
+
+
+## Doc v0.3 section 30: 새 게임 throws the run away, not the player's setup.
+## The volume sliders are environment rather than run data, so starting over
+## must leave the mixer where the player put it.
+func _test_new_game_keeps_the_volume_settings() -> void:
+	SaveManager.delete_save()
+	var original: Dictionary = AudioManager.to_dict()
+	_reset()
+	GameState.day = 5
+	AudioManager.set_volume(AudioManager.BUS_BGM, 0.6)
+	AudioManager.set_volume(AudioManager.BUS_SFX, 0.3)
+	_check(SaveManager.save_game(), "the test needs a save file on disk")
+
+	# The overwrite dialog must not open on the button that cannot be undone.
+	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
+	add_child(title)
+	await get_tree().process_frame
+	var confirm: ConfirmationDialog = title.get_node("%OverwriteConfirm")
+	title.get_node("%NewGameButton").pressed.emit()
+	_check(
+		confirm.get_cancel_button().has_focus(),
+		"the overwrite dialog should open with 취소 focused, not the destructive button"
+	)
+	confirm.hide()
+	title.queue_free()
+	await get_tree().process_frame
+
+	# What confirming the dialog does: the run goes, the settings stay.
+	_check(SaveManager.clear_progress(), "clearing the run should rewrite the save file")
+	_check(
+		not SaveManager.has_save(),
+		"a cleared file must not read as a run waiting to be continued"
+	)
+
+	# A fresh process starts at the defaults and reads the file back.
+	AudioManager.from_dict({"master": 1.0, "bgm": 1.0, "sfx": 1.0})
+	SaveManager.load_audio_settings()
+	_check(
+		absf(AudioManager.get_volume(AudioManager.BUS_BGM) - 0.6) < 0.001,
+		"새 게임 must keep the music volume, got %f"
+		% AudioManager.get_volume(AudioManager.BUS_BGM)
+	)
+	_check(
+		absf(AudioManager.get_volume(AudioManager.BUS_SFX) - 0.3) < 0.001,
+		"새 게임 must keep the effects volume, got %f"
+		% AudioManager.get_volume(AudioManager.BUS_SFX)
+	)
+
+	AudioManager.from_dict(original)
+	SaveManager.delete_save()
+
+
+## A greyed out button still answers Godot's geometric focus search, so the
+## arrow keys would stop on 이어하기 with nothing to continue. Doc v0.3
+## section 37: every keyboard step has to land somewhere that does something.
+func _test_disabled_continue_leaves_the_focus_chain() -> void:
+	SaveManager.delete_save()
+	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
+	add_child(title)
+	await get_tree().process_frame
+
+	var new_game: Button = title.get_node("%NewGameButton")
+	var continue_button: Button = title.get_node("%ContinueButton")
+	_check(continue_button.disabled, "the test needs 이어하기 disabled to start with")
+	_check(
+		continue_button.focus_mode == Control.FOCUS_NONE,
+		"a disabled 이어하기 has to be out of the focus chain"
+	)
+	var below: Control = new_game.find_valid_focus_neighbor(SIDE_BOTTOM)
+	_check(
+		below != continue_button,
+		"the arrow keys must step over the disabled 이어하기"
+	)
+
+	# With a run on disk the same button has to come back into the chain.
+	_reset()
+	GameState.day = 3
+	_check(SaveManager.save_game(), "the test needs a save file on disk")
+	title.refresh()
+	await get_tree().process_frame
+	_check(
+		continue_button.focus_mode == Control.FOCUS_ALL,
+		"an enabled 이어하기 has to be focusable again"
+	)
+	_check(
+		new_game.find_valid_focus_neighbor(SIDE_BOTTOM) == continue_button,
+		"with a save present the arrow keys should reach 이어하기"
+	)
+
+	title.queue_free()
+	await get_tree().process_frame
+	SaveManager.delete_save()

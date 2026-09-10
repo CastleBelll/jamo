@@ -47,6 +47,12 @@ size_flags_horizontal = 3
 text = "전체 화면"
 
 [node name="FullscreenCheck" type="CheckButton" parent="Center/Panel/Box/FullscreenRow"]
+focus_neighbor_left = NodePath("../../SettingsCloseButton")
+focus_neighbor_top = NodePath("../../SettingsCloseButton")
+focus_neighbor_right = NodePath("../../MasterRow/MasterSlider")
+focus_neighbor_bottom = NodePath("../../MasterRow/MasterSlider")
+focus_next = NodePath("../../MasterRow/MasterSlider")
+focus_previous = NodePath("../../SettingsCloseButton")
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -60,6 +66,12 @@ layout_mode = 2
 text = "마스터"
 
 [node name="MasterSlider" type="HSlider" parent="Center/Panel/Box/MasterRow"]
+focus_neighbor_left = NodePath("../../FullscreenRow/FullscreenCheck")
+focus_neighbor_top = NodePath("../../FullscreenRow/FullscreenCheck")
+focus_neighbor_right = NodePath("../../BgmRow/BgmSlider")
+focus_neighbor_bottom = NodePath("../../BgmRow/BgmSlider")
+focus_next = NodePath("../../BgmRow/BgmSlider")
+focus_previous = NodePath("../../FullscreenRow/FullscreenCheck")
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
@@ -87,6 +99,12 @@ layout_mode = 2
 text = "음악"
 
 [node name="BgmSlider" type="HSlider" parent="Center/Panel/Box/BgmRow"]
+focus_neighbor_left = NodePath("../../MasterRow/MasterSlider")
+focus_neighbor_top = NodePath("../../MasterRow/MasterSlider")
+focus_neighbor_right = NodePath("../../SfxRow/SfxSlider")
+focus_neighbor_bottom = NodePath("../../SfxRow/SfxSlider")
+focus_next = NodePath("../../SfxRow/SfxSlider")
+focus_previous = NodePath("../../MasterRow/MasterSlider")
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
@@ -114,6 +132,12 @@ layout_mode = 2
 text = "효과음"
 
 [node name="SfxSlider" type="HSlider" parent="Center/Panel/Box/SfxRow"]
+focus_neighbor_left = NodePath("../../BgmRow/BgmSlider")
+focus_neighbor_top = NodePath("../../BgmRow/BgmSlider")
+focus_neighbor_right = NodePath("../../DeleteSaveButton")
+focus_neighbor_bottom = NodePath("../../DeleteSaveButton")
+focus_next = NodePath("../../DeleteSaveButton")
+focus_previous = NodePath("../../BgmRow/BgmSlider")
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
@@ -132,11 +156,23 @@ text = "100%"
 horizontal_alignment = 2
 
 [node name="DeleteSaveButton" type="Button" parent="Center/Panel/Box"]
+focus_neighbor_left = NodePath("../SfxRow/SfxSlider")
+focus_neighbor_top = NodePath("../SfxRow/SfxSlider")
+focus_neighbor_right = NodePath("../SettingsCloseButton")
+focus_neighbor_bottom = NodePath("../SettingsCloseButton")
+focus_next = NodePath("../SettingsCloseButton")
+focus_previous = NodePath("../SfxRow/SfxSlider")
 unique_name_in_owner = true
 layout_mode = 2
 text = "저장 데이터 삭제"
 
 [node name="SettingsCloseButton" type="Button" parent="Center/Panel/Box"]
+focus_neighbor_left = NodePath("../DeleteSaveButton")
+focus_neighbor_top = NodePath("../DeleteSaveButton")
+focus_neighbor_right = NodePath("../FullscreenRow/FullscreenCheck")
+focus_neighbor_bottom = NodePath("../FullscreenRow/FullscreenCheck")
+focus_next = NodePath("../FullscreenRow/FullscreenCheck")
+focus_previous = NodePath("../DeleteSaveButton")
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4

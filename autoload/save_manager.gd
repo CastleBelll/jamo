@@ -19,7 +19,10 @@ func save_game() -> bool:
 	# Volume sliders live in the same file as the rest of the progress rather
 	# than a second settings file. Doc v0.3 section 30.
 	payload["audio"] = AudioManager.to_dict()
+	return _write(payload)
 
+
+func _write(payload: Dictionary) -> bool:
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file == null:
 		push_error(
@@ -32,12 +35,18 @@ func save_game() -> bool:
 	return true
 
 
-## Reads the save file into GameState. Returns false when there is nothing to
-## load or the file is unusable; the caller then starts a fresh Day 1.
-func load_game() -> bool:
-	loaded_existing_save = false
+## True when the file on disk holds an actual run. A file that only carries the
+## volume sliders (changed at the title before any run started) does not count.
+func has_save() -> bool:
+	return peek_save().has("day")
+
+
+## Reads the save file without touching GameState, so the title screen can show
+## the day and gold of the run waiting to be continued. Empty when there is no
+## file or the file cannot be parsed.
+func peek_save() -> Dictionary:
 	if not FileAccess.file_exists(SAVE_PATH):
-		return false
+		return {}
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
 	if file == null:
@@ -45,16 +54,57 @@ func load_game() -> bool:
 			"SaveManager: cannot read %s (error %d)"
 			% [SAVE_PATH, FileAccess.get_open_error()]
 		)
-		return false
+		return {}
 	var text: String = file.get_as_text()
 	file.close()
 
 	var parsed: Variant = JSON.parse_string(text)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("SaveManager: %s is not valid JSON, ignoring it." % SAVE_PATH)
+		return {}
+	return parsed
+
+
+## Applies the stored volumes only. The title screen runs before any progress is
+## loaded, but its settings panel still has to show what the player set before.
+func load_audio_settings() -> void:
+	var audio: Variant = peek_save().get("audio", {})
+	# Saves written before the volume sliders existed have no "audio" key; those
+	# keep the defaults instead of dropping to silence.
+	AudioManager.from_dict(audio if audio is Dictionary else {})
+
+
+## Merges the volume sliders into the file without writing progress. Used when
+## the settings panel is opened from the title, where there is no run yet and a
+## full save would look like progress waiting to be continued.
+func save_settings() -> bool:
+	var payload: Dictionary = peek_save()
+	payload["save_version"] = SAVE_VERSION
+	payload["audio"] = AudioManager.to_dict()
+	return _write(payload)
+
+
+## Drops the run from the save file while keeping the player's settings. The
+## volume sliders are the player's environment, not run data, so 새 게임 and
+## 저장 데이터 삭제 reset the progress without resetting the mixer.
+## Older saves always carry "day", so a rewritten file reads as "no progress".
+func clear_progress() -> bool:
+	loaded_existing_save = false
+	return _write({
+		"save_version": SAVE_VERSION,
+		"audio": AudioManager.to_dict(),
+	})
+
+
+## Reads the save file into GameState. Returns false when there is nothing to
+## load or the file is unusable; the caller then starts a fresh Day 1.
+func load_game() -> bool:
+	loaded_existing_save = false
+	var data: Dictionary = peek_save()
+	load_audio_settings()
+	if not data.has("day"):
 		return false
 
-	var data: Dictionary = parsed
 	var version: int = int(data.get("save_version", 0))
 	if version > SAVE_VERSION:
 		push_warning(
@@ -63,15 +113,12 @@ func load_game() -> bool:
 		)
 
 	GameState.from_dict(data)
-	# Saves written before the volume sliders existed have no "audio" key; those
-	# keep the defaults instead of dropping to silence.
-	var audio: Variant = data.get("audio", {})
-	AudioManager.from_dict(audio if audio is Dictionary else {})
 	loaded_existing_save = true
 	return true
 
 
-## Deletes the save file. Used by the settings panel.
+## Removes the save file outright, settings included. Progress resets go
+## through clear_progress() instead; this is for tests that need a clean slate.
 func delete_save() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
 		return

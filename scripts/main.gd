@@ -7,6 +7,10 @@ extends Node
 ## Day 1 -> click until energy 0 -> day summary -> jamo pick -> word check
 ## -> upgrade shop -> Day 2. Nothing resets. Doc v0.3 section 2.1.
 
+## Scene the pause menu goes back to. Exported so the entry point can be
+## repointed in the Inspector instead of in code.
+@export_file("*.tscn") var title_scene_path: String = "res://scenes/ui/title_screen.tscn"
+
 ## Opacity of the screen dim shown behind the between-day panels.
 @export_range(0.0, 1.0, 0.01) var dim_opacity: float = 0.55
 @export_range(0.0, 2.0, 0.05) var dim_fade_seconds: float = 0.35
@@ -34,11 +38,16 @@ func _ready() -> void:
 	_hud.settings_pressed.connect(_settings.open)
 	_hud.pause_pressed.connect(_pause_menu.open)
 	_pause_menu.settings_requested.connect(_settings.open)
+	_pause_menu.title_requested.connect(_on_title_requested)
 
 	_dim.color.a = 0.0
 	_dim.visible = false
 
-	SaveManager.load_game()
+	# Nothing to continue from: clear the autoload rather than inheriting the
+	# run the player just left, which is what a title -> 새 게임 round trip
+	# would otherwise carry back in.
+	if not SaveManager.load_game():
+		GameState.from_dict({})
 	GameState.begin_day()
 	_hud.refresh()
 
@@ -94,6 +103,12 @@ func _run_day_end() -> void:
 	_set_dim(false)
 	_day_end_running = false
 	SignalBus.day_ended.emit(finished_day, kills, gold_earned)
+
+
+## The pause menu has already saved and unpaused by the time this runs, so the
+## title finds the run on disk and offers to continue it.
+func _on_title_requested() -> void:
+	get_tree().change_scene_to_file(title_scene_path)
 
 
 func _set_dim(enabled: bool) -> void:
