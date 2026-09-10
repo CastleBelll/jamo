@@ -152,3 +152,31 @@ orca orchestration worker-start --task <task_id>   --worktree b9ec09f0-b3f0-4d4a
 - **사용자 자산을 지우거나 리사이즈·재저장하지 않는다.** F7~F9 에서 확정한 원칙이다.
 - 애셋 브랜치가 main 보다 뒤처져 있으면, 애셋 태스크를 내기 전에 최신 main 을 반영할지
   총지휘자가 먼저 판단한다. 뒤처진 브랜치에서 만든 결과물이 병합 충돌을 만들 수 있다.
+
+## 9. 모델 라우팅
+
+에이전트 역할별로 모델을 고정한다. `worker-start --model` 로 지정한다.
+
+| 역할 | 에이전트 | 모델 |
+|---|---|---|
+| DEV (구현/수정) | claude | **fable** |
+| QA (검증) | claude | **opus** |
+| 애셋 | codex-astra | 해당 에이전트 기본값 |
+
+디스패치 예:
+
+```bash
+# DEV
+orca orchestration worker-start --task <id> --worktree current --agent claude --model fable --json
+
+# QA
+orca orchestration worker-start --task <id> --worktree current --agent claude --model opus --json
+```
+
+### 규칙
+
+- `--model` 은 새 에이전트 터미널에만 적용된다. `--terminal` 재사용과 함께 쓸 수 없다.
+- `--effort` 는 `--model` 과 함께만 쓴다. 필요할 때만 지정한다.
+- 애셋 에이전트(codex-astra)는 Codex 계열이라 Claude 모델 id 를 넘기지 않는다.
+- 재시도(`--retry-of`) 시에도 같은 모델을 유지한다.
+- 검증(QA)은 판정 품질이 결과를 좌우하므로 모델을 낮추지 않는다.
