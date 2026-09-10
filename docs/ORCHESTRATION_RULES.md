@@ -142,14 +142,17 @@ v0.3 기반으로 완료했던 F1~F9 이력은 `docs/DEV_ROADMAP_v03_archive.md`
 ```text
 워크트리 : C:/Users/sjkim/orca/workspaces/JAMO/blender
 브랜치   : CastleBelll/blender
-에이전트 : codex-astra
+에이전트 : codex  (모델 gpt-6-astra — 통칭 "codex-astra")
 ```
 
 디스패치 예:
 
 ```bash
-orca orchestration worker-start --task <task_id>   --worktree b9ec09f0-b3f0-4d4a-94da-5ebb9a8b1616::C:/Users/sjkim/orca/workspaces/JAMO/blender   --agent codex-astra --json
+orca orchestration worker-start --task <task_id>   --worktree b9ec09f0-b3f0-4d4a-94da-5ebb9a8b1616::C:/Users/sjkim/orca/workspaces/JAMO/blender   --agent codex --model gpt-6-astra --json
 ```
+
+`codex-astra` 는 에이전트 id 가 아니다. `--agent codex --model gpt-6-astra` 조합이다.
+`--agent codex-astra` 로 넘기면 `agent_unconfigured` 로 거부된다.
 
 ### 규칙
 
@@ -171,7 +174,7 @@ orca orchestration worker-start --task <task_id>   --worktree b9ec09f0-b3f0-4d4a
 |---|---|---|
 | DEV (구현/수정) | claude | **fable** |
 | QA (검증) | claude | **opus** |
-| 애셋 | codex-astra | 해당 에이전트 기본값 |
+| 애셋 | codex | **gpt-6-astra** |
 
 디스패치 예:
 
@@ -187,6 +190,6 @@ orca orchestration worker-start --task <id> --worktree current --agent claude --
 
 - `--model` 은 새 에이전트 터미널에만 적용된다. `--terminal` 재사용과 함께 쓸 수 없다.
 - `--effort` 는 `--model` 과 함께만 쓴다. 필요할 때만 지정한다.
-- 애셋 에이전트(codex-astra)는 Codex 계열이라 Claude 모델 id 를 넘기지 않는다.
+- 애셋 에이전트는 Codex 계열이므로 Claude 모델 id(fable/opus)를 넘기지 않는다.
 - 재시도(`--retry-of`) 시에도 같은 모델을 유지한다.
 - 검증(QA)은 판정 품질이 결과를 좌우하므로 모델을 낮추지 않는다.
