@@ -18,6 +18,12 @@ const META_OWNED_NAMES: Array[String] = [
 	"defeated_word_bosses", "highest_wave", "statistics",
 ]
 
+## The public properties here that are NOT run payload: the run's own liveness
+## flag. Everything else this script declares has to appear in
+## MetaState.RUN_OWNED_NAMES, and test_state_split asserts exactly that.
+## Doc v0.4 sections 3.2 and 44.
+const NON_STATE_NAMES: Array[String] = ["is_active"]
+
 ## True between start_run() and end_run(). The hub reads it to decide whether a
 ## run can be continued.
 var is_active: bool = false

@@ -5,6 +5,7 @@ extends Node
 ##   godot --path . res://tests/qa_f7_art.tscn
 ## QA-only harness for F7 re-verification; it never destroys the player save.
 
+const HubPlates := preload("res://tests/hub_plates.gd")
 const TITLE_SCENE := "res://scenes/ui/title_screen.tscn"
 const OUT_DIR := "res://tests/qa_artifacts/f7/r2"
 const BACKUP_PATH := "user://jamo_save.json.artbak"
@@ -95,9 +96,8 @@ func _report(tag: String, asked: Vector2i, actual: Vector2i, image: Image) -> vo
 		tag, asked.x, asked.y, actual.x, actual.y,
 		visible.size.x, visible.size.y, image.get_width(), image.get_height()
 	])
-	var names: Array[String] = [
-		"NewGameButton", "ContinueButton", "ContinueInfoLabel", "SettingsButton", "QuitButton"
-	]
+	var names: Array[String] = HubPlates.all(_title)
+	names.append("ContinueInfoLabel")
 	var rects: Array[Rect2] = []
 	var shown: Array[bool] = []
 	for node_name: String in names:

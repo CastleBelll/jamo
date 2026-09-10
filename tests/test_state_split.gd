@@ -66,30 +66,65 @@ func _own_property_names(node: Node) -> PackedStringArray:
 	return names
 
 
-## The boundary is structural: a run field simply does not exist on MetaState,
-## and a permanent field does not exist on RunState. Doc v0.4 sections 3.1, 3.2.
+## The boundary is structural: every scripted property of either singleton has
+## to declare which side of the split it is on, and the two sides may not share
+## a name. Doc v0.4 sections 3.1, 3.2, 44.
+##
+## This deliberately does NOT work off a list of forbidden names. A denylist
+## only sees the fields somebody remembered to write down, so a run-shaped field
+## added to MetaState under a name nobody listed would sail through. Here the
+## live property set is compared against the declaration in both directions, so
+## an undeclared field fails the moment it exists, whatever it is called.
 func _test_no_field_overlap() -> void:
 	print("-- field overlap")
-	var meta_names := _own_property_names(MetaState)
-	var run_names := _own_property_names(RunState)
+	var meta_fields := _state_field_names(MetaState, MetaState.NON_STATE_NAMES)
+	var run_fields := _state_field_names(RunState, RunState.NON_STATE_NAMES)
+	print("    MetaState %d state fields, RunState %d" % [
+		meta_fields.size(), run_fields.size()
+	])
 
-	for name: String in MetaState.RUN_OWNED_NAMES:
+	_check_declaration_matches("MetaState", meta_fields, RunState.META_OWNED_NAMES)
+	_check_declaration_matches("RunState", run_fields, MetaState.RUN_OWNED_NAMES)
+
+	# Neither state has a field the other one also has, whether or not either
+	# list mentions it.
+	for name: String in meta_fields:
 		_check(
-			not meta_names.has(name),
-			"MetaState must not carry the run field %s" % name
+			not run_fields.has(name),
+			"%s is declared on both MetaState and RunState" % name
 		)
+
+
+## Every state-carrying property of `node`: its scripted variables minus the
+## private caches and minus the infrastructure the script itself excludes.
+func _state_field_names(node: Node, non_state: Array[String]) -> PackedStringArray:
+	var names := PackedStringArray()
+	for name: String in _own_property_names(node):
+		if non_state.has(name):
+			continue
+		names.append(name)
+	return names
+
+
+## The live property set and the declared ownership list have to be the same
+## set. An extra property is an undeclared field; a missing one is a stale list.
+func _check_declaration_matches(
+	owner: String, actual: PackedStringArray, declared: Array[String]
+) -> void:
+	_check(
+		not actual.is_empty(),
+		"%s reported no state fields at all - the property scan is broken" % owner
+	)
+	for name: String in actual:
 		_check(
-			run_names.has(name),
-			"RunState is missing the run field %s from doc v0.4 section 44" % name
+			declared.has(name),
+			("%s carries the undeclared field %s: add it to the ownership list "
+				+ "for the state it belongs to (doc v0.4 section 44)") % [owner, name]
 		)
-	for name: String in RunState.META_OWNED_NAMES:
+	for name: String in declared:
 		_check(
-			not run_names.has(name),
-			"RunState must not carry the permanent field %s" % name
-		)
-		_check(
-			meta_names.has(name),
-			"MetaState is missing the permanent field %s from doc v0.4 section 44" % name
+			actual.has(name),
+			"%s is declared to own %s but has no such property" % [owner, name]
 		)
 
 

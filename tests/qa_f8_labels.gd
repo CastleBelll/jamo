@@ -6,6 +6,7 @@ extends Node
 ##   godot --path . res://tests/qa_f8_labels.tscn
 ## Writes one frame per size to tests/qa_artifacts/f8/labels/.
 
+const HubPlates := preload("res://tests/hub_plates.gd")
 const TITLE_SCENE := "res://scenes/ui/title_screen.tscn"
 const OUT_DIR := "res://tests/qa_artifacts/f8/labels"
 
@@ -17,13 +18,18 @@ func _ready() -> void:
 	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
 	add_child(title)
 	await _settle()
+	var problem: String = HubPlates.problem(title)
+	if not problem.is_empty():
+		printerr("  FAIL: %s" % problem)
+		get_tree().quit(1)
+		return
 
 	for size: Vector2i in SIZES:
 		DisplayServer.window_set_size(size)
 		await _settle()
 		var image: Image = get_viewport().get_texture().get_image()
 		image.save_png("%s/pristine_%dx%d.png" % [OUT_DIR, size.x, size.y])
-		for name: String in ["NewGameButton", "ContinueButton", "SettingsButton", "QuitButton"]:
+		for name: String in HubPlates.all(title):
 			var button: Button = title.get_node("%%%s" % name)
 			print("--- %dx%d %s rect=%s disabled=%s font_color=%s" % [
 				size.x, size.y, name, str(button.get_global_rect()),

@@ -315,26 +315,70 @@ func _check_migration_note_is_readable(hub: Node) -> void:
 		"the v0.3 notice spills outside the 영구 성장 panel: note %s vs panel %s"
 			% [str(note_rect), str(panel_rect)])
 
+	# Measured off the rendered frame, not off the declared colours: the whole
+	# point of the P0 HIGH was that the declared colour looked fine in the
+	# inspector and vanished on screen. The darkest pixel in the note rect is
+	# the glyph ink, the brightest is what the glyph is drawn against - the
+	# outline where there is one, the panel otherwise.
 	var image: Image = get_viewport().get_texture().get_image()
 	image.convert(Image.FORMAT_RGBA8)
-	# Sample the strip the glyphs sit on and take the worst pixel behind them as
-	# the background, which is what a WCAG ratio is measured against.
-	var text_luma: float = note.get_theme_color(&"font_color").get_luminance()
-	var darkest := 1.0
-	var brightest := 0.0
-	var y: int = int(note_rect.get_center().y)
-	for x: int in range(int(note_rect.position.x), int(note_rect.end.x), 4):
-		if x < 0 or x >= image.get_width() or y < 0 or y >= image.get_height():
-			continue
-		var luma: float = image.get_pixel(x, y).get_luminance()
-		darkest = minf(darkest, luma)
-		brightest = maxf(brightest, luma)
-	var worst: float = _contrast_ratio(text_luma, brightest)
-	print("    notice contrast: text=%.3f background %.3f..%.3f worst=%.2f:1"
-		% [text_luma, darkest, brightest, worst])
+	var scale: Vector2 = Vector2(image.get_width(), image.get_height()) 		/ get_viewport().get_visible_rect().size
+	var pixels := Rect2i(
+		Vector2i(floori(note_rect.position.x * scale.x), floori(note_rect.position.y * scale.y)),
+		Vector2i(ceili(note_rect.size.x * scale.x), ceili(note_rect.size.y * scale.y))
+	).intersection(Rect2i(Vector2i.ZERO, image.get_size()))
+
+	var ink := Color.WHITE
+	var behind := Color.BLACK
+	var darkest := 2.0
+	var brightest := -1.0
+	for y: int in range(pixels.position.y, pixels.end.y):
+		for x: int in range(pixels.position.x, pixels.end.x):
+			var pixel: Color = image.get_pixel(x, y)
+			var luma: float = _relative_luminance(pixel)
+			if luma < darkest:
+				darkest = luma
+				ink = pixel
+			if luma > brightest:
+				brightest = luma
+				behind = pixel
+	_check(pixels.get_area() > 0, "the v0.3 notice covers no pixels at all")
+
+	var worst: float = _contrast_ratio(darkest, brightest)
+	print("    notice contrast: ink=%s L=%.4f behind=%s L=%.4f -> %.2f:1 (%d px)"
+		% [str(ink), darkest, str(behind), brightest, worst, pixels.get_area()])
 	_check(worst >= 4.5,
 		"the v0.3 notice only reaches %.2f:1 against what is behind it, want >= 4.5:1"
 			% worst)
+
+	# The ink on screen has to be the ink the theme asks for. Without this a
+	# background that happens to hold a dark pixel somewhere could carry the
+	# ratio on its own while the text itself stayed unreadable.
+	var declared: Color = note.get_theme_color(&"font_color")
+	_check(
+		_channel_delta(ink, declared) <= 24,
+		"the darkest pixel in the notice is %s, not the theme font_color %s - "
+			% [str(ink), str(declared)] + "the measured ratio is not the text's"
+	)
+
+
+## WCAG 2.x relative luminance. Color.get_luminance() weights the sRGB values
+## straight, without the transfer function, so it is not a WCAG number and is
+## not used here.
+func _relative_luminance(c: Color) -> float:
+	var channels: Array[float] = [c.r, c.g, c.b]
+	for i: int in channels.size():
+		var v: float = channels[i]
+		channels[i] = v / 12.92 if v <= 0.03928 else pow((v + 0.055) / 1.055, 2.4)
+	return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+
+
+## Largest single-channel difference between two colours, in 0-255 units.
+func _channel_delta(a: Color, b: Color) -> int:
+	return maxi(
+		absi(int(a.r8) - int(b.r8)),
+		maxi(absi(int(a.g8) - int(b.g8)), absi(int(a.b8) - int(b.b8)))
+	)
 
 
 func _contrast_ratio(a: float, b: float) -> float:

@@ -30,6 +30,13 @@ const RUN_OWNED_NAMES: Array[String] = [
 	"active_compounds", "risk_words", "run_modifiers", "run_statistics",
 ]
 
+## The public properties here that are NOT permanent player state: the loaded
+## resources and the mirrored save format number. Everything else this script
+## declares has to appear in RunState.META_OWNED_NAMES, and test_state_split
+## asserts exactly that - so a new field cannot join either state without
+## declaring the side it is on. Doc v0.4 sections 3.1 and 44.
+const NON_STATE_NAMES: Array[String] = ["database", "balance", "save_version"]
+
 var database: GameDatabase
 var balance: GameBalance
 

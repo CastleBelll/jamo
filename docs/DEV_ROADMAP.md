@@ -58,17 +58,27 @@ v0.4 는 장르 전환이다. 기존 코드를 전부 버리지 않고 다음과
 - **RUN 실패 조건**: 문장핵은 P1 이라서, 지금은 **에너지 0 = RUN 실패** 로 대체돼 있다
   (`scripts/main.gd`의 `end_run_when_energy_depleted`). §7.1 은 에너지 0 이 Wave 를
   끝내면 안 된다고 명시하므로, P1 에서 이 플래그를 끄고 문장핵 HP 0 으로 옮겨야 한다.
+- **결과 화면 부제**: 문장핵이 없으므로 `scenes/ui/run_result.tscn` 의 `SubtitleLabel` 은
+  임시 실패 조건(에너지 0)을 그대로 적어 뒀다. P1 에서 문장핵이 실패 주체가 되면
+  `"문장핵이 무너졌다. 다음 RUN 은 WAVE 1 부터 시작한다."` 로 되돌린다.
+  되돌릴 지점은 `scripts/ui/run_result.gd` 헤더의 `PHASE 1 REVERT POINT` 주석에 있다.
 - **Wave Clear 없음**: Wave 2 이상으로 진행하는 경로는 P1 이다. `RunState.advance_wave()`
   는 있지만 아직 호출하는 곳이 없다.
 - **Day 기반 업그레이드 해금 제거됨**: `critical_click` Day 25 게이트, `reroll` Day 5/25/60
   게이트가 사라졌다. Gold 가격 곡선만 남았으므로 `reroll` 은 첫 Hub 방문부터 구매 가능하다.
   P5 에서 가격 재산출 대상.
 
-### P0 이월 (P1 착수 전 처리)
-- [ ] HIGH: v0.3 세이브 마이그레이션 안내문이 크림 배경에 노란 글씨 — 측정 대비 1.04:1 로 안 읽힘
-- [ ] MEDIUM: F7~F9 하네스가 허브 판때기 7개 중 4개만 검사 (QA 가 `qa_p0_plates_all` 로 보완)
-- [ ] MEDIUM: `test_state_split` 의 필드 겹침 검사가 이름 denylist 라 미등록 이름은 놓침
-- [ ] MEDIUM: 결과 화면이 '문장핵이 무너졌다' 인데 HUD 는 문장핵 20/20 — 문장핵 미구현(P1) 탓
+### P0 이월 (P1 착수 전 처리) — 완료
+- [x] HIGH: 마이그레이션 안내문 대비. 테마 `NoticeLabel` 변형(짙은 적갈색 글자 + 크림
+  아웃라인 6px)으로 교체. 실제 렌더 픽셀 측정 **1.04:1 → 12.44:1**, 배경 사진에
+  의존하지 않는다. `tests/qa_p0_flow.tscn` 이 WCAG 상대휘도로 매번 재측정한다.
+- [x] MEDIUM: 허브 판때기 회귀를 `qa_p0_plates_all` 하나로 통합. 판때기 목록은
+  `tests/hub_plates.gd` 가 씬에서 뽑는다. 부분집합만 보던 하네스 4개 삭제.
+- [x] MEDIUM: `test_state_split` 의 겹침 검사를 이름 denylist → 구조 검증으로 교체.
+  두 State 의 실제 프로퍼티 집합과 소속 선언(`NON_STATE_NAMES` / `*_OWNED_NAMES`)이
+  양방향으로 일치해야 한다. 미등록 이름 주입(NC3)이 이제 잡힌다.
+- [x] MEDIUM: 결과 화면 부제를 임시 실패 조건 그대로 서술하도록 교체
+  ("에너지가 바닥나 RUN 이 끝났다"). 되돌릴 지점은 아래 P1 목록에 있다.
 - [x] 총지휘자 승인: Wave 곡선을 Day 곡선 1:1 임시 매핑한 것은 P0 한정으로 허용. P1/P12 에서 재산출
 
 ## P1. Wave 전투  `[~]`

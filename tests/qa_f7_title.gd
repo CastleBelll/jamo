@@ -4,6 +4,7 @@ extends Node
 ## only. Run: godot --headless --path . res://tests/qa_f7_title.tscn
 ## Doc v0.3 section 30 and DEV_ROADMAP F7 S1-S6.
 
+const HubPlates := preload("res://tests/hub_plates.gd")
 const TITLE_SCENE := "res://scenes/ui/title_screen.tscn"
 ## The run this test throws away is moved aside instead of deleted, so running
 ## it locally does not cost the developer their own progress.
@@ -37,7 +38,7 @@ func _ready() -> void:
 		next.grab_focus()
 		cursor = title.get_viewport().gui_get_focus_owner()
 	print("  keyboard reachable: %s" % ", ".join(seen))
-	for required: String in ["NewGameButton", "SettingsButton", "QuitButton"]:
+	for required: String in HubPlates.interactive(title):
 		_check(seen.has(required), "%s should be reachable with the keyboard" % required)
 	_check(
 		not seen.has("ContinueButton"),

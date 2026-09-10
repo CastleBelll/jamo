@@ -156,8 +156,7 @@ horizontal_alignment = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.98, 0.82, 0.4, 1)
+theme_type_variation = &"NoticeLabel"
 text = "v0.3 세이브를 불러왔다. GOLD·업그레이드·단어는 유지, DAY 기록은 WAVE 로 옮길 수 없어 제외됐다."
 autowrap_mode = 2
 

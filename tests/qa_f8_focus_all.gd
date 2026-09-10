@@ -15,6 +15,7 @@ extends Node
 ## Writes the two frames plus a report to tests/qa_artifacts/f8/.
 ## It never touches the player save: nothing here writes to user://.
 
+const HubPlates := preload("res://tests/hub_plates.gd")
 const TITLE_SCENE := "res://scenes/ui/title_screen.tscn"
 const OUT_DIR := "res://tests/qa_artifacts/f8/variants"
 ## SC 2.4.11 asks the focus indicator to change by at least this contrast.
@@ -40,6 +41,10 @@ func _ready() -> void:
 	_title = (load(TITLE_SCENE) as PackedScene).instantiate()
 	add_child(_title)
 	await _settle()
+	var problem: String = HubPlates.problem(_title)
+	if not problem.is_empty():
+		_failures += 1
+		printerr("  FAIL: %s" % problem)
 
 	for size: Vector2i in SIZES:
 		await _measure(size)
@@ -64,7 +69,7 @@ func _measure(size: Vector2i) -> void:
 	DisplayServer.window_set_size(size)
 	await _settle()
 
-	for name: String in ["NewGameButton", "ContinueButton", "SettingsButton", "QuitButton"]:
+	for name: String in HubPlates.all(_title):
 		var button: Button = _title.get_node("%%%s" % name)
 		# 이어하기 is off the screen entirely until a run exists, and grabbing
 		# focus on a hidden control is an error rather than a measurement.

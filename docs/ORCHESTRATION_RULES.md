@@ -114,9 +114,19 @@ v0.3 기반으로 완료했던 F1~F9 이력은 `docs/DEV_ROADMAP_v03_archive.md`
 - **헤드리스로 돌 수 있는 테스트는 2개다**: `tests/test_state_split.tscn`,
   `tests/test_run_flow.tscn`. 둘 다 `godot --headless --path . res://tests/<x>.tscn` 로
   돌리고 exit 0 이어야 한다.
-- **스크린샷 하네스는 헤드리스에서 돌지 않는다**: `qa_f7_art` / `qa_f8_*` / `qa_f9_*` 는
+- **스크린샷 하네스는 헤드리스에서 돌지 않는다**: `qa_f7_*` / `qa_f8_*` / `qa_p0_*` 는
   `await RenderingServer.frame_post_draw` 를 쓰기 때문에 `--headless` 에서 영원히 멈춘다.
   창 모드(`godot --path . res://tests/<x>.tscn`)로 돌려야 한다. 이는 P0 이전부터 그랬다.
+- **허브 판때기 회귀는 `qa_p0_plates_all` 하나다** (P0 이월 정리에서 확정). F7~F9 규칙
+  — 밝은 판때기 항상 1개 / 포커스 해제 시 0개 / 선택 대비 ≥ 3.0:1 / 레이아웃 /
+  세이브 유무로 판때기 높이 불변 — 을 전부 여기서, **4해상도 × 세이브 유/무 2상태**에서
+  측정한다 (포인터×키보드 순서쌍 전수 sweep 만 1280x720 1회). 같은 것을 4개 버튼으로만
+  다시 보던 `qa_f8_hover_focus` / `qa_f9_hover_focus` / `qa_f9_verify_real_input` /
+  `qa_f8_title_shots` 는 삭제했다.
+- **판때기 목록을 하네스에 적지 말 것**: `tests/hub_plates.gd` 가 허브 씬에서 직접 뽑는다.
+  Phase 마다 허브 메뉴가 늘어나도 하네스 수정 없이 새 행이 검사 대상에 들어온다.
+  현재 남은 창 모드 하네스: `qa_p0_plates_all` / `qa_p0_flow` / `qa_f7_title` /
+  `qa_f7_art` / `qa_f8_labels` / `qa_f8_focus_all` / `qa_f8_resize`.
 - **`qa_f7_live` / `qa_f5_*` 는 스스로 종료하지 않거나 수천 프레임을 관찰한다.**
   타임아웃은 실패가 아니다.
 - **보류 테스트**: `tests/_deferred_v03/` 에 `.gdignore` 와 함께 있고, 무엇을 왜 보류했는지
