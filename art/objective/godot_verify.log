@@ -1,0 +1,14 @@
+Godot Engine v4.7.stable.official.5b4e0cb0f - https://godotengine.org
+
+ERROR: Resource file not found: res://art/fonts/NotoSansKR-Regular.ttf (expected type: unknown)
+   at: _load (core/io/resource_loader.cpp:325)
+ERROR: Error loading custom project font 'res://art/fonts/NotoSansKR-Regular.ttf'
+   at: initialize_theme (scene/theme/theme_db.cpp:84)
+PART Binding surfaces=1
+PART BookPages surfaces=2
+PART BindingThread surfaces=1
+PART SentenceInk surfaces=1
+PART CorePaper surfaces=1
+PART CoreInk surfaces=1
+PART Seal surfaces=2
+ASSET_PASS triangles=2780 surfaces=9 bounds=[P: (-1.27, 0.0, -0.84), S: (2.54, 1.96, 1.68)]
