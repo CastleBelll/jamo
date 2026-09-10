@@ -1,5 +1,8 @@
 [gd_resource type="Theme" format=3 uid="uid://bundkvpd2w625"]
 
+[ext_resource type="Texture2D" path="res://art/ui/title/title_active_button.png" id="2_btn_selected"]
+[ext_resource type="Texture2D" path="res://art/ui/title/title_inactive_button.png" id="3_btn_plain"]
+
 [sub_resource type="StyleBoxFlat" id="SB_btn_disabled"]
 content_margin_left = 16.0
 content_margin_top = 9.0
@@ -191,21 +194,11 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[sub_resource type="StyleBoxFlat" id="SB_title_focus"]
+[sub_resource type="StyleBoxEmpty" id="SB_title_focus"]
 content_margin_left = 16.0
 content_margin_top = 9.0
 content_margin_right = 16.0
 content_margin_bottom = 9.0
-bg_color = Color(0.788, 0.682, 0.494, 0)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.2, 0.161, 0.118, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="SB_btn_focus"]
 content_margin_left = 16.0
@@ -253,6 +246,49 @@ corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 expand_margin_top = 26.0
 
+[sub_resource type="StyleBoxTexture" id="SB_title_normal"]
+content_margin_left = 28.0
+content_margin_top = 8.0
+content_margin_right = 28.0
+content_margin_bottom = 8.0
+texture = ExtResource("3_btn_plain")
+region_rect = Rect2(116, 149, 1931, 434)
+
+[sub_resource type="StyleBoxTexture" id="SB_title_selected"]
+content_margin_left = 28.0
+content_margin_top = 8.0
+content_margin_right = 28.0
+content_margin_bottom = 8.0
+texture = ExtResource("2_btn_selected")
+region_rect = Rect2(112, 157, 1946, 423)
+
+[sub_resource type="StyleBoxTexture" id="SB_title_hover"]
+content_margin_left = 28.0
+content_margin_top = 8.0
+content_margin_right = 28.0
+content_margin_bottom = 8.0
+texture = ExtResource("2_btn_selected")
+modulate_color = Color(1.12, 1.09, 1.02, 1)
+region_rect = Rect2(112, 157, 1946, 423)
+
+[sub_resource type="StyleBoxTexture" id="SB_title_pressed"]
+content_margin_left = 28.0
+content_margin_top = 8.0
+content_margin_right = 28.0
+content_margin_bottom = 8.0
+texture = ExtResource("2_btn_selected")
+modulate_color = Color(0.84, 0.8, 0.74, 1)
+region_rect = Rect2(112, 157, 1946, 423)
+
+[sub_resource type="StyleBoxTexture" id="SB_title_disabled"]
+content_margin_left = 28.0
+content_margin_top = 8.0
+content_margin_right = 28.0
+content_margin_bottom = 8.0
+texture = ExtResource("3_btn_plain")
+modulate_color = Color(0.46, 0.47, 0.5, 1)
+region_rect = Rect2(116, 149, 1931, 434)
+
 [resource]
 default_font_size = 17
 AcceptDialog/styles/panel = SubResource("SB_dialog_panel")
@@ -279,8 +315,18 @@ Panel/styles/panel = SubResource("SB_panel")
 PanelContainer/styles/panel = SubResource("SB_panel")
 ProgressBar/styles/background = SubResource("SB_bar_bg")
 TitleButton/base_type = &"Button"
-TitleButton/font_sizes/font_size = 26
+TitleButton/colors/font_color = Color(0.949, 0.902, 0.808, 1)
+TitleButton/colors/font_disabled_color = Color(0.949, 0.902, 0.808, 1)
+TitleButton/colors/font_focus_color = Color(0.2, 0.161, 0.118, 1)
+TitleButton/colors/font_hover_color = Color(0.2, 0.161, 0.118, 1)
+TitleButton/colors/font_pressed_color = Color(0.2, 0.161, 0.118, 1)
+TitleButton/font_sizes/font_size = 22
+TitleButton/styles/disabled = SubResource("SB_title_disabled")
 TitleButton/styles/focus = SubResource("SB_title_focus")
+TitleButton/styles/hover = SubResource("SB_title_hover")
+TitleButton/styles/normal = SubResource("SB_title_normal")
+TitleButton/styles/pressed = SubResource("SB_title_pressed")
+TitleButton/styles/selected = SubResource("SB_title_selected")
 Window/colors/title_color = Color(0.949, 0.902, 0.808, 1)
 Window/styles/embedded_border = SubResource("SB_window_border")
 Window/styles/embedded_unfocused_border = SubResource("SB_window_border")

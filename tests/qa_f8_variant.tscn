@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/qa_f8_variant.gd" id="1_var"]
+
+[node name="QaF8Variant" type="Node"]
+script = ExtResource("1_var")

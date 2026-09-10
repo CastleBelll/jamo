@@ -49,6 +49,8 @@ func _ready() -> void:
 	_test_starting_stats()
 	_test_energy_ends_the_day()
 	_test_day_scaling()
+	_test_day_200_curve_comes_from_the_balance_resource()
+	_test_tuned_values_come_from_resources()
 	_test_word_completes_and_consumes_jamo()
 	_test_bap_needs_two_bieup()
 	_test_shared_jamo_is_not_double_spent()
@@ -90,11 +92,12 @@ func _ready() -> void:
 	_test_step_sfx_paths_differ_per_motion_profile()
 	await _test_word_completion_can_be_skipped()
 	await _test_settings_sliders_drive_the_buses()
-	await _test_title_disables_continue_without_a_save()
+	await _test_title_hides_continue_without_a_save()
 	await _test_new_game_asks_before_overwriting()
 	await _test_returning_to_the_title_saves()
 	await _test_new_game_keeps_the_volume_settings()
-	await _test_disabled_continue_leaves_the_focus_chain()
+	await _test_hidden_continue_leaves_the_focus_chain()
+	await _test_title_plates_keep_one_size_without_a_save()
 
 	if _failures == 0:
 		print("OK - all game loop checks passed.")
@@ -158,10 +161,97 @@ func _test_day_scaling() -> void:
 	_close(balance.monster_gold_for_day(1), 2.0, "Day 1 gold")
 	# Doc growth_balance v0.2 section 3: Day 10 lands on 4 HP after rounding.
 	_close(balance.monster_hp_for_day(10), 4.0, "Day 10 HP")
+	# F8 raised gold growth to match HP growth, so the Day 10 reward moved from
+	# the 2.5 of growth_balance v0.2 section 4 to 2.73. docs/BALANCE_NOTES.md.
 	_check(
-		absf(balance.monster_gold_for_day(10) - 2.5) < 0.05,
-		"Day 10 gold should be about 2.5"
+		absf(balance.monster_gold_for_day(10) - 2.73) < 0.05,
+		"Day 10 gold should be about 2.73"
 	)
+
+
+## Doc v0.3 section 8.1 pins HP = 3 * 1.035^(Day-1). The far end of the curve is
+## where a wrong rounding or a lost float would show, so Day 200 is checked
+## against the formula rebuilt from the numbers in game_balance.tres.
+func _test_day_200_curve_comes_from_the_balance_resource() -> void:
+	var balance: GameBalance = GameState.balance
+	_close(balance.base_monster_hp, 3.0, "doc v0.3 8.1 base monster HP")
+	_close(balance.hp_growth_per_day, 1.035, "doc v0.3 8.1 HP growth")
+	_close(balance.base_monster_gold, 2.0, "doc v0.3 42-4 Day 1 gold")
+	# F8 moved gold growth off the 1.025 printed in v0.3 8.1. Pin the tuned
+	# constant with a literal so changing it again cannot pass silently -
+	# the HP side has had that anchor since F8, the gold side had none.
+	# docs/BALANCE_NOTES.md 3-1 carries the reasoning.
+	_close(balance.gold_growth_per_day, 1.035, "BALANCE_NOTES 3-1 gold growth")
+
+	for day: int in [1, 10, 50, 100, 200]:
+		var expected_hp: float = roundf(
+			balance.base_monster_hp * pow(balance.hp_growth_per_day, day - 1)
+		)
+		var expected_gold: float = (
+			balance.base_monster_gold * pow(balance.gold_growth_per_day, day - 1)
+		)
+		_close(balance.monster_hp_for_day(day), expected_hp, "Day %d HP" % day)
+		_close(balance.monster_gold_for_day(day), expected_gold, "Day %d gold" % day)
+
+	var hp_200: float = balance.monster_hp_for_day(200)
+	var gold_200: float = balance.monster_gold_for_day(200)
+	_check(is_finite(hp_200) and hp_200 > 0.0, "Day 200 HP must stay a finite number")
+	_check(is_finite(gold_200) and gold_200 > 0.0, "Day 200 gold must stay a finite number")
+	_check(hp_200 > balance.monster_hp_for_day(199), "Day 200 HP must still be rising")
+	# 2820 is what 3 * 1.035^199 rounds to. growth_balance v0.2 section 3 prints
+	# 2,824; the formula is the authority and the printed table is rounded.
+	_close(hp_200, 2820.0, "Day 200 HP from the documented formula")
+	# 1880.0076 is 2 * 1.035^199, the tuned gold curve. v0.3 8.1 still prints
+	# 2 * 1.025^199 = 272.3; the gap is the deviation BALANCE_NOTES 3-1 records.
+	_close(gold_200, 1880.0076, "Day 200 gold from the tuned gold curve")
+
+
+## F8 tuning lives in the .tres files, never in a script. Reading the numbers
+## back through GameState is what proves the shop and the click both see them.
+func _test_tuned_values_come_from_resources() -> void:
+	_reset()
+	var balance: GameBalance = GameState.balance
+	# Gold growth is held equal to HP growth so income stays neutral in Day and
+	# all growth comes from upgrades. The Day 110 collapse itself came from the
+	# click damage Lv9 cap, not from this gap. docs/BALANCE_NOTES.md 3-1.
+	_close(
+		balance.gold_growth_per_day, balance.hp_growth_per_day,
+		"gold growth has to track HP growth"
+	)
+	_close(balance.special_spawn_chance, 0.02, "growth_balance v0.2 2: special 2%")
+	_close(balance.golden_spawn_chance, 0.02, "doc v0.3 9.3: golden 2%")
+
+	var damage: UpgradeData = GameState.database.find_upgrade(&"click_damage")
+	_check(damage != null, "click_damage should be registered in the database")
+	_check(
+		damage.max_level() == 26,
+		"the click damage ladder should reach Lv26 (got %d)" % damage.max_level()
+	)
+	_check(
+		damage.costs.size() == damage.values.size(),
+		"every click damage level needs both a cost and a value"
+	)
+	for level in range(1, damage.max_level()):
+		_check(
+			damage.costs[level] > damage.costs[level - 1],
+			"click damage Lv%d must cost more than Lv%d" % [level + 1, level]
+		)
+		_check(
+			damage.values[level] > damage.values[level - 1],
+			"click damage Lv%d must hit harder than Lv%d" % [level + 1, level]
+		)
+
+	# The top of the ladder has to beat a Day 200 monster in a handful of clicks,
+	# which is the whole reason it was extended past the Lv9 of the document.
+	GameState.upgrade_levels[&"click_damage"] = damage.max_level()
+	var top: float = GameState.get_click_damage()
+	_close(top, damage.values[damage.max_level() - 1], "GameState reads the .tres value")
+	_check(
+		balance.monster_hp_for_day(200) / top < 4.0,
+		"Day 200 should fall in under 4 clicks (got %.1f)"
+			% (balance.monster_hp_for_day(200) / top)
+	)
+	_reset()
 
 
 func _test_word_completes_and_consumes_jamo() -> void:
@@ -221,36 +311,40 @@ func _test_word_effects_apply() -> void:
 	_check(GameState.get_max_energy() == 22, "밥 adds +2 max energy")
 
 
+## Prices are read off the .tres rather than written here, so retuning a track
+## in the Inspector never turns this into a red test. Doc v0.3 section 38.
 func _test_upgrade_purchase() -> void:
 	_reset()
-	GameState.gold = 50.0
 	var upgrade: UpgradeData = GameState.database.find_upgrade(&"max_energy")
-	_check(UpgradeManager.purchase(upgrade), "50G should buy max energy Lv.1")
+	var energy_price: int = upgrade.cost_for_next(0)
+	GameState.gold = float(energy_price)
+	_check(UpgradeManager.purchase(upgrade), "the listed price should buy max energy Lv.1")
 	_check(GameState.get_upgrade_level(&"max_energy") == 1, "level should be 1")
 	_check(GameState.get_max_energy() == 21, "max energy should now be 21")
 	_close(GameState.gold, 0.0, "the price should be deducted")
 
-	GameState.gold = 100.0
 	var damage: UpgradeData = GameState.database.find_upgrade(&"click_damage")
-	_check(UpgradeManager.purchase(damage), "100G should buy click damage Lv.1")
+	GameState.gold = float(damage.cost_for_next(0))
+	_check(UpgradeManager.purchase(damage), "the listed price should buy click damage Lv.1")
 	_close(GameState.get_click_damage(), 2.0, "click damage Lv.1 is 2")
 
-	GameState.gold = 100.0
 	var gold_bonus: UpgradeData = GameState.database.find_upgrade(&"gold_bonus")
-	_check(UpgradeManager.purchase(gold_bonus), "100G should buy gold bonus Lv.1")
+	GameState.gold = float(gold_bonus.cost_for_next(0))
+	_check(UpgradeManager.purchase(gold_bonus), "the listed price should buy gold bonus Lv.1")
 	_close(GameState.get_gold_multiplier(), 1.05, "gold bonus Lv.1 is +5%")
 
 
 func _test_upgrade_blocked_when_poor() -> void:
 	_reset()
-	GameState.gold = 49.0
 	var upgrade: UpgradeData = GameState.database.find_upgrade(&"max_energy")
+	var short_by_one: float = float(upgrade.cost_for_next(0)) - 1.0
+	GameState.gold = short_by_one
 	_check(
 		UpgradeManager.get_availability(upgrade) == UpgradeManager.Availability.TOO_EXPENSIVE,
-		"49G is not enough for a 50G upgrade"
+		"one gold short of the listed price is not enough"
 	)
 	_check(not UpgradeManager.purchase(upgrade), "purchase should be refused")
-	_close(GameState.gold, 49.0, "a refused purchase must not spend gold")
+	_close(GameState.gold, short_by_one, "a refused purchase must not spend gold")
 	_check(GameState.get_upgrade_level(&"max_energy") == 0, "level must stay at 0")
 
 
@@ -382,14 +476,15 @@ func _test_reroll_upgrade_gates() -> void:
 	_check(not UpgradeManager.purchase(reroll), "buying before Day 5 must fail")
 
 	GameState.day = 5
-	GameState.gold = 999.0
+	var reroll_price: int = reroll.cost_for_next(0)
+	GameState.gold = float(reroll_price) - 1.0
 	_check(
 		UpgradeManager.get_availability(reroll)
 			== UpgradeManager.Availability.TOO_EXPENSIVE,
-		"999G is not enough for the 1,000G Lv.1"
+		"one gold short of the listed Lv.1 price is not enough"
 	)
-	GameState.gold = 1000.0
-	_check(UpgradeManager.purchase(reroll), "Day 5 + 1,000G buys 리롤 Lv.1")
+	GameState.gold = float(reroll_price)
+	_check(UpgradeManager.purchase(reroll), "Day 5 plus the listed price buys 리롤 Lv.1")
 	_check(GameState.get_max_rerolls() == 1, "리롤 Lv.1 grants 1 reroll per day")
 
 	GameState.gold = 100000.0
@@ -1624,9 +1719,10 @@ func _test_settings_sliders_drive_the_buses() -> void:
 	await get_tree().process_frame
 
 
-## Doc v0.3 section 30: with nothing on disk there is nothing to continue, and
-## the title has to say so in words rather than only greying the button out.
-func _test_title_disables_continue_without_a_save() -> void:
+## Doc v0.3 section 30: with nothing on disk there is nothing to continue, so
+## the row is taken off the screen rather than greyed out. A row that is not
+## drawn cannot mislead and cannot be stopped on.
+func _test_title_hides_continue_without_a_save() -> void:
 	SaveManager.delete_save()
 	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
 	add_child(title)
@@ -1634,15 +1730,18 @@ func _test_title_disables_continue_without_a_save() -> void:
 
 	var continue_button: Button = title.get_node("%ContinueButton")
 	var info: Label = title.get_node("%ContinueInfoLabel")
-	_check(continue_button.disabled, "no save should leave 이어하기 disabled")
+	_check(not continue_button.visible, "no save should hide 이어하기 entirely")
 	_check(
-		not info.text.strip_edges().is_empty(),
-		"the disabled 이어하기 needs a written reason, not just a colour"
+		not info.visible,
+		"with 이어하기 gone its reason line has nothing left to explain"
 	)
+	_check(continue_button.disabled, "the hidden 이어하기 must also stay disabled")
 	_check(
 		title.get_node("%NewGameButton").has_focus(),
 		"the title should hold keyboard focus on entry"
 	)
+	# The three rows that are left still have to sit in one evenly spaced stack.
+	_check_remaining_stack_is_intact(title)
 
 	# A save appears: the same screen has to offer it, with the run's day in it.
 	_reset()
@@ -1650,6 +1749,9 @@ func _test_title_disables_continue_without_a_save() -> void:
 	GameState.gold = 123.0
 	_check(SaveManager.save_game(), "the test needs a save file on disk")
 	title.refresh()
+	await get_tree().process_frame
+	_check(continue_button.visible, "an existing save should bring 이어하기 back")
+	_check(info.visible, "the saved progress line comes back with the button")
 	_check(not continue_button.disabled, "an existing save should enable 이어하기")
 	_check(
 		info.text.contains("7"),
@@ -1686,6 +1788,15 @@ func _test_new_game_asks_before_overwriting() -> void:
 	_check(
 		int(SaveManager.peek_save().get("day", 0)) == 4,
 		"the untouched save should still hold the day it was written with"
+	)
+	# The dialog carries no hardcoded pixel size, so it has to end up at least
+	# as big as its own contents whatever the font or the content scale does.
+	await get_tree().process_frame
+	var minimum: Vector2 = confirm.get_contents_minimum_size()
+	_check(
+		confirm.size.x >= int(minimum.x) and confirm.size.y >= int(minimum.y),
+		"the overwrite dialog must fit its contents (size %s, contents %s)"
+			% [str(confirm.size), str(minimum)]
 	)
 
 	confirm.hide()
@@ -1790,7 +1901,9 @@ func _test_new_game_keeps_the_volume_settings() -> void:
 ## A greyed out button still answers Godot's geometric focus search, so the
 ## arrow keys would stop on 이어하기 with nothing to continue. Doc v0.3
 ## section 37: every keyboard step has to land somewhere that does something.
-func _test_disabled_continue_leaves_the_focus_chain() -> void:
+## The row is hidden now, which is the stronger version of the same rule, so
+## this walks the whole chain and asserts it never arrives there.
+func _test_hidden_continue_leaves_the_focus_chain() -> void:
 	SaveManager.delete_save()
 	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
 	add_child(title)
@@ -1798,16 +1911,28 @@ func _test_disabled_continue_leaves_the_focus_chain() -> void:
 
 	var new_game: Button = title.get_node("%NewGameButton")
 	var continue_button: Button = title.get_node("%ContinueButton")
+	_check(not continue_button.visible, "the test needs 이어하기 hidden to start with")
 	_check(continue_button.disabled, "the test needs 이어하기 disabled to start with")
 	_check(
 		continue_button.focus_mode == Control.FOCUS_NONE,
-		"a disabled 이어하기 has to be out of the focus chain"
+		"a hidden 이어하기 has to be out of the focus chain"
 	)
 	var below: Control = new_game.find_valid_focus_neighbor(SIDE_BOTTOM)
 	_check(
 		below != continue_button,
-		"the arrow keys must step over the disabled 이어하기"
+		"the arrow keys must step over the hidden 이어하기"
 	)
+	var walked: Array[String] = _walk_focus_chain(new_game)
+	_check(
+		not walked.has("ContinueButton"),
+		"walking the whole chain must never land on the hidden 이어하기, got %s"
+			% ", ".join(walked)
+	)
+	for required: String in ["NewGameButton", "SettingsButton", "QuitButton"]:
+		_check(
+			walked.has(required),
+			"%s must stay reachable once 이어하기 is gone, got %s" % [required, ", ".join(walked)]
+		)
 
 	# With a run on disk the same button has to come back into the chain.
 	_reset()
@@ -1815,6 +1940,7 @@ func _test_disabled_continue_leaves_the_focus_chain() -> void:
 	_check(SaveManager.save_game(), "the test needs a save file on disk")
 	title.refresh()
 	await get_tree().process_frame
+	_check(continue_button.visible, "an enabled 이어하기 has to be on screen again")
 	_check(
 		continue_button.focus_mode == Control.FOCUS_ALL,
 		"an enabled 이어하기 has to be focusable again"
@@ -1823,7 +1949,107 @@ func _test_disabled_continue_leaves_the_focus_chain() -> void:
 		new_game.find_valid_focus_neighbor(SIDE_BOTTOM) == continue_button,
 		"with a save present the arrow keys should reach 이어하기"
 	)
+	_check(
+		_walk_focus_chain(new_game).has("ContinueButton"),
+		"with a save present the chain should pass through 이어하기"
+	)
 
 	title.queue_free()
 	await get_tree().process_frame
 	SaveManager.delete_save()
+
+
+## Hiding 이어하기 used to make the other plates grow: the column shared its
+## leftover space out between whatever rows were still visible, so three rows
+## each took more than four did. The menu has to be the same size either way.
+## Doc v0.3 section 31 Phase 11.
+func _test_title_plates_keep_one_size_without_a_save() -> void:
+	SaveManager.delete_save()
+	var title: Control = (load(TITLE_SCENE) as PackedScene).instantiate()
+	add_child(title)
+	await _settle_layout()
+
+	var safe: Control = title.get_node("Safe/Content")
+	var ratio: float = float(title.get(&"plate_height_ratio"))
+	var wanted: float = roundf(safe.size.y * ratio)
+	var without_save: float = title.get_node("%NewGameButton").size.y
+	_check(
+		absf(without_save - wanted) <= 1.0,
+		"the plate should be %.0f px tall (%.1f%% of the safe area), got %.1f"
+			% [wanted, 100.0 * ratio, without_save]
+	)
+	for plate: String in ["SettingsButton", "QuitButton"]:
+		var height: float = title.get_node("%%%s" % plate).size.y
+		_check(
+			absf(height - without_save) <= 1.0,
+			"%s should match 새 게임: %.1f vs %.1f" % [plate, height, without_save]
+		)
+
+	# The same screen with a run on disk: one more plate and the progress line
+	# join the column, and none of that may resize what was already there.
+	_reset()
+	GameState.day = 3
+	_check(SaveManager.save_game(), "the test needs a save file on disk")
+	title.refresh()
+	await _settle_layout()
+	_check(
+		title.get_node("%ContinueButton").visible,
+		"the test needs 이어하기 back on screen to compare against"
+	)
+	for plate: String in ["NewGameButton", "ContinueButton", "SettingsButton", "QuitButton"]:
+		var height: float = title.get_node("%%%s" % plate).size.y
+		_check(
+			absf(height - without_save) <= 1.0,
+			"a save must not resize %s: %.1f without a save, %.1f with one"
+				% [plate, without_save, height]
+		)
+
+	title.queue_free()
+	await get_tree().process_frame
+	SaveManager.delete_save()
+
+
+## Containers only re-sort on the frame after a minimum size changes, and the
+## plate height is applied from a resize signal, so measuring takes a few frames.
+func _settle_layout() -> void:
+	for _frame in 4:
+		await get_tree().process_frame
+
+
+## Names of every control the down arrow reaches, starting from `first`. Bounded
+## so a chain that loops back on itself cannot hang the suite.
+func _walk_focus_chain(first: Control) -> Array[String]:
+	var seen: Array[String] = []
+	var cursor: Control = first
+	for _step in 8:
+		if cursor == null or seen.has(String(cursor.name)):
+			break
+		seen.append(String(cursor.name))
+		cursor = cursor.find_valid_focus_neighbor(SIDE_BOTTOM)
+	return seen
+
+
+## Hiding a row must not leave a hole behind it: whatever is still on screen
+## stays in one column, with the theme's separation between every neighbouring
+## pair and a single shared width.
+func _check_remaining_stack_is_intact(title: Control) -> void:
+	var box: VBoxContainer = title.get_node("Safe/Content/Box")
+	var separation: float = float(box.get_theme_constant(&"separation"))
+	var previous: Control = null
+	for child: Control in box.get_children():
+		if not child.visible:
+			continue
+		if previous != null:
+			var gap: float = child.position.y - previous.position.y - previous.size.y
+			_check(
+				absf(gap - separation) <= 1.0,
+				"the stack should keep a %.0f px gap, got %.1f between %s and %s"
+					% [separation, gap, previous.name, child.name]
+			)
+			_check(
+				absf(child.position.x - previous.position.x) <= 1.0
+					and absf(child.size.x - previous.size.x) <= 1.0,
+				"%s should stay aligned with %s" % [child.name, previous.name]
+			)
+		previous = child
+	_check(previous != null, "the title stack must not be empty")

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dsdwskylwtwsn"
-path="res://.godot/imported/title_ex.png-71b242531594e4f660f5f41d8b2be23d.ctex"
+uid="uid://i3j1rfr3wlm0"
+path="res://.godot/imported/focus_ring.png-82d7539a2f17466beebe356376622d79.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/ui/title/title_ex.png"
-dest_files=["res://.godot/imported/title_ex.png-71b242531594e4f660f5f41d8b2be23d.ctex"]
+source_file="res://art/ui/focus_ring.png"
+dest_files=["res://.godot/imported/focus_ring.png-82d7539a2f17466beebe356376622d79.ctex"]
 
 [params]
 

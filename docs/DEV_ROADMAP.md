@@ -111,21 +111,39 @@
 - [x] S7 타이틀 아트 적용 (title_bg / title / active·inactive button, 5개 해상도 검증)
 - [x] QA 확인: 첫 실행 / 세이브 있음 / 새 게임 덮어쓰기 / 타이틀 복귀 후 재진입 / 키보드 완결
 
-## F8. 밸런싱 (Phase 10)  `[~]`
+## F8. 밸런싱 (Phase 10)  `[x]`
 
 근거: v0.3 §31 Phase 10, §34, §35 / growth_balance v0.2 전체
 
-- [ ] S0 F7 이월: 타이틀 포커스 테두리 대비 1.34:1 (WCAG 2.2 SC 2.4.11 의 3:1 미달)
-- [ ] S0 F7 이월: title_ex.png 가 res:// 에 있어 익스포트에 포함됨 (스토어용 목업)
-- [ ] S0 F7 이월: 타이틀 텍스처 무압축+밉맵 약 33MB VRAM
-- [ ] S0 F7 이월: OverwriteConfirm 460x140 픽셀 하드코딩
-- [ ] S1 Day 1~200 곡선 검증 — HP `3 x 1.035^(Day-1)`, Gold `2 x 1.025^(Day-1)` 실측
-- [ ] S2 계측 지표 수집 (v0.3 §34) — Day length / Clicks / Kills / Gold per Day / Days per Word
-- [ ] S3 밸런스 경고 조건 점검 (v0.3 §35) — 에너지·DoT·자모 RNG·Gold 4종
-- [ ] S4 경제 튜닝 — 업그레이드 구매 간격이 §34 "목표 감각"에 맞는지
-- [ ] S5 특수 개체 확률 튜닝
-- [ ] S6 조정값은 전부 `.tres` 로. 튜닝 근거를 문서로 남긴다
-- [ ] QA 확인: 30분 이상 장시간 플레이 세션 실시, 진행 막힘 없음 확인
+- [x] S0 F7 이월: 타이틀 포커스 테두리 대비 — **4 개 버튼 전부** 최저 3.51:1 (1 차 크림 단색은 `종료` 에서 2.73:1 FAIL. `SB_title_focus` 를 2 색 링 9-patch `art/ui/focus_ring.png` 로 교체, 검정 2px + 흰색 4px). 측정 `tests/qa_f8_focus_all.tscn`
+- [x] S0 F7 이월: title_ex.png 를 `art/_reference/` + `.gdignore` 로 이동 (파일 보존, 익스포트 제외)
+- [x] S0 F7 이월: 타이틀 텍스처 4장 BC7 VRAM 압축 — 약 33MB -> 8.1MB (원본 .png 무수정)
+- [x] S0 F7 이월: OverwriteConfirm 픽셀 size 제거, 내용 크기로 자동 (622x104)
+- [x] S1 Day 1~200 곡선 검증 — 런타임이 v0.3 8.1 식과 일치. growth_balance 3절 표가 Day 100/150/200 에서 반올림 오차
+- [x] S2 계측 지표 수집 — `tests/sim_balance.tscn` 헤드리스 하네스, 결과 `tests/qa_artifacts/f8/`
+- [x] S3 밸런스 경고 조건 점검 — 에너지/DoT/RNG 정상, Gold 는 역방향 실패(Day 107 부터 94일 무구매)
+- [x] S4 경제 튜닝 — 무구매 최장 94일 -> 16일, Day 1~30 중 25일 구매. `docs/BALANCE_NOTES.md`
+- [x] S5 특수 개체 확률 튜닝 — A/B 결과 문서값(2%) 유지가 맞아 변경 없음. 근거는 BALANCE_NOTES 5장
+- [x] S6 조정값 전부 `.tres`, 근거는 `docs/BALANCE_NOTES.md`
+- [x] QA 확인: 30분 이상 장시간 플레이 세션 실시, 진행 막힘 없음 확인
+
+### F8 후속 — 기준 문서 개정 (v0.4, 총지휘자·사용자 판단 사항)
+
+F8 은 코드가 기준 문서를 앞서간 상태로 끝났다. 아래는 **DEV 가 임의로 고치지 않는다.**
+
+- [ ] v0.3 §8.1 개정: `BaseGold = 2 × 1.025^(Day-1)` 를 `2 × 1.035^(Day-1)` 로.
+      F8 이 이 식을 어기고 있고, §41 우선순위상 1 순위 문서다. 근거 `docs/BALANCE_NOTES.md` 3-1
+- [ ] growth_balance v0.2 내부 모순 확정: §4 표(골드 1.025)와 §5 목표 수입곡선
+      (Day 200 50,000 G+)이 서로 모순이다. F8 은 **§5 를 정본**으로 삼고 §4 를 정오표 대상으로
+      뒀다. 어느 쪽이 최종 정본인지 결정 필요
+- [ ] growth_balance v0.2 §8.1 클릭 피해 표를 Lv26 값으로 교체 (BALANCE_NOTES 3-2)
+- [ ] growth_balance v0.2 §3 HP 표의 Day 100/150/200 반올림 오차 정정 (BALANCE_NOTES 1장)
+
+### F8 이월 (사용자 판단 대상)
+- [ ] MEDIUM-3: `docs/BALANCE_NOTES.md:314` 가 134행에서 철회한 §42 주장을 반복 (한 줄 정정)
+- [ ] MEDIUM-4: 포커스 링 제거 부작용 — 키보드 포커스와 마우스 호버가 다른 버튼이면 밝은 판때기 2개
+- [ ] `art/ui/focus_ring.png` 미참조 에셋 (파일 보존됨)
+- [ ] v0.3 §8.1 골드 상수 v0.4 개정 (코드는 1.035, 문서는 1.025)
 
 ---
 
@@ -139,7 +157,7 @@ F1~F6 완료 후 아래를 일괄 점검하고 통과해야 Phase 10(밸런싱) 
 - [x] Burn / Critical / Gold Word / Energy Word 동작
 - [x] Jamo Choice + Reroll
 - [x] Save / Load / Settings
-- [ ] 30분 이상 진행 시 심각한 막힘 없음 (장시간 플레이 세션 미실시)
+- [ ] 30분 이상 진행 시 심각한 막힘 없음 (Day 1~200 시뮬레이션은 완주, 실플레이 세션 미실시)
 
 ### 남은 LOW 이슈 (F6 QA)
 - [ ] `word_revealed` unused-signal 에디터 경고

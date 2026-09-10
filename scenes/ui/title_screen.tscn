@@ -1,45 +1,9 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_title"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings.tscn" id="2_settings"]
 [ext_resource type="Texture2D" path="res://art/ui/title/title_bg.png" id="3_bg"]
 [ext_resource type="Texture2D" path="res://art/ui/title/title.png" id="4_logo"]
-[ext_resource type="Texture2D" path="res://art/ui/title/title_active_button.png" id="5_btn_on"]
-[ext_resource type="Texture2D" path="res://art/ui/title/title_inactive_button.png" id="6_btn_off"]
-
-[sub_resource type="StyleBoxTexture" id="SB_plate_normal"]
-content_margin_left = 28.0
-content_margin_top = 8.0
-content_margin_right = 28.0
-content_margin_bottom = 8.0
-texture = ExtResource("5_btn_on")
-region_rect = Rect2(112, 157, 1946, 423)
-
-[sub_resource type="StyleBoxTexture" id="SB_plate_hover"]
-content_margin_left = 28.0
-content_margin_top = 8.0
-content_margin_right = 28.0
-content_margin_bottom = 8.0
-texture = ExtResource("5_btn_on")
-modulate_color = Color(1.12, 1.09, 1.02, 1)
-region_rect = Rect2(112, 157, 1946, 423)
-
-[sub_resource type="StyleBoxTexture" id="SB_plate_pressed"]
-content_margin_left = 28.0
-content_margin_top = 8.0
-content_margin_right = 28.0
-content_margin_bottom = 8.0
-texture = ExtResource("5_btn_on")
-modulate_color = Color(0.84, 0.8, 0.74, 1)
-region_rect = Rect2(112, 157, 1946, 423)
-
-[sub_resource type="StyleBoxTexture" id="SB_plate_disabled"]
-content_margin_left = 28.0
-content_margin_top = 8.0
-content_margin_right = 28.0
-content_margin_bottom = 8.0
-texture = ExtResource("6_btn_off")
-region_rect = Rect2(116, 149, 1931, 434)
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -92,10 +56,10 @@ mouse_filter = 2
 texture_filter = 4
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.2
-anchor_top = 0.05
-anchor_right = 0.8
-anchor_bottom = 0.32
+anchor_left = 0.22
+anchor_top = 0.07
+anchor_right = 0.78
+anchor_bottom = 0.31
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -106,73 +70,55 @@ stretch_mode = 5
 [node name="Box" type="VBoxContainer" parent="Safe/Content"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.345
-anchor_top = 0.37
-anchor_right = 0.655
-anchor_bottom = 0.95
+anchor_left = 0.385
+anchor_top = 0.43
+anchor_right = 0.615
+anchor_bottom = 0.89
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 6
+alignment = 1
+theme_override_constants/separation = 10
 
 [node name="NewGameButton" type="Button" parent="Safe/Content/Box"]
 unique_name_in_owner = true
 texture_filter = 4
 layout_mode = 2
-size_flags_vertical = 3
 theme_type_variation = &"TitleButton"
-theme_override_styles/disabled = SubResource("SB_plate_disabled")
-theme_override_styles/hover = SubResource("SB_plate_hover")
-theme_override_styles/normal = SubResource("SB_plate_normal")
-theme_override_styles/pressed = SubResource("SB_plate_pressed")
 text = "새 게임"
 
 [node name="ContinueButton" type="Button" parent="Safe/Content/Box"]
 unique_name_in_owner = true
 texture_filter = 4
+visible = false
 layout_mode = 2
-size_flags_vertical = 3
 theme_type_variation = &"TitleButton"
-theme_override_colors/font_disabled_color = Color(0.949, 0.902, 0.808, 1)
-theme_override_styles/disabled = SubResource("SB_plate_disabled")
-theme_override_styles/hover = SubResource("SB_plate_hover")
-theme_override_styles/normal = SubResource("SB_plate_normal")
-theme_override_styles/pressed = SubResource("SB_plate_pressed")
 disabled = true
 text = "이어하기"
 
 [node name="ContinueInfoLabel" type="Label" parent="Safe/Content/Box"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.949, 0.902, 0.808, 1)
 theme_override_colors/font_outline_color = Color(0.075, 0.055, 0.043, 1)
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 15
-text = "저장된 게임이 없습니다."
+text = "저장된 진행 — DAY 1 · 0 G"
 horizontal_alignment = 1
-autowrap_mode = 3
+autowrap_mode = 2
 
 [node name="SettingsButton" type="Button" parent="Safe/Content/Box"]
 unique_name_in_owner = true
 texture_filter = 4
 layout_mode = 2
-size_flags_vertical = 3
 theme_type_variation = &"TitleButton"
-theme_override_styles/disabled = SubResource("SB_plate_disabled")
-theme_override_styles/hover = SubResource("SB_plate_hover")
-theme_override_styles/normal = SubResource("SB_plate_normal")
-theme_override_styles/pressed = SubResource("SB_plate_pressed")
 text = "설정"
 
 [node name="QuitButton" type="Button" parent="Safe/Content/Box"]
 unique_name_in_owner = true
 texture_filter = 4
 layout_mode = 2
-size_flags_vertical = 3
 theme_type_variation = &"TitleButton"
-theme_override_styles/disabled = SubResource("SB_plate_disabled")
-theme_override_styles/hover = SubResource("SB_plate_hover")
-theme_override_styles/normal = SubResource("SB_plate_normal")
-theme_override_styles/pressed = SubResource("SB_plate_pressed")
 text = "종료"
 
 [node name="Settings" parent="." instance=ExtResource("2_settings")]
@@ -184,7 +130,6 @@ run_in_progress = false
 unique_name_in_owner = true
 title = "새 게임 시작"
 initial_position = 2
-size = Vector2i(460, 140)
 ok_button_text = "새로 시작"
 dialog_text = "저장된 진행 상황이 사라지고 DAY 1부터 다시 시작합니다. 되돌릴 수 없습니다."
 cancel_button_text = "취소"
