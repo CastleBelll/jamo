@@ -32,6 +32,11 @@ var first_run: bool = true
 var run_seed: int = 0
 ## Stability actually lost during the current Wave (G10 Wave Clear row).
 var wave_damage_taken: float = 0.0
+## Build roster, goal pin (kept across RUNs, G2), Forge failure pity (B3) and the live Forge.
+var build := BuildState.new()
+var pinned_word: StringName = &""
+var forge_fail_bonus: int = 0
+var forge: ForgeService
 
 
 func setup(content: ContentDB, max_stability: float = -1.0) -> void:
@@ -66,6 +71,10 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	gold_run = 0.0
 	end_reason = EndReason.NONE
 	deck = DeckService.from_deck_data(db.decks[chosen_deck], db.balance)
+	build = BuildState.new()
+	build.setup(db.balance)
+	forge = null
+	forge_fail_bonus = 0
 	# B5: drop and spawn streams are independent; both derive from run_seed through distinct labels.
 	drops.setup(db.balance, hash("drop:%d" % run_seed))
 	_set_stability(stability_max)
@@ -123,6 +132,62 @@ func confirm_build() -> bool:
 	wave += 1
 	wave_changed.emit(wave)
 	return _go(Phase.FORGE, Phase.WAVE_PREP)
+
+
+## Direct Forge candidates this RUN: start-unlocked base words (B5 snapshot; 위험 words and
+## compound results are not in the pool until their unlock/recipe systems land).
+func word_pool() -> Array[WordData]:
+	var out: Array[WordData] = []
+	for w in db.base_words():
+		if w.unlock == &"start":
+			out.append(w)
+	return out
+
+
+## Opens the Forge for the Wave just cleared (G5). The very first Forge of the first RUN deals
+## the fixed tutorial hand from real deck tokens (B3).
+func start_forge() -> ForgeService:
+	if phase != Phase.FORGE:
+		_reject("start_forge")
+		return null
+	forge = ForgeService.new()
+	var tutorial: Array[String] = []
+	if first_run and wave == FIRST_WAVE:
+		tutorial = db.balance.tutorial_hand
+	forge.pinned = pinned_word
+	forge.start(deck, db, build, word_pool(), hash("forge:%d:%d" % [run_seed, wave]), forge_fail_bonus, tutorial)
+	return forge
+
+
+func pin_word(word_id: StringName) -> void:
+	pinned_word = word_id if db.words.has(word_id) else &""
+	if forge != null:
+		forge.pinned = pinned_word
+
+
+## Jamo the pinned word still lacks in the deck; B5 spawn weight x1.15 applies to them.
+func pin_lacking() -> Array[String]:
+	var out: Array[String] = []
+	if pinned_word == &"" or deck == null:
+		return out
+	for j in deck.missing_for(db.words[pinned_word]):
+		out.append(j)
+	return out
+
+
+## 빌드 확정: settle Forge failure/success pity (G5/B3), return tokens, advance the Wave.
+func finish_forge() -> bool:
+	if phase != Phase.FORGE:
+		return _reject("finish_forge")
+	if forge != null:
+		if forge.restored_word != &"":
+			forge_fail_bonus = 0
+		elif forge.is_failed():
+			heal_stability(db.balance.forge_fail_heal)
+			forge_fail_bonus = mini(forge_fail_bonus + db.balance.forge_fail_bonus_reroll, db.balance.forge_fail_bonus_reroll_cap)
+		forge.finish()
+		forge = null
+	return confirm_build()
 
 
 ## Menu abandon, allowed in any in-run phase after confirmation in the UI.

@@ -1,0 +1,113 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/forge_panel.gd" id="1"]
+[ext_resource type="Theme" path="res://resources/ui/theme.tres" id="2"]
+
+[node name="ForgePanel" type="PanelContainer"]
+custom_minimum_size = Vector2(1300, 0)
+theme = ExtResource("2")
+script = ExtResource("1")
+
+[node name="Box" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Box"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+text = "단어 복원"
+
+[node name="HandRow" type="HBoxContainer" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="LockRow" type="HBoxContainer" parent="Box"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="LockLabel" type="Label" parent="Box/LockRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Lock 0 / 3"
+
+[node name="RerollButton" type="Button" parent="Box/LockRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 64)
+layout_mode = 2
+text = "Reroll (2)"
+
+[node name="BuildLabel" type="Label" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = "보유 0 / 6"
+
+[node name="Candidates" type="VBoxContainer" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CompareLabel" type="Label" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = ""
+
+[node name="ReplaceRow" type="HBoxContainer" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+visible = false
+
+[node name="PinRow" type="HBoxContainer" parent="Box"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="PinCaption" type="Label" parent="Box/PinRow"]
+layout_mode = 2
+text = "목표 핀"
+
+[node name="PinOption" type="OptionButton" parent="Box/PinRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+
+[node name="PinLabel" type="Label" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = ""
+
+[node name="StatusLabel" type="Label" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = ""
+
+[node name="ActionRow" type="HBoxContainer" parent="Box"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="RestoreButton" type="Button" parent="Box/ActionRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 64)
+layout_mode = 2
+text = "복원"
+
+[node name="FinishButton" type="Button" parent="Box/ActionRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 64)
+layout_mode = 2
+text = "빌드 확정"
+
