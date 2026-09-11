@@ -169,7 +169,7 @@ func _check_run_game_scene() -> void:
 	_expect(hud.get_node("%StabilityLabel").text.begins_with("안정도 92.0"), "HUD follows stability")
 	run.on_wave_cleared()
 	_expect(game.get_node("%ClearPanel").visible and get_tree().paused, "clear panel shown and paused")
-	game.get_node("%FinishClearButton").pressed.emit()
+	game.get_node("%ClearPanel").get_node("%FinishButton").pressed.emit()
 	game.get_node("%ConfirmBuildButton").pressed.emit()
 	_expect(hud.get_node("%WaveLabel").text == "Wave 2", "HUD wave 2 after build confirm")
 	game.get_node("%StartWaveButton").pressed.emit()

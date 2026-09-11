@@ -7,8 +7,12 @@ const LIFETIME := 0.45
 
 
 func show_value(value: float, crit: bool) -> void:
-	text = ("%.1f" % value) + ("*" if crit else "")
-	modulate = Color(1.0, 0.85, 0.3) if crit else Color.WHITE
+	show_text(("%.1f" % value) + ("*" if crit else ""), Color(1.0, 0.85, 0.3) if crit else Color.WHITE)
+
+
+func show_text(value: String, color: Color) -> void:
+	text = value
+	modulate = color
 	var tween := create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(self, "position:y", position.y - RISE_PX, LIFETIME)

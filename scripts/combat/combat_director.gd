@@ -319,6 +319,15 @@ func _spawn_damage_number(at: Vector2, value: float, crit: bool) -> void:
 	n.show_value(value, crit)
 
 
+func spawn_text(at: Vector2, text: String, color: Color) -> void:
+	if effect_root == null:
+		return
+	var n := DAMAGE_NUMBER_SCENE.instantiate()
+	effect_root.add_child(n)
+	n.global_position = at + Vector2(-20, -80)
+	n.show_text(text, color)
+
+
 func _retire(m: JamoMonster, delay: float) -> void:
 	m.focused = false
 	if delay <= 0.0 or not is_inside_tree():

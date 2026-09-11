@@ -16,8 +16,9 @@ const LIBRARY_SCENE := "res://scenes/hub/last_library.tscn"
 @onready var result_label: Label = %ResultLabel
 @onready var pause_panel: PanelContainer = %PausePanel
 
-## Spawn RNG seed per run; tests override it for reproducible waves.
+## Spawn/drop RNG seed per run; tests override it for reproducible waves.
 var run_seed: int = 0
+var db_ref: ContentDB
 
 
 func _ready() -> void:
@@ -27,13 +28,16 @@ func _ready() -> void:
 		push_error("content invalid: %s" % errors[0])
 	if run_seed == 0:
 		run_seed = int(Time.get_unix_time_from_system()) ^ Time.get_ticks_msec()
+	run.run_seed = run_seed
 	run.setup(db)
+	db_ref = db
 	director.setup(run, db, page)
 	director.enemies_changed.connect(hud.set_enemies_left)
+	director.enemy_purified.connect(_on_enemy_purified)
+	clear_panel.finished.connect(func(): run.finish_clear())
 	hud.bind(run)
 	run.phase_changed.connect(_on_phase_changed)
 	%StartWaveButton.pressed.connect(func(): run.begin_combat())
-	%FinishClearButton.pressed.connect(func(): run.finish_clear())
 	%ConfirmBuildButton.pressed.connect(func(): run.confirm_build())
 	%ResultLibraryButton.pressed.connect(_on_return_to_library)
 	%ResumeButton.pressed.connect(_close_pause)
@@ -87,15 +91,23 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			%StartWaveButton.grab_focus()
 		RunController.Phase.COMBAT:
 			director.set_hold(false)
+			hud.set_temp_drops(0)
 			director.start_wave(run.wave_data(), run_seed + run.wave)
 		RunController.Phase.CLEAR:
-			%FinishClearButton.grab_focus()
+			clear_panel.open(run.build_reward(), db_ref)
 		RunController.Phase.FORGE:
 			%ConfirmBuildButton.grab_focus()
 		RunController.Phase.RESULT:
 			director.set_hold(false)
 			result_label.text = _result_text(run.end_reason)
 			%ResultLibraryButton.grab_focus()
+
+
+## Data first, then the 회수 feedback (G12): the drop is counted before the glyph floats.
+func _on_enemy_purified(monster: JamoMonster, _source: StringName) -> void:
+	if run.on_purified(monster.jamo):
+		hud.set_temp_drops(run.drops.drops.size())
+		director.spawn_text(monster.global_position, "+" + monster.jamo, Color(0.95, 0.75, 0.2))
 
 
 func _result_text(reason: RunController.EndReason) -> String:

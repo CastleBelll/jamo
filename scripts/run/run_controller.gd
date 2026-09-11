@@ -24,6 +24,12 @@ var stability: float = 0.0
 var stability_max: float = 0.0
 var gold_run: float = 0.0
 var end_reason: EndReason = EndReason.NONE
+## RUN deck and this Wave's recovered jamo (G4). Rewards are built from these on CLEAR.
+var deck: DeckService
+var drops := DropService.new()
+## Until meta persistence lands (P4) every run counts as the first run for the W1 tutorial rule.
+var first_run: bool = true
+var run_seed: int = 0
 
 
 func setup(content: ContentDB, max_stability: float = -1.0) -> void:
@@ -57,6 +63,8 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	wave = FIRST_WAVE
 	gold_run = 0.0
 	end_reason = EndReason.NONE
+	deck = DeckService.from_deck_data(db.decks[chosen_deck], db.balance)
+	drops.setup(db.balance, run_seed + 1)
 	_set_stability(stability_max)
 	gold_changed.emit(gold_run)
 	wave_changed.emit(wave)
@@ -64,7 +72,29 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 
 
 func begin_combat() -> bool:
+	if phase != Phase.WAVE_PREP:
+		return _reject("begin_combat")
+	drops.start_wave()
 	return _go(Phase.WAVE_PREP, Phase.COMBAT)
+
+
+## Normal purify with a recoverable jamo. Returns true when it was recovered (B4).
+func on_purified(jamo: String) -> bool:
+	if phase != Phase.COMBAT:
+		return false
+	return drops.roll(jamo)
+
+
+## Reward budget for the Wave just cleared (B4): 1 pick normally, 2 picks + 1 remove after
+## a boss Wave. The very first W1 forbids 교체 so the guaranteed tutorial hand survives (G2).
+func build_reward() -> RewardService:
+	var reward := RewardService.new()
+	var boss := is_boss_wave()
+	var picks := db.balance.reward_picks_boss if boss else db.balance.reward_picks_normal
+	var removes := db.balance.reward_removes_boss if boss else 0
+	var replace_allowed := not (first_run and wave == FIRST_WAVE)
+	reward.start(deck, drops.drops, picks, removes, replace_allowed)
+	return reward
 
 
 ## Spawns done and no enemies/patterns left (G2). W20 skips CLEAR/FORGE entirely.
