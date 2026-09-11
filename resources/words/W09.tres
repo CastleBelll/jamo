@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"apply_slow"
+trigger = &"manual_hit"
+value = 0.2
+duration = 2.0
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"apply_slow"
+trigger = &"manual_hit"
+value = 0.25
+duration = 2.5
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"apply_slow"
+trigger = &"manual_hit"
+value = 0.3
+duration = 3.0
+
+[resource]
+script = ExtResource("1")
+id = &"W09"
+name = "눈"
+required_jamo = Array[String](["ㄴ", "ㅜ", "ㄴ"])
+category = &"S"
+tags = Array[StringName]([&"냉기"])
+role = "시간 확보"
+rank1 = Array[Resource]([SubResource("r1_0")])
+rank2 = Array[Resource]([SubResource("r2_0")])
+rank3 = Array[Resource]([SubResource("r3_0")])
+unlock = &"start"
+related_boss = &"B_IEUNG"
+compound_id = &"C02"
+is_compound = false
+requires_any_word = Array[StringName]([])

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ResearchData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/research_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"R_SAFE_1"
+name = "안정도 강화 I"
+price = 30
+description = "최대 안정도 100→105"
+requires_research = &""
+requires_reach_wave = 0
+effect = {"max_stability": 105}

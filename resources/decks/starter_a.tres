@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DeckData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/deck_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"starter_a"
+name = "Starter A"
+tokens = Array[String](["ㄱ", "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅎ", "ㅏ", "ㅓ", "ㅗ", "ㅜ", "ㅜ", "ㅊ", "ㅣ", "ㅣ", "ㅕ"])
+unlock_research = &""

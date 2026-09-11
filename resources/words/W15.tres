@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"extra_remove_every_n"
+trigger = &"passive"
+every_n = 4
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"extra_remove_every_n"
+trigger = &"passive"
+every_n = 3
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"extra_remove_every_n"
+trigger = &"passive"
+every_n = 2
+
+[resource]
+script = ExtResource("1")
+id = &"W15"
+name = "복"
+required_jamo = Array[String](["ㅂ", "ㅗ", "ㄱ"])
+category = &"R"
+tags = Array[StringName]([&"행운"])
+role = "덱 관리"
+rank1 = Array[Resource]([SubResource("r1_0")])
+rank2 = Array[Resource]([SubResource("r2_0")])
+rank3 = Array[Resource]([SubResource("r3_0")])
+unlock = &"start"
+related_boss = &"B_GREED"
+compound_id = &""
+is_compound = false
+requires_any_word = Array[StringName]([])

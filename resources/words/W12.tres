@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"clear_heal_bonus"
+trigger = &"passive"
+value = 3.0
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"clear_heal_bonus"
+trigger = &"passive"
+value = 5.0
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"clear_heal_bonus"
+trigger = &"passive"
+value = 7.0
+
+[resource]
+script = ExtResource("1")
+id = &"W12"
+name = "숨"
+required_jamo = Array[String](["ㅅ", "ㅜ", "ㅁ"])
+category = &"R"
+tags = Array[StringName]([&"방어"])
+role = "Wave 회복"
+rank1 = Array[Resource]([SubResource("r1_0")])
+rank2 = Array[Resource]([SubResource("r2_0")])
+rank3 = Array[Resource]([SubResource("r3_0")])
+unlock = &"start"
+related_boss = &"B_SILENCE"
+compound_id = &""
+is_compound = false
+requires_any_word = Array[StringName]([])

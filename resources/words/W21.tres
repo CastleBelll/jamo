@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"manual_damage_pct"
+trigger = &"passive"
+value = 0.25
+
+[sub_resource type="Resource" id="r1_1"]
+script = ExtResource("2")
+kind = &"input_interval"
+trigger = &"passive"
+value = 0.22
+
+[sub_resource type="Resource" id="r1_2"]
+script = ExtResource("2")
+kind = &"stability_taken_pct"
+trigger = &"passive"
+value = 0.2
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"manual_damage_pct"
+trigger = &"passive"
+value = 0.35
+
+[sub_resource type="Resource" id="r2_1"]
+script = ExtResource("2")
+kind = &"input_interval"
+trigger = &"passive"
+value = 0.21
+
+[sub_resource type="Resource" id="r2_2"]
+script = ExtResource("2")
+kind = &"stability_taken_pct"
+trigger = &"passive"
+value = 0.25
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"manual_damage_pct"
+trigger = &"passive"
+value = 0.45
+
+[sub_resource type="Resource" id="r3_1"]
+script = ExtResource("2")
+kind = &"input_interval"
+trigger = &"passive"
+value = 0.2
+
+[sub_resource type="Resource" id="r3_2"]
+script = ExtResource("2")
+kind = &"stability_taken_pct"
+trigger = &"passive"
+value = 0.3
+
+[resource]
+script = ExtResource("1")
+id = &"W21"
+name = "광기"
+required_jamo = Array[String](["ㄱ", "ㅗ", "ㅏ", "ㅇ", "ㄱ", "ㅣ"])
+category = &"X"
+tags = Array[StringName]([&"무기", &"위험"])
+role = "빠른 집중"
+rank1 = Array[Resource]([SubResource("r1_0"), SubResource("r1_1"), SubResource("r1_2")])
+rank2 = Array[Resource]([SubResource("r2_0"), SubResource("r2_1"), SubResource("r2_2")])
+rank3 = Array[Resource]([SubResource("r3_0"), SubResource("r3_1"), SubResource("r3_2")])
+unlock = &"after_mieum"
+related_boss = &"B_SILENCE"
+compound_id = &""
+is_compound = false
+requires_any_word = Array[StringName]([])

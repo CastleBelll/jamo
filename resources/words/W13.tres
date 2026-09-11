@@ -1,0 +1,63 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"gold_pct"
+trigger = &"passive"
+value = 0.15
+
+[sub_resource type="Resource" id="r1_1"]
+script = ExtResource("2")
+kind = &"heal_per_gold"
+trigger = &"wave_clear"
+value = 2.0
+value2 = 12.0
+cap = 4.0
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"gold_pct"
+trigger = &"passive"
+value = 0.25
+
+[sub_resource type="Resource" id="r2_1"]
+script = ExtResource("2")
+kind = &"heal_per_gold"
+trigger = &"wave_clear"
+value = 3.0
+value2 = 12.0
+cap = 6.0
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"gold_pct"
+trigger = &"passive"
+value = 0.35
+
+[sub_resource type="Resource" id="r3_1"]
+script = ExtResource("2")
+kind = &"heal_per_gold"
+trigger = &"wave_clear"
+value = 4.0
+value2 = 12.0
+cap = 8.0
+
+[resource]
+script = ExtResource("1")
+id = &"W13"
+name = "돈"
+required_jamo = Array[String](["ㄷ", "ㅗ", "ㄴ"])
+category = &"R"
+tags = Array[StringName]([&"경제"])
+role = "수입·생존 연결"
+rank1 = Array[Resource]([SubResource("r1_0"), SubResource("r1_1")])
+rank2 = Array[Resource]([SubResource("r2_0"), SubResource("r2_1")])
+rank3 = Array[Resource]([SubResource("r3_0"), SubResource("r3_1")])
+unlock = &"start"
+related_boss = &"B_GREED"
+compound_id = &""
+is_compound = false
+requires_any_word = Array[StringName]([])

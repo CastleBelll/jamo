@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="SynergyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/synergy_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="effect"]
+script = ExtResource("2")
+kind = &"manual_damage_pct"
+trigger = &"passive"
+value = 0.1
+
+[resource]
+script = ExtResource("1")
+id = &"SY_WEAPON"
+conditions = Array[Dictionary]([{"tag": "무기", "min": 2}])
+effect = SubResource("effect")
+description = "무기 서로 다른 2개: 수동 피해 +10%"

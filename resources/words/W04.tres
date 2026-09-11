@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"stability_damage_pct"
+trigger = &"passive"
+value = -0.1
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"stability_damage_pct"
+trigger = &"passive"
+value = -0.16
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"stability_damage_pct"
+trigger = &"passive"
+value = -0.22
+
+[resource]
+script = ExtResource("1")
+id = &"W04"
+name = "벽"
+required_jamo = Array[String](["ㅂ", "ㅕ", "ㄱ"])
+category = &"E"
+tags = Array[StringName]([&"방어"])
+role = "누락 완충"
+rank1 = Array[Resource]([SubResource("r1_0")])
+rank2 = Array[Resource]([SubResource("r2_0")])
+rank3 = Array[Resource]([SubResource("r3_0")])
+unlock = &"start"
+related_boss = &"B_MIEUM"
+compound_id = &""
+is_compound = false
+requires_any_word = Array[StringName]([])

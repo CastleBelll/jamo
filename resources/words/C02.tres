@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"apply_slow"
+trigger = &"manual_hit"
+value = 0.25
+duration = 2.5
+
+[sub_resource type="Resource" id="r1_1"]
+script = ExtResource("2")
+kind = &"heal_stability"
+trigger = &"manual_kill"
+value = 3.0
+every_n = 4
+
+[resource]
+script = ExtResource("1")
+id = &"C02"
+name = "눈물"
+required_jamo = Array[String](["ㄴ", "ㅜ", "ㄴ", "ㅁ", "ㅜ", "ㄹ"])
+category = &"S"
+tags = Array[StringName]([&"냉기", &"방어"])
+role = "둔화·회복"
+rank1 = Array[Resource]([SubResource("r1_0"), SubResource("r1_1")])
+rank2 = Array[Resource]([])
+rank3 = Array[Resource]([])
+unlock = &"start"
+related_boss = &"B_GREED"
+compound_id = &""
+is_compound = true
+requires_any_word = Array[StringName]([])

@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"apply_burn"
+trigger = &"manual_hit"
+value = 1.1
+duration = 4.0
+
+[sub_resource type="Resource" id="r1_1"]
+script = ExtResource("2")
+kind = &"enemy_speed_pct"
+trigger = &"passive"
+value = -0.08
+
+[sub_resource type="Resource" id="r1_2"]
+script = ExtResource("2")
+kind = &"damage_near_other"
+trigger = &"manual_kill"
+value = 1.5
+radius_px = 120.0
+
+[resource]
+script = ExtResource("1")
+id = &"C01"
+name = "불길"
+required_jamo = Array[String](["ㅂ", "ㅜ", "ㄹ", "ㄱ", "ㅣ", "ㄹ"])
+category = &"S"
+tags = Array[StringName]([&"화염", &"방어"])
+role = "화염 확산·지연"
+rank1 = Array[Resource]([SubResource("r1_0"), SubResource("r1_1"), SubResource("r1_2")])
+rank2 = Array[Resource]([])
+rank3 = Array[Resource]([])
+unlock = &"start"
+related_boss = &"B_SILENCE"
+compound_id = &""
+is_compound = true
+requires_any_word = Array[StringName]([])

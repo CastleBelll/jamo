@@ -1,0 +1,51 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"apply_burn"
+trigger = &"manual_hit"
+value = 0.8
+duration = 3.0
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"apply_burn"
+trigger = &"manual_hit"
+value = 1.0
+duration = 4.0
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"apply_burn"
+trigger = &"manual_hit"
+value = 1.2
+duration = 4.0
+
+[sub_resource type="Resource" id="r3_1"]
+script = ExtResource("2")
+kind = &"burn_spread"
+trigger = &"kill"
+value = 1.2
+duration = 4.0
+target_count = 1
+radius_px = 120.0
+
+[resource]
+script = ExtResource("1")
+id = &"W02"
+name = "불"
+required_jamo = Array[String](["ㅂ", "ㅜ", "ㄹ"])
+category = &"S"
+tags = Array[StringName]([&"화염"])
+role = "찍고 이동"
+rank1 = Array[Resource]([SubResource("r1_0")])
+rank2 = Array[Resource]([SubResource("r2_0")])
+rank3 = Array[Resource]([SubResource("r3_0"), SubResource("r3_1")])
+unlock = &"start"
+related_boss = &"B_SILENCE"
+compound_id = &"C01"
+is_compound = false
+requires_any_word = Array[StringName]([])
