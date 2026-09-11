@@ -9,6 +9,7 @@ extends CanvasLayer
 @onready var gold_label: Label = %GoldLabel
 @onready var drops_label: Label = %DropsLabel
 @onready var build_bar: HBoxContainer = $Root/BuildBar
+@onready var hover_label: Label = %HoverLabel
 
 
 func bind(run: RunController) -> void:
@@ -36,6 +37,15 @@ R%d" % [word.name, build.words[i]["rank"]]
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			l.set_anchors_preset(Control.PRESET_FULL_RECT)
 			slot.add_child(l)
+
+
+## 적 Hover (G10): HP and variant of the enemy under the cursor, empty when none.
+func set_hover(target: JamoMonster) -> void:
+	if target == null:
+		hover_label.text = ""
+		return
+	var kind := "보스" if target is Boss else target.variant_name()
+	hover_label.text = "%s  HP %.1f / %.1f  %s" % [target.jamo if not (target is Boss) else target.data.name, target.hp, target.hp_max, kind]
 
 
 func set_enemies_left(count: int) -> void:

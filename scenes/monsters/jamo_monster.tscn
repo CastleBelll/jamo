@@ -64,6 +64,16 @@ text = "ㄱ"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="VariantMark" type="Label" parent="VisualPivot"]
+offset_left = -28.0
+offset_top = -58.0
+offset_right = 28.0
+offset_bottom = -30.0
+theme_override_colors/font_color = Color(0.55, 0.12, 0.1, 1)
+theme_override_font_sizes/font_size = 22
+text = ""
+horizontal_alignment = 1
+
 [node name="ClickArea" type="Area2D" parent="."]
 monitoring = false
 monitorable = false

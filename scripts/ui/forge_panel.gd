@@ -21,6 +21,10 @@ var replace_target: StringName = &""
 @onready var pin_option: OptionButton = %PinOption
 @onready var pin_label: Label = %PinLabel
 @onready var status_label: Label = %StatusLabel
+@onready var compound_box: VBoxContainer = %CompoundBox
+@onready var compound_label: Label = %CompoundLabel
+@onready var compound_button: Button = %CompoundButton
+var selected_compound: StringName = &""
 @onready var finish_button: Button = %FinishButton
 
 
@@ -29,6 +33,7 @@ func _ready() -> void:
 	restore_button.pressed.connect(_on_restore)
 	pin_option.item_selected.connect(_on_pin_selected)
 	finish_button.pressed.connect(func(): finished.emit())
+	compound_button.pressed.connect(_on_compound)
 
 
 func open(controller: RunController, content: ContentDB) -> void:
@@ -37,6 +42,7 @@ func open(controller: RunController, content: ContentDB) -> void:
 	forge = run.start_forge()
 	selected = &""
 	replace_target = &""
+	selected_compound = &""
 	_fill_pin_options()
 	_refresh()
 	finish_button.grab_focus()
@@ -72,6 +78,7 @@ func _refresh() -> void:
 	compare_label.text = _compare_text(c)
 	pin_label.text = _pin_text()
 	status_label.text = _status_text()
+	_rebuild_compounds()
 
 
 func _rebuild_hand() -> void:
@@ -224,6 +231,62 @@ func _on_restore() -> void:
 	if forge.restore(selected, replace_target):
 		selected = &""
 		replace_target = &""
+		_refresh()
+		finish_button.grab_focus()
+
+
+## 합성 (G6/G10 빌드 확정): recipes whose materials are held; preview shows what is lost.
+func _rebuild_compounds() -> void:
+	for ch in compound_box.get_children():
+		ch.queue_free()
+	var options := forge.build.compound_options(db)
+	compound_box.visible = not options.is_empty() or forge.compounded != &""
+	compound_button.visible = compound_box.visible
+	if forge.compounded != &"":
+		compound_label.text = "합성 완료: %s. 이번 빌드 확정에서는 더 합성할 수 없습니다." % db.words[db.compounds[forge.compounded].result].name
+		compound_button.disabled = true
+		return
+	if options.is_empty():
+		compound_label.text = ""
+		compound_button.disabled = true
+		return
+	if selected_compound == &"" or db.compounds.get(selected_compound) == null or not (db.compounds[selected_compound] in options):
+		selected_compound = options[0].id
+	for c in options:
+		var b := Button.new()
+		var result: WordData = db.words[c.result]
+		b.text = "%s + %s → %s" % [db.words[c.material_a].name, db.words[c.material_b].name, result.name]
+		b.custom_minimum_size = Vector2(0, 56)
+		b.toggle_mode = true
+		b.button_pressed = c.id == selected_compound
+		var id := c.id
+		b.pressed.connect(func(): selected_compound = id; _refresh())
+		compound_box.add_child(b)
+	compound_label.text = _compound_preview_text(selected_compound)
+	compound_button.disabled = not forge.can_compound()
+
+
+func _compound_preview_text(id: StringName) -> String:
+	var pv := forge.compound_preview(id)
+	if pv.is_empty():
+		return ""
+	var c: CompoundData = pv["compound"]
+	var result: WordData = pv["result"]
+	var lines: Array[String] = []
+	lines.append("잃는 효과: %s R%d (%s) / %s R%d (%s)" % [db.words[c.material_a].name, pv["material_a_rank"], EffectText.describe_rank(db.words[c.material_a], pv["material_a_rank"]),
+		db.words[c.material_b].name, pv["material_b_rank"], EffectText.describe_rank(db.words[c.material_b], pv["material_b_rank"])])
+	lines.append("얻는 효과: %s R1 (%s)" % [result.name, EffectText.describe_rank(result, 1)])
+	lines.append("슬롯 2 → 1. 결과 Rank는 1로 고정되며 재료의 높은 Rank는 사라집니다.")
+	if not pv["synergies_lost"].is_empty():
+		var names: Array[String] = []
+		for sid in pv["synergies_lost"]:
+			names.append(String(sid))
+		lines.append("꺼지는 시너지: %s" % ", ".join(names))
+	return "\n".join(lines)
+
+
+func _on_compound() -> void:
+	if forge.compound(selected_compound):
 		_refresh()
 		finish_button.grab_focus()
 

@@ -22,6 +22,8 @@ var rerolls_left: int = 2
 var restores_left: int = 1
 var restored_word: StringName = &""
 var pinned: StringName = &""
+## One 합성 per 빌드 확정 (G6); it never counts as the Forge restore.
+var compounded: StringName = &""
 
 
 func start(run_deck: DeckService, content: ContentDB, run_build: BuildState, word_pool: Array[WordData],
@@ -36,6 +38,7 @@ func start(run_deck: DeckService, content: ContentDB, run_build: BuildState, wor
 	rerolls_left = db.balance.reroll_base + bonus_rerolls
 	restores_left = db.balance.restores_per_forge
 	restored_word = &""
+	compounded = &""
 	locked.clear()
 	hand.clear()
 	discard.clear()
@@ -191,6 +194,44 @@ func restore(word_id: StringName, replace_id: StringName = &"") -> bool:
 			return false
 	restores_left -= 1
 	restored_word = word.id
+	return true
+
+
+func can_compound() -> bool:
+	return compounded == &"" and not build.compound_options(db).is_empty()
+
+
+## 합성 preview (G6): what leaves, what enters, and which synergies switch off/on.
+func compound_preview(compound_id: StringName) -> Dictionary:
+	var c: CompoundData = db.compounds.get(compound_id)
+	if c == null:
+		return {}
+	var before: Array[StringName] = []
+	for syn in CombatResolver.active_synergies(db, build):
+		before.append(syn.id)
+	var trial := BuildState.new()
+	trial.slots = build.slots
+	trial.risk_max = build.risk_max
+	trial.words = build.words.duplicate(true)
+	trial.apply_compound(db, compound_id)
+	var after: Array[StringName] = []
+	for syn in CombatResolver.active_synergies(db, trial):
+		after.append(syn.id)
+	var lost: Array[StringName] = []
+	for id in before:
+		if id not in after:
+			lost.append(id)
+	return {"compound": c, "material_a_rank": build.rank_of(c.material_a), "material_b_rank": build.rank_of(c.material_b),
+		"result": db.words[c.result], "synergies_lost": lost}
+
+
+## Applies the recipe once per 빌드 확정; cancelling before this call costs nothing.
+func compound(compound_id: StringName) -> bool:
+	if compounded != &"":
+		return false
+	if not build.apply_compound(db, compound_id):
+		return false
+	compounded = compound_id
 	return true
 
 

@@ -40,6 +40,10 @@ var forge: ForgeService
 ## Result-screen records (G9): words first restored this RUN, stability loss by cause,
 ## and the highest Wave actually cleared.
 var discovered: Array[StringName] = []
+## 위험 words join the pool only when 거대한 ㅁ was purified in an earlier RUN (B5); the pool
+## is snapshotted at RUN start and never widens mid-RUN.
+var risk_unlocked: bool = false
+var run_pool: Array[WordData] = []
 var damage_causes: Dictionary = {}
 var waves_cleared: int = 0
 
@@ -83,6 +87,8 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	discovered.clear()
 	damage_causes.clear()
 	waves_cleared = 0
+	run_pool.clear()
+	run_pool = word_pool()
 	# B5: drop and spawn streams are independent; both derive from run_seed through distinct labels.
 	drops.setup(db.balance, hash("drop:%d" % run_seed))
 	_set_stability(stability_max)
@@ -149,9 +155,11 @@ func confirm_build() -> bool:
 ## Direct Forge candidates this RUN: start-unlocked base words (B5 snapshot; 위험 words and
 ## compound results are not in the pool until their unlock/recipe systems land).
 func word_pool() -> Array[WordData]:
+	if not run_pool.is_empty():
+		return run_pool
 	var out: Array[WordData] = []
 	for w in db.base_words():
-		if w.unlock == &"start":
+		if w.unlock == &"start" or (w.unlock == &"after_mieum" and risk_unlocked):
 			out.append(w)
 	return out
 
@@ -196,6 +204,10 @@ func finish_forge() -> bool:
 			forge_fail_bonus = 0
 			if forge.restored_word not in discovered:
 				discovered.append(forge.restored_word)
+		if forge.compounded != &"":
+			var result_id: StringName = db.compounds[forge.compounded].result
+			if result_id not in discovered:
+				discovered.append(result_id)
 		elif forge.is_failed():
 			heal_stability(db.balance.forge_fail_heal)
 			forge_fail_bonus = mini(forge_fail_bonus + db.balance.forge_fail_bonus_reroll, db.balance.forge_fail_bonus_reroll_cap)

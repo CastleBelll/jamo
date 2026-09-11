@@ -25,6 +25,10 @@ var enemy_root: Node2D
 var effect_root: Node2D
 
 var rng_spawn := RandomNumberGenerator.new()
+## Variant rolls use their own stream (B2: 생성 가중치와 변형 확률은 별도 추첨).
+var rng_variant := RandomNumberGenerator.new()
+## 위험 words unlocked for this RUN: widens the B5 spawn pool to 20 jamo types.
+var risk_unlocked: bool = false
 var enemies: Array[JamoMonster] = []
 var wave_data: WaveData
 var clock: float = 0.0
@@ -70,6 +74,7 @@ func start_wave(data: WaveData, seed: int) -> void:
 	clear_enemies()
 	wave_data = data
 	rng_spawn.seed = seed
+	rng_variant.seed = hash("variant:%d" % seed)
 	clock = 0.0
 	spawned = 0
 	total = data.enemy_count
@@ -265,7 +270,7 @@ func _manual_attack(target: JamoMonster) -> void:
 
 
 func _apply_hit(target: JamoMonster, damage: float, source: StringName) -> float:
-	var dealt := target.take_damage(damage)
+	var dealt := target.take_damage(damage * guard_multiplier(target))
 	if dealt > 0.0:
 		target.last_source = source
 	return dealt
@@ -345,7 +350,7 @@ func _spawn_if_due() -> void:
 	var slot := _pick_slot()
 	if slot < 0:
 		return  # spawn spot blocked: hold this spawn, never batch (G11)
-	_spawn(slot, _draw_jamo(), wave_data.base_hp, wave_data.travel_time)
+	_spawn(slot, _draw_jamo(), wave_data.base_hp, wave_data.travel_time, _roll_variant())
 	# B2: next spawn counts from the actual spawn time, delays included.
 	next_spawn_at = clock + wave_data.spawn_interval
 
@@ -451,11 +456,44 @@ func _fewest(counts: Array, start: int) -> int:
 	return best
 
 
-func _spawn(slot: int, jamo: String, hp: float, travel_time: float) -> void:
+## B2: variant chance per Wave, then LIGHT/HEAVY/GUARD by the 40/40/20 weights. Minions
+## never roll (B9).
+func _roll_variant() -> JamoMonster.Variant:
+	if wave_data == null or wave_data.variant_chance <= 0.0:
+		return JamoMonster.Variant.NORMAL
+	if rng_variant.randf() >= wave_data.variant_chance:
+		return JamoMonster.Variant.NORMAL
+	var w: Dictionary = db.balance.variant_weights
+	var total_w := 0
+	for k in w:
+		total_w += int(w[k])
+	var roll := rng_variant.randi_range(1, total_w)
+	for name in ["LIGHT", "HEAVY", "GUARD"]:
+		roll -= int(w.get(name, 0))
+		if roll <= 0:
+			return JamoMonster.Variant[name]
+	return JamoMonster.Variant.NORMAL
+
+
+## GUARD (B2): the foremost OTHER enemy in the guard lane takes 25% less damage; several
+## guards never stack. Returns the multiplier for `target`.
+func guard_multiplier(target: JamoMonster) -> float:
+	if target is Boss:
+		return 1.0
+	for g in enemies:
+		if g == target or g is Boss or not g.alive or g.variant != JamoMonster.Variant.GUARD or g.lane != target.lane:
+			continue
+		if resolver._lane_front_other(g, enemies) == target:
+			return 1.0 - db.balance.guard_damage_reduction
+	return 1.0
+
+
+func _spawn(slot: int, jamo: String, hp: float, travel_time: float, variant: JamoMonster.Variant = JamoMonster.Variant.NORMAL) -> void:
 	var m: JamoMonster = MONSTER_SCENE.instantiate()
 	var lane := slot / SUB_LANE_COUNT
 	var sub := slot % SUB_LANE_COUNT
 	m.setup(next_entity_id, jamo, hp, paths[slot], travel_time, lane, sub)
+	m.apply_variant(variant, db.balance)
 	next_entity_id += 1
 	enemy_root.add_child(m)
 	enemies.append(m)
@@ -465,7 +503,7 @@ func _spawn(slot: int, jamo: String, hp: float, travel_time: float) -> void:
 
 ## B5 weighted draw on the spawn RNG stream; pinned-and-lacking jamo get x1.15 once.
 func _draw_jamo() -> String:
-	var weights := db.spawn_weights(false)
+	var weights := db.spawn_weights(risk_unlocked)
 	var keys := weights.keys()
 	keys.sort()
 	var total_w := 0.0

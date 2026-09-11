@@ -94,6 +94,19 @@ autowrap_mode = 3
 horizontal_alignment = 1
 text = ""
 
+[node name="CompoundBox" type="VBoxContainer" parent="Box"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CompoundLabel" type="Label" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = ""
+
 [node name="ActionRow" type="HBoxContainer" parent="Box"]
 layout_mode = 2
 theme_override_constants/separation = 12
@@ -104,6 +117,13 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
 text = "복원"
+
+[node name="CompoundButton" type="Button" parent="Box/ActionRow"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(200, 64)
+layout_mode = 2
+text = "합성"
 
 [node name="FinishButton" type="Button" parent="Box/ActionRow"]
 unique_name_in_owner = true
