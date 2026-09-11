@@ -30,6 +30,8 @@ var drops := DropService.new()
 ## Until meta persistence lands (P4) every run counts as the first run for the W1 tutorial rule.
 var first_run: bool = true
 var run_seed: int = 0
+## Stability actually lost during the current Wave (G10 Wave Clear row).
+var wave_damage_taken: float = 0.0
 
 
 func setup(content: ContentDB, max_stability: float = -1.0) -> void:
@@ -64,7 +66,8 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	gold_run = 0.0
 	end_reason = EndReason.NONE
 	deck = DeckService.from_deck_data(db.decks[chosen_deck], db.balance)
-	drops.setup(db.balance, run_seed + 1)
+	# B5: drop and spawn streams are independent; both derive from run_seed through distinct labels.
+	drops.setup(db.balance, hash("drop:%d" % run_seed))
 	_set_stability(stability_max)
 	gold_changed.emit(gold_run)
 	wave_changed.emit(wave)
@@ -75,6 +78,7 @@ func begin_combat() -> bool:
 	if phase != Phase.WAVE_PREP:
 		return _reject("begin_combat")
 	drops.start_wave()
+	wave_damage_taken = 0.0
 	return _go(Phase.WAVE_PREP, Phase.COMBAT)
 
 
@@ -139,6 +143,7 @@ func return_to_library() -> bool:
 func damage_stability(amount: float) -> void:
 	if amount <= 0.0 or phase != Phase.COMBAT:
 		return
+	wave_damage_taken += minf(amount, stability)
 	_set_stability(stability - amount)
 	if stability <= 0.0:
 		_end(EndReason.FAILED)

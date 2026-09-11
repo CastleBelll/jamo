@@ -18,6 +18,12 @@ theme_override_font_sizes/font_size = 36
 horizontal_alignment = 1
 text = "Wave Clear · 자모 정리"
 
+[node name="StatsLabel" type="Label" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+text = ""
+
 [node name="InfoLabel" type="Label" parent="Box"]
 unique_name_in_owner = true
 layout_mode = 2

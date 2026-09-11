@@ -10,7 +10,9 @@ var reward: RewardService
 var db: ContentDB
 var selected_candidate: int = -1
 var mode: StringName = &""   # "", "replace", "remove"
+var had_drops: bool = false
 
+@onready var stats_label: Label = %StatsLabel
 @onready var info_label: Label = %InfoLabel
 @onready var candidates_row: HBoxContainer = %Candidates
 @onready var hint_label: Label = %HintLabel
@@ -31,11 +33,13 @@ func _ready() -> void:
 	deck_grid.columns = DECK_COLUMNS
 
 
-func open(new_reward: RewardService, content: ContentDB) -> void:
+func open(new_reward: RewardService, content: ContentDB, stats_text: String = "") -> void:
 	if reward != null and reward.changed.is_connected(_refresh):
 		reward.changed.disconnect(_refresh)
 	reward = new_reward
 	db = content
+	stats_label.text = stats_text
+	had_drops = not new_reward.candidates.is_empty()
 	selected_candidate = 0 if not reward.candidates.is_empty() else -1
 	mode = &""
 	reward.changed.connect(_refresh)
@@ -48,9 +52,11 @@ func _refresh() -> void:
 		return
 	if selected_candidate >= reward.candidates.size():
 		selected_candidate = reward.candidates.size() - 1
-	if reward.candidates.is_empty() or reward.picks_left <= 0:
-		if mode == &"replace":
-			mode = &""
+	# Leave a mode whose action can no longer happen, so clicks never die silently.
+	if (reward.candidates.is_empty() or reward.picks_left <= 0) and mode == &"replace":
+		mode = &""
+	if (reward.removes_left <= 0 or not reward.deck.can_remove()) and mode == &"remove":
+		mode = &""
 	info_label.text = "덱 %d장 (최소 %d / 최대 %d) · 남은 선택 %d · 남은 제거 %d · 회수 %d" % [
 		reward.deck.size(), reward.deck.deck_min, reward.deck.deck_max, reward.picks_left, reward.removes_left, reward.candidates.size()]
 	_rebuild_candidates()
@@ -79,7 +85,7 @@ func _rebuild_candidates() -> void:
 		candidates_row.add_child(b)
 	if reward.candidates.is_empty():
 		var l := Label.new()
-		l.text = "회수한 자모 없음" if reward.picks_left == 0 and reward.finished == false else "선택 완료"
+		l.text = "선택 완료" if had_drops else "회수한 자모 없음"
 		candidates_row.add_child(l)
 
 

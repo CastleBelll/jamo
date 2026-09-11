@@ -92,15 +92,20 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 		RunController.Phase.COMBAT:
 			director.set_hold(false)
 			hud.set_temp_drops(0)
-			director.start_wave(run.wave_data(), run_seed + run.wave)
+			director.start_wave(run.wave_data(), hash("spawn:%d:%d" % [run_seed, run.wave]))
 		RunController.Phase.CLEAR:
-			clear_panel.open(run.build_reward(), db_ref)
+			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text())
 		RunController.Phase.FORGE:
 			%ConfirmBuildButton.grab_focus()
 		RunController.Phase.RESULT:
 			director.set_hold(false)
 			result_label.text = _result_text(run.end_reason)
 			%ResultLibraryButton.grab_focus()
+
+
+## G10 Wave Clear row: 정화/놓침, 안정도 손실, 회수 수.
+func _clear_stats_text() -> String:
+	return "정화 %d · 놓침 %d · 안정도 손실 %.1f · 회수 %d" % [director.stats["purified"], director.stats["reached"], run.wave_damage_taken, run.drops.drops.size()]
 
 
 ## Data first, then the 회수 feedback (G12): the drop is counted before the glyph floats.

@@ -194,6 +194,8 @@ func _check_scene_flow() -> void:
 	director.request_click(director.enemies[0].global_position)
 	director.tick(0.3)
 	_expect(run.phase == RunController.Phase.CLEAR and panel.visible, "clear opens the 자모 정리 panel")
+	_expect(panel.get_node("%StatsLabel").text.begins_with("정화 2 · 놓침 0 · 안정도 손실 0.0 · 회수 2"), "G10 Wave Clear stats row: %s" % panel.get_node("%StatsLabel").text)
+	_expect(run.drops.rng.seed != director.rng_spawn.seed, "B5: drop and spawn RNG streams are seeded independently")
 	_expect(panel.reward != null and panel.reward.candidates.size() == 2, "panel shows both recovered jamo")
 	_expect(panel.get_node("%ReplaceButton").disabled, "first W1: 교체 button disabled")
 	panel.get_node("%AddButton").pressed.emit()
