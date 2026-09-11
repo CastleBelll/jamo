@@ -117,12 +117,18 @@ var last_source: StringName = &""
 
 ## Burn re-application keeps the larger dps and the longer remaining time; the tick clock
 ## is never delayed (first tick 1s after the first application).
-func apply_burn(dps: float, duration: float, now: float) -> void:
+## `generation` 0 = from a direct hit, 1 = spread copy (B7); a direct hit resets it to 0.
+func apply_burn(dps: float, duration: float, now: float, generation: int = 0) -> void:
 	if burn.is_empty() or burn["until"] < now:
-		burn = {"dps": dps, "until": now + duration, "next_tick": now + 1.0}
+		burn = {"dps": dps, "until": now + duration, "next_tick": now + 1.0, "generation": generation}
 		return
 	burn["dps"] = maxf(burn["dps"], dps)
 	burn["until"] = maxf(burn["until"], now + duration)
+	burn["generation"] = mini(int(burn.get("generation", 0)), generation)
+
+
+func burn_generation() -> int:
+	return int(burn.get("generation", 0)) if not burn.is_empty() else 0
 
 
 ## Each stack has its own life; ticks share one clock from the first application. At max

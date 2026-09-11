@@ -45,7 +45,8 @@ func setup(content: ContentDB, run_build: BuildState, seed: int) -> void:
 	refresh()
 
 
-## Active effect lines: [{key, word, rank, effect}] for every held word at its Rank (G6).
+## Active effect lines: [{key, word, rank, effect}] for every held word at its Rank, plus the
+## effect of every active B8 synergy (G6).
 func active_effects() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for held in build.words:
@@ -55,7 +56,39 @@ func active_effects() -> Array[Dictionary]:
 			var e := effects[i] as EffectData
 			if e != null:
 				out.append({"key": "%s:%d" % [word.id, i], "word": word, "rank": held["rank"], "effect": e})
+	for syn in active_synergies(db, build):
+		out.append({"key": "SYN:%s" % syn.id, "word": null, "rank": 0, "effect": syn.effect})
 	return out
+
+
+## B8 synergies whose tag thresholds the build meets. Tags are counted per distinct word id;
+## Rank never adds tags (G6). Sealed words will be excluded here when 침묵 lands (P3).
+static func active_synergies(content: ContentDB, run_build: BuildState) -> Array[SynergyData]:
+	var tag_counts := {}
+	for held in run_build.words:
+		for t in content.words[held["id"]].tags:
+			tag_counts[t] = tag_counts.get(t, 0) + 1
+	var out: Array[SynergyData] = []
+	var ids := content.synergies.keys()
+	ids.sort()
+	for id in ids:
+		var syn: SynergyData = content.synergies[id]
+		var met := true
+		for c in syn.conditions:
+			if tag_counts.get(StringName(c["tag"]), 0) < int(c["min"]):
+				met = false
+		if met:
+			out.append(syn)
+	return out
+
+
+## Extra 자모 picks on normal Wave rewards from active synergies (SY_ECON).
+static func reward_pick_bonus(content: ContentDB, run_build: BuildState) -> int:
+	var bonus := 0
+	for syn in active_synergies(content, run_build):
+		if syn.effect != null and syn.effect.kind == &"reward_pick_add":
+			bonus += int(syn.effect.value)
+	return bonus
 
 
 func effects_with(trigger: StringName) -> Array[Dictionary]:
@@ -174,10 +207,12 @@ func clear_heal(wave_gold: float) -> float:
 
 # --- hit / kill triggers (G7: only real manual damage procs; derived hits never do) -------
 
-## Called after a manual hit landed on a still-living target. Returns derived hits to apply:
+## Called after every manual hit that dealt real damage (B7 counts each 적중, including the
+## killing blow). Statuses only land on a target that survived (G7). Returns derived hits:
 ## [{"target": JamoMonster, "damage": float, "source": StringName}].
 func on_manual_hit(target: JamoMonster, enemies: Array[JamoMonster]) -> Array[Dictionary]:
 	var derived: Array[Dictionary] = []
+	var survived := target.hp > 0.0
 	for a in effects_with(&"manual_hit"):
 		var e: EffectData = a["effect"]
 		if e.every_n > 0:
@@ -186,11 +221,14 @@ func on_manual_hit(target: JamoMonster, enemies: Array[JamoMonster]) -> Array[Di
 				continue
 		match e.kind:
 			&"apply_burn":
-				target.apply_burn(e.value, e.duration, clock)
+				if survived:
+					target.apply_burn(e.value, e.duration, clock, 0)
 			&"apply_poison":
-				target.apply_poison(e.duration, e.max_stacks, e.value, clock)
+				if survived:
+					target.apply_poison(e.duration, e.max_stacks, e.value, clock)
 			&"apply_slow":
-				target.apply_slow(e.value, e.duration, clock)
+				if survived:
+					target.apply_slow(e.value, e.duration, clock)
 			&"damage_lane_front_other":
 				var other := _lane_front_other(target, enemies)
 				if other != null:
@@ -223,10 +261,13 @@ func on_kill(victim: JamoMonster, source: StringName, enemies: Array[JamoMonster
 	for a in effects_with(&"kill"):
 		var e: EffectData = a["effect"]
 		if e.kind == &"burn_spread":
-			# spread_generation = 1: the copy comes from the kill, never from another spread.
+			# 같은 화상 전이: only a burning victim spreads, and a spread copy (generation 1)
+			# never spreads again (B7 spread_generation=1).
+			if not victim.burn_active(clock) or victim.burn_generation() > 0:
+				continue
 			var near := _nearest_other(victim, enemies, e.radius_px)
 			if near != null:
-				near.apply_burn(e.value, e.duration, clock)
+				near.apply_burn(e.value, e.duration, clock, 1)
 	return result
 
 

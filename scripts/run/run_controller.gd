@@ -104,6 +104,8 @@ func build_reward() -> RewardService:
 	var reward := RewardService.new()
 	var boss := is_boss_wave()
 	var picks := db.balance.reward_picks_boss if boss else db.balance.reward_picks_normal
+	if not boss:
+		picks += CombatResolver.reward_pick_bonus(db, build)  # SY_ECON, normal Waves only (B8)
 	var removes := db.balance.reward_removes_boss if boss else 0
 	var replace_allowed := not (first_run and wave == FIRST_WAVE)
 	reward.start(deck, drops.drops, picks, removes, replace_allowed)

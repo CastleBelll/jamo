@@ -196,8 +196,8 @@ func _manual_attack(target: JamoMonster) -> void:
 	stats["hits"] += 1
 	_spawn_damage_number(target.global_position, dealt, crit)
 	manual_hit.emit(target, dealt, crit)
-	# 3. on-hit statuses and counters only for a target that survived the direct hit (G7).
-	if target.hp > 0.0:
+	# 3. counters on every real hit; statuses only if the target survived (resolver decides).
+	if dealt > 0.0:
 		for hit in resolver.on_manual_hit(target, enemies):
 			_apply_hit(hit["target"], hit["damage"], hit["source"])
 

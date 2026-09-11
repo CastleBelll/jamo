@@ -26,6 +26,8 @@ func _ready() -> void:
 		_check_crit_rate()
 		_check_gold_heal_drops()
 		_check_risk_words()
+		_check_synergies()
+		_check_spread_generation_and_counters()
 	if game != null:
 		game.free()
 	for f in failures:
@@ -109,8 +111,8 @@ func _check_stability_and_shield() -> void:
 	director.resolver.end_wave()
 	_expect(director.resolver.shield == 0.0, "shield gone at wave end")
 	_boot([[&"W18", 3], [&"W04", 1]])
-	_expect(director.resolver.shield == 11.0, "봄 R3: shield 11")
-	_expect(is_equal_approx(director.resolver.stability_damage(8.0), 0.0) and is_equal_approx(director.resolver.shield, 3.8), "reduction then shield: 7.2 absorbed")
+	_expect(director.resolver.shield == 15.0, "봄 R3 11 + SY_GUARD 4 = shield 15 (got %s)" % director.resolver.shield)
+	_expect(is_equal_approx(director.resolver.stability_damage(8.0), 0.0) and is_equal_approx(director.resolver.shield, 7.8), "reduction then shield: 7.2 absorbed")
 
 
 func _check_burn_and_night() -> void:
@@ -261,9 +263,12 @@ func _check_counters_and_kills() -> void:
 	_boot([[&"W02", 3]], 2, 1.0)
 	a = director.enemies[0]
 	b = director.enemies[1]
+	a.hp = 5.0
+	_hit(a)
+	a.hp = 0.5
 	b.global_position = a.global_position + Vector2(80, 0)
 	_hit(a)
-	_expect(not a.alive and b.burn_active(director.resolver.clock), "불 R3: burn spreads on purify")
+	_expect(not a.alive and b.burn_active(director.resolver.clock), "불 R3: a burning victim spreads its burn on purify")
 	_expect(director.resolver.counters.is_empty() or true, "counters exist")
 	director.start_wave(director.wave_data, 3)
 	_expect(director.resolver.counters.is_empty(), "counters reset at wave start")
@@ -313,3 +318,69 @@ func _check_risk_words() -> void:
 	_expect(is_equal_approx(run.gold_run, 1.45), "욕심 R1: gold x1.45")
 	_boot([[&"W04", 3], [&"W20", 3]])
 	_expect(is_equal_approx(director.resolver.stability_damage(8.0), 8.0 * 0.78 * 1.30), "reduction and risk applied once each")
+
+
+func _check_synergies() -> void:
+	_boot([[&"W01", 1], [&"W08", 1]])
+	var syn := CombatResolver.active_synergies(db, run.build)
+	_expect(syn.size() == 1 and syn[0].id == &"SY_WEAPON", "검 + 칼 = SY_WEAPON")
+	_expect(is_equal_approx(_hit(director.enemies[0]), 1.4) or is_equal_approx(_hit(director.enemies[0]), 1.4 * 1.5), "SY_WEAPON adds +10%% manual (검 30%% + 10%%)")
+	_boot([[&"W01", 3], [&"W01", 1]])
+	_boot([[&"W05", 3]])
+	_expect(CombatResolver.active_synergies(db, run.build).is_empty(), "one word with two tags counts once per tag: 돌 alone is no synergy")
+	_boot([[&"W04", 1], [&"W18", 1]])
+	syn = CombatResolver.active_synergies(db, run.build)
+	_expect(syn.size() == 1 and syn[0].id == &"SY_GUARD", "벽 + 봄 = SY_GUARD")
+	_expect(director.resolver.shield == 9.0, "SY_GUARD: shield 5 + 4 at wave start (got %s)" % director.resolver.shield)
+	_boot([[&"W13", 1], [&"W14", 1]])
+	_expect(CombatResolver.reward_pick_bonus(db, run.build) == 1, "돈 + 운 = SY_ECON +1 pick")
+	run.on_wave_cleared()
+	var reward := run.build_reward()
+	_expect(reward.picks_left == 0, "no drops: picks limited to 0 even with SY_ECON")
+	run.drops.drops = ["ㄱ", "ㄴ", "ㄷ"] as Array[String]
+	reward = run.build_reward()
+	_expect(reward.picks_left == 2, "SY_ECON: normal Wave picks 1 + 1 (got %d)" % reward.picks_left)
+	run.wave = 5
+	reward = run.build_reward()
+	_expect(reward.picks_left == 2, "boss Wave keeps 2 picks, no SY_ECON stacking")
+
+
+func _check_spread_generation_and_counters() -> void:
+	# A burning victim spreads once; the copy (generation 1) never spreads again.
+	_boot([[&"W02", 3]], 3, 1.0)
+	var a: JamoMonster = director.enemies[0]
+	var b: JamoMonster = director.enemies[1]
+	var c: JamoMonster = director.enemies[2]
+	b.global_position = a.global_position + Vector2(80, 0)
+	c.global_position = a.global_position + Vector2(160, 0)
+	a.hp = 5.0
+	_hit(a)
+	_expect(a.burn_active(director.resolver.clock) and a.burn_generation() == 0, "direct hit burn is generation 0")
+	a.hp = 0.5
+	b.global_position = a.global_position + Vector2(80, 0)
+	_hit(a)
+	_expect(not a.alive and b.burn_active(director.resolver.clock) and b.burn_generation() == 1, "kill spreads a generation-1 burn to b")
+	c.global_position = b.global_position + Vector2(80, 0)
+	b.hp = 0.5
+	_hit(b)
+	_expect(not b.alive and not c.burn_active(director.resolver.clock), "generation-1 burn does not spread on")
+	# An unburnt victim spreads nothing.
+	_boot([[&"W02", 3]], 2, 1.0)
+	a = director.enemies[0]
+	b = director.enemies[1]
+	b.global_position = a.global_position + Vector2(80, 0)
+	_hit(a)
+	_expect(not a.alive and not b.burn_active(director.resolver.clock), "instant kill without burn: no spread")
+	# Counters count the killing blow too (창 every 3 manual hits, any target).
+	_boot([[&"W07", 1]], 6, 1.0)
+	var other: JamoMonster = director.enemies[1]
+	other.hp = 100.0
+	other.progress = 300.0
+	var ho := other.hp
+	_hit(director.enemies[0])  # kill 1 (counter 1)
+	_hit(director.enemies[2])  # kill 2 (counter 2)
+	_expect(other.hp == ho, "창: two killing blows, no lane hit yet")
+	var third: JamoMonster = director.enemies[3]
+	other.lane = third.lane  # make `other` the only lane-mate of the third target
+	_hit(third)  # kill 3 (counter 3 -> lane hit)
+	_expect(is_equal_approx(ho - other.hp, 1.0), "창: third hit (a killing blow) still counts and hits the lane front other")
