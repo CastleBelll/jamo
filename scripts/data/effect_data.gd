@@ -56,6 +56,9 @@ const KINDS: Array[StringName] = [
 @export var radius_px: float = 0.0
 ## Upper bound for capped values (e.g. 돈 heal per Wave). 0 = no cap.
 @export var cap: float = 0.0
+## G13 proc rule: may damage from this effect trigger on-hit effects? Derived hits (실/창/활/비,
+## 불 spread) must stay false so statuses only come from manual input (B7).
+@export var allows_proc: bool = false
 
 
 func validate(prefix: String) -> Array[String]:

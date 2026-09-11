@@ -5,7 +5,7 @@ extends Resource
 
 const CATEGORIES: Array[StringName] = [&"E", &"R", &"S", &"X"]
 const TAGS: Array[StringName] = [&"무기", &"화염", &"지속", &"방어", &"자동", &"냉기", &"경제", &"행운", &"위험"]
-const UNLOCKS: Array[StringName] = [&"start", &"after_mieum"]
+const UNLOCKS: Array[StringName] = [&"start", &"after_mieum", &"materials"]
 const MAX_RANK_BASE := 3
 const MAX_RANK_COMPOUND := 1
 

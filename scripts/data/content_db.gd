@@ -132,6 +132,8 @@ func _validate_waves() -> Array[String]:
 				errors.append("wave %d: must be boss %s" % [n, BOSS_WAVES[n]])
 		elif w.is_boss:
 			errors.append("wave %d: unexpected boss wave" % n)
+		if w.is_boss and not bosses.has(w.boss_id):
+			errors.append("wave %d: boss_id %s has no BossData" % [n, w.boss_id])
 		if not w.is_boss and w.concurrent_max > balance.max_normal_enemies:
 			errors.append("wave %d: concurrent %d exceeds screen cap %d" % [n, w.concurrent_max, balance.max_normal_enemies])
 	return errors
