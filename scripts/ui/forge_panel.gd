@@ -3,6 +3,7 @@ extends PanelContainer
 ## effect compare, goal pin with lacking jamo, one restore transaction, 빌드 확정.
 
 signal finished
+signal state_changed
 
 var run: RunController
 var forge: ForgeService
@@ -35,7 +36,7 @@ func _ready() -> void:
 	pin_option.item_selected.connect(_on_pin_selected)
 	finish_button.pressed.connect(func(): finished.emit())
 	compound_button.pressed.connect(_on_compound)
-	skip_restore_button.pressed.connect(func(): forge.skip_restore(); _refresh())
+	skip_restore_button.pressed.connect(func(): forge.skip_restore(); _refresh(); state_changed.emit())
 
 
 func open(controller: RunController, content: ContentDB) -> void:
@@ -216,11 +217,13 @@ func _on_token(token_id: int) -> void:
 		_rebuild_hand()
 		return
 	_refresh()
+	state_changed.emit()
 
 
 func _on_reroll() -> void:
 	if forge.reroll():
 		_refresh()
+		state_changed.emit()
 
 
 func _select(id: StringName) -> void:
@@ -239,6 +242,7 @@ func _on_restore() -> void:
 		selected = &""
 		replace_target = &""
 		_refresh()
+		state_changed.emit()
 		finish_button.grab_focus()
 
 
@@ -300,6 +304,7 @@ func _compound_preview_text(id: StringName) -> String:
 func _on_compound() -> void:
 	if forge.compound(selected_compound):
 		_refresh()
+		state_changed.emit()
 		finish_button.grab_focus()
 
 

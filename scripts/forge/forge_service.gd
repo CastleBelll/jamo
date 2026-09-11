@@ -311,3 +311,43 @@ func _shuffle(arr: Array[Dictionary]) -> void:
 		var tmp := arr[i]
 		arr[i] = arr[j]
 		arr[j] = tmp
+
+
+# --- persistence (G14): the Forge resumes with the same hand, counts and RNG ------------
+
+func snapshot() -> Dictionary:
+	return {"hand": hand.duplicate(true), "draw": draw.duplicate(true), "discard": discard.duplicate(true),
+		"locked": locked.duplicate(), "rerolls_left": rerolls_left, "restores_left": restores_left,
+		"restored_word": String(restored_word), "compounded": String(compounded), "failed_latched": failed_latched,
+		"rng_seed": str(rng.seed), "rng_state": str(rng.state)}
+
+
+func load_snapshot(d: Dictionary, run_deck: DeckService, content: ContentDB, run_build: BuildState, word_pool: Array[WordData]) -> void:
+	deck = run_deck
+	db = content
+	build = run_build
+	pool = word_pool
+	hand_size = db.balance.hand_size
+	lock_max = db.balance.lock_max
+	hand = _tokens_from(d.get("hand", []))
+	draw = _tokens_from(d.get("draw", []))
+	discard = _tokens_from(d.get("discard", []))
+	locked.clear()
+	for id in d.get("locked", []):
+		locked.append(int(id))
+	rerolls_left = int(d.get("rerolls_left", 0))
+	restores_left = int(d.get("restores_left", 0))
+	restored_word = StringName(String(d.get("restored_word", "")))
+	compounded = StringName(String(d.get("compounded", "")))
+	failed_latched = bool(d.get("failed_latched", false))
+	# 64-bit values travel as strings: JSON numbers come back as doubles (G14 RNG 상태).
+	rng.seed = String(d.get("rng_seed", "0")).to_int()
+	if d.has("rng_state"):
+		rng.state = String(d["rng_state"]).to_int()
+
+
+static func _tokens_from(list: Array) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for t in list:
+		out.append({"id": int(t["id"]), "jamo": String(t["jamo"])})
+	return out

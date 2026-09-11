@@ -15,6 +15,9 @@ var failures: Array[String] = []
 
 
 func _ready() -> void:
+	# Isolate persistence: never touch the real profile from a test (G14).
+	Meta.saver.path = "user://test_content.json"
+	Meta.new_profile()
 	var db := ContentDB.load_all()
 	failures.append_array(db.validate())
 	if db.balance != null and failures.is_empty():
@@ -25,6 +28,7 @@ func _ready() -> void:
 	for f in failures:
 		printerr("FAIL: " + f)
 	print("test_content: %s (%d failures)" % ["PASS" if failures.is_empty() else "FAIL", failures.size()])
+	Meta.saver.delete_all()
 	get_tree().quit(0 if failures.is_empty() else 1)
 
 

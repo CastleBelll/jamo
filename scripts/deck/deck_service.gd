@@ -18,6 +18,20 @@ static func from_deck_data(data: DeckData, balance: BalanceConfig) -> DeckServic
 	return d
 
 
+func snapshot() -> Dictionary:
+	return {"tokens": tokens.duplicate(true), "next_id": _next_id, "deck_min": deck_min, "deck_max": deck_max}
+
+
+static func from_snapshot(d: Dictionary, balance: BalanceConfig) -> DeckService:
+	var s := DeckService.new()
+	s.deck_min = balance.deck_min
+	s.deck_max = balance.deck_max
+	for t in d.get("tokens", []):
+		s.tokens.append({"id": int(t["id"]), "jamo": String(t["jamo"])})
+	s._next_id = int(d.get("next_id", s.tokens.size() + 1))
+	return s
+
+
 func size() -> int:
 	return tokens.size()
 

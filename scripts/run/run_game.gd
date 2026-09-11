@@ -45,8 +45,16 @@ func _ready() -> void:
 	%ResumeButton.pressed.connect(_close_pause)
 	%AbandonButton.pressed.connect(_on_abandon)
 	pause_panel.visible = false
-	run.open_run_setup()
-	run.confirm_setup(&"starter_a")
+	clear_panel.state_changed.connect(_save_run)
+	forge_panel.state_changed.connect(_save_run)
+	if Meta.resume_pending and Meta.has_run():
+		Meta.resume_pending = false
+		run.load_snapshot(Meta.run)
+		run_seed = run.run_seed  # same spawn/drop streams as the interrupted RUN
+	else:
+		Meta.resume_pending = false
+		run.open_run_setup()
+		run.confirm_setup(Meta.chosen_deck if db.decks.has(Meta.chosen_deck) else &"starter_a")
 
 
 func _physics_process(delta: float) -> void:
@@ -93,6 +101,7 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 	get_tree().paused = pause_panel.visible or to != RunController.Phase.COMBAT
 	match to:
 		RunController.Phase.WAVE_PREP:
+			_save_run()  # 체크포인트: 전투 시작 직전 상태 (G14)
 			hud.set_build(run.build, db_ref)
 			prep_label.text = "Wave %d%s" % [run.wave, " 보스" if run.is_boss_wave() else ""]
 			%PrepHint.text = _prep_hint()
@@ -105,8 +114,10 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			director.start_wave(run.wave_data(), hash("spawn:%d:%d" % [run_seed, run.wave]))
 		RunController.Phase.CLEAR:
 			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text())
+			_save_run()
 		RunController.Phase.FORGE:
 			forge_panel.open(run, db_ref)
+			_save_run()
 		RunController.Phase.RESULT:
 			director.set_hold(false)
 			result_label.text = _result_text(run.end_reason)
@@ -189,6 +200,14 @@ func _next_goal() -> String:
 		if not (run.build.has(c.material_a) and run.build.has(c.material_b)):
 			return "%s과 %s을 함께 복원하면 새로운 뜻을 엮을 수 있다" % [db_ref.words[c.material_a].name, db_ref.words[c.material_b].name]
 	return "거대한 ㅁ에 도전하기"
+
+
+## Atomic save of the whole logical RUN state (G14). Never called during COMBAT.
+func _save_run() -> void:
+	if run.phase == RunController.Phase.COMBAT or run.phase == RunController.Phase.RESULT:
+		return
+	Meta.run = run.snapshot()
+	Meta.save()
 
 
 func _open_pause() -> void:

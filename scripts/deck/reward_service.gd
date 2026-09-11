@@ -86,3 +86,20 @@ func _consume(index: int) -> void:
 	candidates.remove_at(index)
 	picks_left -= 1
 	changed.emit()
+
+
+func snapshot() -> Dictionary:
+	return {"candidates": candidates.duplicate(), "picks_left": picks_left, "removes_left": removes_left,
+		"allow_replace": allow_replace, "finished": finished}
+
+
+func load_snapshot(d: Dictionary, run_deck: DeckService) -> void:
+	deck = run_deck
+	candidates.clear()
+	for j in d.get("candidates", []):
+		candidates.append(String(j))
+	picks_left = int(d.get("picks_left", 0))
+	removes_left = int(d.get("removes_left", 0))
+	allow_replace = bool(d.get("allow_replace", true))
+	finished = bool(d.get("finished", false))
+	changed.emit()

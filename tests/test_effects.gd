@@ -12,6 +12,9 @@ var director: CombatDirector
 
 
 func _ready() -> void:
+	# Isolate persistence: never touch the real profile from a test (G14).
+	Meta.saver.path = "user://test_effects.json"
+	Meta.new_profile()
 	db = ContentDB.load_all()
 	if not db.validate().is_empty():
 		failures.append("content invalid")
@@ -34,6 +37,7 @@ func _ready() -> void:
 		printerr("FAIL: " + f)
 	print("test_effects: %s (%d failures)" % ["PASS" if failures.is_empty() else "FAIL", failures.size()])
 	get_tree().paused = false
+	Meta.saver.delete_all()
 	get_tree().quit(0 if failures.is_empty() else 1)
 
 
@@ -338,9 +342,11 @@ func _check_synergies() -> void:
 	var reward := run.build_reward()
 	_expect(reward.picks_left == 0, "no drops: picks limited to 0 even with SY_ECON")
 	run.drops.drops = ["ㄱ", "ㄴ", "ㄷ"] as Array[String]
+	run.reward = null  # build_reward caches the live model while in CLEAR (G14 resume)
 	reward = run.build_reward()
 	_expect(reward.picks_left == 2, "SY_ECON: normal Wave picks 1 + 1 (got %d)" % reward.picks_left)
 	run.wave = 5
+	run.reward = null
 	reward = run.build_reward()
 	_expect(reward.picks_left == 2, "boss Wave keeps 2 picks, no SY_ECON stacking")
 
