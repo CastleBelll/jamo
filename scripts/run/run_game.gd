@@ -45,6 +45,7 @@ func _ready() -> void:
 	%ResumeButton.pressed.connect(_close_pause)
 	%AbandonButton.pressed.connect(_on_abandon)
 	pause_panel.visible = false
+	page.get_node("LastSentence/Text").text = LibraryService.sentence_text(db)
 	clear_panel.state_changed.connect(_save_run)
 	forge_panel.state_changed.connect(_save_run)
 	if Meta.resume_pending and Meta.has_run():
@@ -104,7 +105,8 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			_save_run()  # 체크포인트: 전투 시작 직전 상태 (G14)
 			hud.set_build(run.build, db_ref)
 			prep_label.text = "Wave %d%s" % [run.wave, " 보스" if run.is_boss_wave() else ""]
-			%PrepHint.text = _prep_hint()
+			var line := run.take_pending_line()
+			%PrepHint.text = _prep_hint() + ("\n" + line if line != "" else "")
 			%StartWaveButton.grab_focus()
 		RunController.Phase.COMBAT:
 			director.set_hold(false)
@@ -113,7 +115,8 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			director.risk_unlocked = run.risk_unlocked
 			director.start_wave(run.wave_data(), hash("spawn:%d:%d" % [run_seed, run.wave]))
 		RunController.Phase.CLEAR:
-			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text())
+			var line := run.take_pending_line()
+			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text() + ("\n" + line if line != "" else ""))
 			_save_run()
 		RunController.Phase.FORGE:
 			forge_panel.open(run, db_ref)

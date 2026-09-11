@@ -89,6 +89,8 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	risk_unlocked = Meta.risk_unlocked_for_new_run()
 	first_run = not Meta.first_run_done
 	stability_max = Meta.stability_max(db)
+	if pinned_word == &"" and Meta.pinned_word != "" and db.words.has(StringName(Meta.pinned_word)):
+		pinned_word = StringName(Meta.pinned_word)
 	run_id = "%d-%d" % [Time.get_unix_time_from_system(), run_seed]
 	bosses_purified.clear()
 	build = BuildState.new()
@@ -200,6 +202,7 @@ func start_forge() -> ForgeService:
 
 func pin_word(word_id: StringName) -> void:
 	pinned_word = word_id if db.words.has(word_id) else &""
+	Meta.pinned_word = String(pinned_word)
 	if forge != null:
 		forge.pinned = pinned_word
 
@@ -223,6 +226,8 @@ func finish_forge() -> bool:
 			forge_fail_bonus = 0
 			if forge.restored_word not in discovered:
 				discovered.append(forge.restored_word)
+			if Meta.codex.is_empty() and "S_WORD" not in Meta.events:
+				_record_event("S_WORD")
 		elif forge.is_failed():
 			heal_stability(db.balance.forge_fail_heal)
 			forge_fail_bonus = mini(forge_fail_bonus + db.balance.forge_fail_bonus_reroll, db.balance.forge_fail_bonus_reroll_cap)
@@ -301,6 +306,11 @@ func on_boss_purified(boss_id: StringName) -> void:
 	bosses_purified.append(String(boss_id))
 	if boss_id == &"B_MIEUM":
 		Meta.mieum_purified = true
+		_record_event("S_M")
+	elif boss_id == &"B_SILENCE":
+		_record_event("S_SILENCE")
+	elif boss_id == &"B_GREED":
+		_record_event("S_GREED")
 
 
 func _end(reason: EndReason) -> bool:
@@ -357,9 +367,22 @@ func settle() -> void:
 	Meta.save()
 
 
+## Lines unlocked in this RUN that the next paused screen should show once (G10 한 줄).
+var pending_lines: Array[String] = []
+
+
 func _record_event(id: String) -> void:
 	if id not in Meta.events:
 		Meta.events.append(id)
+		var line := db.narrative.line(id) if db.narrative != null else ""
+		if line != "":
+			pending_lines.append(line)
+
+
+func take_pending_line() -> String:
+	if pending_lines.is_empty():
+		return ""
+	return pending_lines.pop_front()
 
 
 ## Full logical state of the RUN for the atomic save points (G14).

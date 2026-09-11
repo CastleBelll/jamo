@@ -196,7 +196,7 @@ func _check_result_and_retry() -> void:
 	_expect(not run.first_run, "first run over after the result")
 	game.get_node("%RetryButton").pressed.emit()
 	_expect(run.phase == RunController.Phase.WAVE_PREP and run.wave == 1 and run.stability == 100.0, "재도전 restarts at W1")
-	_expect(game.get_node("%PrepHint").text == "", "retry shows no W1 guidance line (G2)")
+	_expect(not ("자모를 눌러" in game.get_node("%PrepHint").text), "retry shows no W1 guidance line (G2); S5 lines may still appear once")
 	_expect(run.pinned_word == &"W08" and run.deck.size() == 20 and run.build.words.is_empty(), "pin kept, deck and build reset")
 	run.on_wave_cleared()
 	run.begin_combat()
