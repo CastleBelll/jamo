@@ -1,0 +1,22 @@
+{
+  "triangles": 2780,
+  "mesh_nodes": 7,
+  "blender_version": "5.2.1 LTS",
+  "glb_bytes": 189728,
+  "dimensions_godot_xyz": [
+    2.54,
+    1.96,
+    1.68
+  ],
+  "materials": [
+    "Dark_Wood_Binding",
+    "Flax_Stitch",
+    "Warm_Hanji",
+    "Core_Paper_ReplaceOnHit",
+    "Core_Ink_ReplaceOnHit",
+    "Cinnabar_Seal"
+  ],
+  "provenance": "Original procedural mesh and solid materials; no downloaded assets or fonts.",
+  "surface_count": 9,
+  "preview_bytes": 1205261
+}
