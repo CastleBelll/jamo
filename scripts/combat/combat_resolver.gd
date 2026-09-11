@@ -82,6 +82,18 @@ static func active_synergies(content: ContentDB, run_build: BuildState) -> Array
 	return out
 
 
+## 복 (B7): one extra remove on normal Waves whose number is a multiple of every_n. Boss
+## Waves keep their own remove instead (no stacking).
+static func extra_removes(content: ContentDB, run_build: BuildState, wave: int) -> int:
+	var removes := 0
+	for held in run_build.words:
+		var word: WordData = content.words[held["id"]]
+		for e in word.effects_at(held["rank"]):
+			if e is EffectData and e.kind == &"extra_remove_every_n" and e.every_n > 0 and wave % e.every_n == 0:
+				removes += 1
+	return removes
+
+
 ## Extra 자모 picks on normal Wave rewards from active synergies (SY_ECON).
 static func reward_pick_bonus(content: ContentDB, run_build: BuildState) -> int:
 	var bonus := 0
