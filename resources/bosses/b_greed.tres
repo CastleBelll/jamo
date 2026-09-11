@@ -18,6 +18,7 @@ respond_count_p2 = 4
 fail_damage = 16.0
 seal_duration = 0.0
 gold = 100
+response_hint = "고리 표식을 4번 눌러 끊으면 보호막이 사라지고 4초간 다시 쌓이지 않습니다."
 boss_position = Vector2(960.0, 260.0)
 marker_positions = Array[Vector2]([Vector2(1260.0, 260.0)])
 minion_schedule = Array[Dictionary]([{"t": 8.0, "count": 2, "jamo": ""}, {"t": 16.0, "count": 2, "jamo": ""}, {"t": 24.0, "count": 2, "jamo": ""}, {"t": 32.0, "count": 2, "jamo": ""}, {"t": 40.0, "count": 2, "jamo": ""}])

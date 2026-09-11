@@ -18,6 +18,7 @@ respond_count_p2 = 3
 fail_damage = 12.0
 seal_duration = 0.0
 gold = 30
+response_hint = "착지 예고 원이 보이면 보스 옆 교정점을 3번 눌러 착지를 막으세요."
 boss_position = Vector2(960.0, 260.0)
 marker_positions = Array[Vector2]([Vector2(660.0, 260.0)])
 minion_schedule = Array[Dictionary]([{"t": 8.0, "count": 1, "jamo": "ㅁ"}, {"t": 16.0, "count": 1, "jamo": "ㅁ"}])

@@ -18,6 +18,8 @@ extends Resource
 ## 침묵: seal duration when a sealable word exists; fail_damage applies otherwise.
 @export var seal_duration: float = 0.0
 @export var gold: int = 0
+## G10 보스 등장: the single response line shown before combat.
+@export var response_hint: String = ""
 @export var boss_position: Vector2 = Vector2(960, 260)
 ## PatternTarget positions; W15 lists one per lane (좌/중/우).
 @export var marker_positions: Array[Vector2] = []

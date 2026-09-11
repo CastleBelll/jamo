@@ -34,6 +34,7 @@ func _ready() -> void:
 	director.setup(run, db, page)
 	director.enemies_changed.connect(hud.set_enemies_left)
 	director.enemy_purified.connect(_on_enemy_purified)
+	director.seal_changed.connect(func(): hud.set_build(run.build, db_ref, director.resolver.seal_remaining()))
 	clear_panel.finished.connect(func(): run.finish_clear())
 	hud.bind(run)
 	run.phase_changed.connect(_on_phase_changed)
@@ -55,6 +56,8 @@ func _physics_process(delta: float) -> void:
 	var cursor := page.get_global_mouse_position()
 	director.tick(delta, cursor)
 	hud.set_hover(director.pick_target(cursor) if run.phase == RunController.Phase.COMBAT else null)
+	if not director.resolver.sealed.is_empty():
+		hud.set_build(run.build, db_ref, director.resolver.seal_remaining())  # countdown while sealed
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -130,7 +133,8 @@ func _prep_hint() -> String:
 		# The W1 guidance belongs to the first RUN only (G2: 재도전은 안내를 다시 보이지 않는다).
 		return "자모를 눌러 마지막 문장을 지키세요" if run.wave == 1 and run.first_run else ""
 	var b: BossData = db_ref.bosses[run.wave_data().boss_id]
-	return "%s 등장. 표식이 나타나면 %d번 눌러 대응하세요." % [b.name, b.respond_count]
+	var hint := b.response_hint if b.response_hint != "" else "표식이 나타나면 %d번 눌러 대응하세요." % b.respond_count
+	return "%s 등장. %s" % [b.name, hint]
 
 
 ## RUN Result (G9): reason, reached/cleared Wave, top loss causes, build, discoveries, Gold,

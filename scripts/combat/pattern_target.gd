@@ -14,6 +14,12 @@ var remaining: float = 0.0
 var duration: float = 0.0
 var fail_damage: float = 0.0
 var seal: bool = false
+var seal_duration: float = 0.0
+var ring: bool = false
+## 침묵: the word this 봉인선 threatens (chosen by the director at pattern start).
+var seal_word: StringName = &""
+var seal_word_name: String = ""
+var lane_x: float = -1.0
 var done: bool = false
 var focused: bool = false:
 	set(value):
@@ -31,7 +37,14 @@ func setup(spec: Dictionary) -> void:
 	remaining = duration
 	fail_damage = spec["fail_damage"]
 	seal = spec.get("seal", false)
+	seal_duration = spec.get("seal_duration", 0.0)
+	ring = spec.get("ring", false)
+	seal_word = spec.get("seal_word", &"")
 	position = spec["marker"]
+	lane_x = spec.get("lane_x", -1.0)
+	if is_node_ready():
+		_refresh()
+		_draw_lane_preview()
 	if is_node_ready():
 		_refresh()
 
@@ -39,6 +52,17 @@ func setup(spec: Dictionary) -> void:
 func _ready() -> void:
 	$FocusRing.visible = focused
 	_refresh()
+	_draw_lane_preview()
+
+
+## 질주 ㅇ (G8/B9): a non-colliding preview line from the marker down its lane.
+func _draw_lane_preview() -> void:
+	var line := get_node_or_null("LanePreview") as Line2D
+	if line == null:
+		return
+	line.visible = lane_x >= 0.0
+	if lane_x >= 0.0:
+		line.points = PackedVector2Array([Vector2(0, 60), Vector2(0, 850 - position.y)])
 
 
 func is_hit_by(world_pos: Vector2) -> bool:
@@ -70,4 +94,6 @@ func tick(delta: float) -> void:
 
 func _refresh() -> void:
 	count_label.text = "%d / %d" % [hits, required]
+	if seal_word != &"":
+		count_label.text += "  봉인선 → %s" % seal_word_name
 	time_label.text = "%.1f" % maxf(remaining, 0.0)

@@ -8,6 +8,7 @@ signal enemies_changed(remaining: int)
 signal enemy_purified(monster: JamoMonster, source: StringName)
 signal enemy_reached(monster: JamoMonster)
 signal manual_hit(monster: JamoMonster, damage: float, crit: bool)
+signal seal_changed
 
 const MONSTER_SCENE := preload("res://scenes/monsters/jamo_monster.tscn")
 const DAMAGE_NUMBER_SCENE := preload("res://scenes/effects/damage_number.tscn")
@@ -27,6 +28,8 @@ var effect_root: Node2D
 var rng_spawn := RandomNumberGenerator.new()
 ## Variant rolls use their own stream (B2: 생성 가중치와 변형 확률은 별도 추첨).
 var rng_variant := RandomNumberGenerator.new()
+## Boss decisions (침묵 seal target) roll on their own stream too.
+var rng_boss := RandomNumberGenerator.new()
 ## 위험 words unlocked for this RUN: widens the B5 spawn pool to 20 jamo types.
 var risk_unlocked: bool = false
 var enemies: Array[JamoMonster] = []
@@ -75,6 +78,7 @@ func start_wave(data: WaveData, seed: int) -> void:
 	wave_data = data
 	rng_spawn.seed = seed
 	rng_variant.seed = hash("variant:%d" % seed)
+	rng_boss.seed = hash("boss:%d" % seed)
 	clock = 0.0
 	spawned = 0
 	total = data.enemy_count
@@ -240,8 +244,11 @@ func tick(delta: float, cursor_world: Vector2 = Vector2.INF) -> void:
 	pending_pattern = null
 	# 3. hit statuses were applied inside _manual_attack (only for a surviving target).
 	# 4. scheduled auto / status damage (no procs from these sources, G7)
+	var sealed_before := resolver.sealed_ids().size()
 	for hit in resolver.scheduled_damage(delta, enemies):
 		_apply_hit(hit["target"], hit["damage"], hit["source"])
+	if resolver.sealed_ids().size() != sealed_before:
+		seal_changed.emit()
 	# 5. purify, in entity_id order
 	_resolve_purify()
 	# 6. movement and reach damage, then boss patterns (보스 패턴/도달 피해)
@@ -293,6 +300,8 @@ func _resolve_purify() -> void:
 		if e is Boss:
 			_on_boss_purified(e as Boss)
 			run.on_boss_purified(boss_data.id)
+		elif boss != null and boss.alive and boss_data != null and boss_data.shield_per_minion > 0.0:
+			boss.add_shield(boss_data.shield_per_minion, clock)  # 탐욕: 지정 부하 정화마다 +3 (B9)
 		var kill := resolver.on_kill(e, e.last_source, enemies)
 		if kill["heal"] > 0.0:
 			run.heal_stability(kill["heal"])
@@ -384,22 +393,46 @@ func _spawn_boss() -> void:
 func _tick_boss(delta: float) -> void:
 	if boss == null or not boss.alive:
 		return
+	boss.update_readout(clock)
 	var spec := boss.poll_pattern(clock)
 	if not spec.is_empty():
+		if spec["seal"]:
+			# 침묵: pick the threatened word now so the 봉인선 is visible during the warning.
+			var options := resolver.sealable_words()
+			if not options.is_empty():
+				var chosen: StringName = options[rng_boss.randi_range(0, options.size() - 1)]
+				spec["seal_word"] = chosen
 		var p: PatternTarget = PATTERN_SCENE.instantiate()
+		if spec.has("seal_word"):
+			p.seal_word_name = db.words[spec["seal_word"]].name
 		p.setup(spec)
 		effect_root.add_child(p)
 		pattern_targets.append(p)
+		p.completed.connect(_on_pattern_defused)
 	for p in pattern_targets.duplicate():
 		if p.done:
 			continue
 		p.tick(delta)
-		if p.done:
-			if p.hits >= p.required:
-				continue
-			stats["patterns_failed"] += 1
-			run.damage_stability(resolver.stability_damage(p.fail_damage), &"pattern")
+		if p.done and p.hits < p.required:
+			_on_pattern_failed(p)
 	_prune_patterns()
+
+
+## 대응 성공 (G8): the pattern effect is cancelled; 탐욕 also loses its shield for 4s.
+func _on_pattern_defused(p: PatternTarget) -> void:
+	if p.ring and boss != null:
+		boss.break_ring(clock)
+
+
+## 대응 실패 (G8/B9): damage, or for 침묵 a 4s seal of the threatened word (damage when
+## nothing could be sealed). Sealed words never include 위험 words.
+func _on_pattern_failed(p: PatternTarget) -> void:
+	stats["patterns_failed"] += 1
+	if p.seal and p.seal_word != &"" and not resolver.is_sealed(p.seal_word):
+		resolver.seal(p.seal_word, p.seal_duration)
+		seal_changed.emit()
+		return
+	run.damage_stability(resolver.stability_damage(p.fail_damage), &"pattern")
 
 
 func _prune_patterns() -> void:

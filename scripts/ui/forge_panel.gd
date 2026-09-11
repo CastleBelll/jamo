@@ -87,6 +87,7 @@ func _refresh() -> void:
 
 func _rebuild_hand() -> void:
 	for ch in hand_row.get_children():
+		hand_row.remove_child(ch)
 		ch.queue_free()
 	for t in forge.hand:
 		var b := Button.new()
@@ -102,6 +103,7 @@ func _rebuild_hand() -> void:
 
 func _rebuild_candidates() -> void:
 	for ch in candidates_box.get_children():
+		candidates_box.remove_child(ch)
 		ch.queue_free()
 	var list := forge.candidates()
 	list.sort_custom(func(a, b): return String(a["word"].id) < String(b["word"].id))
@@ -132,6 +134,7 @@ func _rebuild_candidates() -> void:
 
 func _rebuild_replace_row() -> void:
 	for ch in replace_row.get_children():
+		replace_row.remove_child(ch)
 		ch.queue_free()
 	var c := forge.candidate_for(selected) if selected != &"" else {}
 	var needs_swap: bool = not c.is_empty() and (c["needs_replace"] or c["replace_risk"])
@@ -242,6 +245,7 @@ func _on_restore() -> void:
 ## 합성 (G6/G10 빌드 확정): recipes whose materials are held; preview shows what is lost.
 func _rebuild_compounds() -> void:
 	for ch in compound_box.get_children():
+		compound_box.remove_child(ch)
 		ch.queue_free()
 	var options := forge.build.compound_options(db)
 	compound_box.visible = not options.is_empty() or forge.compounded != &""

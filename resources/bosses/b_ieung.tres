@@ -18,6 +18,7 @@ respond_count_p2 = 4
 fail_damage = 16.0
 seal_duration = 0.0
 gold = 50
+response_hint = "예고된 통로의 정지 표식을 눌러 돌진을 막으세요. 부하는 보스 정화 전에 정리하세요."
 boss_position = Vector2(1200.0, 260.0)
 marker_positions = Array[Vector2]([Vector2(480.0, 260.0), Vector2(960.0, 260.0), Vector2(1440.0, 260.0)])
 minion_schedule = Array[Dictionary]([{"t": 8.0, "count": 2, "jamo": "ㅇ"}, {"t": 16.0, "count": 2, "jamo": "ㅇ"}, {"t": 24.0, "count": 2, "jamo": "ㅇ"}])

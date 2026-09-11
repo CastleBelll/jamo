@@ -74,6 +74,7 @@ func _refresh() -> void:
 
 func _rebuild_candidates() -> void:
 	for c in candidates_row.get_children():
+		candidates_row.remove_child(c)
 		c.queue_free()
 	for i in reward.candidates.size():
 		var b := Button.new()
@@ -91,6 +92,7 @@ func _rebuild_candidates() -> void:
 
 func _rebuild_deck() -> void:
 	for c in deck_grid.get_children():
+		deck_grid.remove_child(c)
 		c.queue_free()
 	deck_grid.visible = mode != &""
 	if mode == &"":
