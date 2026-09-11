@@ -16,4 +16,6 @@ godot --headless --path . tests/test_combat.tscn
 godot --headless --path . tests/test_deck.tscn
 # Forge: full shuffle, non-replacement draws, lock/reroll, candidates, restore transaction, failure pity, pin, screen flow
 godot --headless --path . tests/test_forge.tscn
+# word effects: B1 formulas, burn/poison/slow, auto hits without procs, counters, kill triggers, clear heal, gold, drops
+godot --headless --path . tests/test_effects.tscn
 ```

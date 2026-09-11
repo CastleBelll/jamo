@@ -87,6 +87,7 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 	get_tree().paused = pause_panel.visible or to != RunController.Phase.COMBAT
 	match to:
 		RunController.Phase.WAVE_PREP:
+			hud.set_build(run.build, db_ref)
 			prep_label.text = "Wave %d%s" % [run.wave, " 보스" if run.is_boss_wave() else ""]
 			%StartWaveButton.grab_focus()
 		RunController.Phase.COMBAT:

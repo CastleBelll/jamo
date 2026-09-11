@@ -104,6 +104,8 @@ func build_reward() -> RewardService:
 	var reward := RewardService.new()
 	var boss := is_boss_wave()
 	var picks := db.balance.reward_picks_boss if boss else db.balance.reward_picks_normal
+	if not boss:
+		picks += CombatResolver.reward_pick_bonus(db, build)  # SY_ECON, normal Waves only (B8)
 	var removes := db.balance.reward_removes_boss if boss else 0
 	var replace_allowed := not (first_run and wave == FIRST_WAVE)
 	reward.start(deck, drops.drops, picks, removes, replace_allowed)
@@ -111,12 +113,13 @@ func build_reward() -> RewardService:
 
 
 ## Spawns done and no enemies/patterns left (G2). W20 skips CLEAR/FORGE entirely.
-func on_wave_cleared() -> bool:
+## `heal` is the full clear heal (base + word bonuses); negative means base only.
+func on_wave_cleared(heal: float = -1.0) -> bool:
 	if phase != Phase.COMBAT:
 		return _reject("on_wave_cleared")
 	if wave >= LAST_WAVE:
 		return _end(EndReason.COMPLETED)
-	_set_stability(stability + db.balance.clear_heal)
+	_set_stability(stability + (heal if heal >= 0.0 else db.balance.clear_heal))
 	return _go(Phase.COMBAT, Phase.CLEAR)
 
 

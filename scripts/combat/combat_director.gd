@@ -17,6 +17,7 @@ const SOURCE_MANUAL := &"manual"
 
 var run: RunController
 var db: ContentDB
+var resolver := CombatResolver.new()
 var paths: Array[Path2D] = []       # index = lane * 2 + sub
 var enemy_root: Node2D
 var effect_root: Node2D
@@ -40,6 +41,8 @@ var miss_clicks: int = 0
 var hold_pressed: bool = false
 var focus_index: int = -1
 var stats := {"hits": 0, "purified": 0, "reached": 0}
+## Gold earned in this Wave (float, B10 fractions accumulate) for the 돈 clear heal.
+var wave_gold: float = 0.0
 ## Jamo the pinned goal lacks in the deck: B5 spawn weight x1.15, renormalised.
 var pin_lacking: Array[String] = []
 
@@ -52,6 +55,7 @@ func setup(controller: RunController, content: ContentDB, page: Node2D) -> void:
 		paths.append(page.get_node("Paths/" + name) as Path2D)
 	enemy_root = page.get_node("Enemies")
 	effect_root = page.get_node("Effects")
+	resolver.setup(db, run.build, hash("crit:%d" % run.run_seed))
 
 
 func start_wave(data: WaveData, seed: int) -> void:
@@ -69,6 +73,10 @@ func start_wave(data: WaveData, seed: int) -> void:
 	focus_index = -1
 	miss_clicks = 0
 	stats = {"hits": 0, "purified": 0, "reached": 0}
+	wave_gold = 0.0
+	resolver.build = run.build
+	resolver.start_wave()
+	run.drops.bonus = resolver.drop_chance_add
 	active = true
 	enemies_changed.emit(remaining())
 
@@ -164,7 +172,10 @@ func tick(delta: float, cursor_world: Vector2 = Vector2.INF) -> void:
 	if pending_target != null and can_attack() and pending_target.alive:
 		_manual_attack(pending_target)
 	pending_target = null
-	# 3./4. hit statuses and scheduled auto/status damage arrive with words (P1/P2).
+	# 3. hit statuses were applied inside _manual_attack (only for a surviving target).
+	# 4. scheduled auto / status damage (no procs from these sources, G7)
+	for hit in resolver.scheduled_damage(delta, enemies):
+		_apply_hit(hit["target"], hit["damage"], hit["source"])
 	# 5. purify, in entity_id order
 	_resolve_purify()
 	# 6. movement, then reach damage (보스 패턴/도달 피해)
@@ -173,24 +184,29 @@ func tick(delta: float, cursor_world: Vector2 = Vector2.INF) -> void:
 	# 7./8. defeat is decided inside damage_stability; clear only if still in COMBAT.
 	if run.phase == RunController.Phase.COMBAT and spawned >= total and enemies.is_empty():
 		active = false
-		run.on_wave_cleared()
+		resolver.end_wave()
+		run.on_wave_cleared(resolver.clear_heal(wave_gold))
 
 
 func _manual_attack(target: JamoMonster) -> void:
-	var crit := false
-	var damage := manual_damage(crit)
-	var dealt := target.take_damage(damage)
-	attack_cooldown = db.balance.manual_interval
+	var roll := resolver.manual_damage(target)
+	var crit: bool = roll["crit"]
+	var dealt := _apply_hit(target, roll["damage"], CombatResolver.SOURCE_MANUAL)
+	attack_cooldown = resolver.input_interval()
 	stats["hits"] += 1
 	_spawn_damage_number(target.global_position, dealt, crit)
 	manual_hit.emit(target, dealt, crit)
+	# 3. counters on every real hit; statuses only if the target survived (resolver decides).
+	if dealt > 0.0:
+		for hit in resolver.on_manual_hit(target, enemies):
+			_apply_hit(hit["target"], hit["damage"], hit["source"])
 
 
-## B1: 1.0 x (1 + bonus sum) x crit. Word bonuses plug in here in P1.
-func manual_damage(crit: bool) -> float:
-	var bonus := 0.0
-	var value := db.balance.manual_base_damage * (1.0 + minf(bonus, db.balance.manual_damage_bonus_cap))
-	return value * (db.balance.crit_multiplier if crit else 1.0)
+func _apply_hit(target: JamoMonster, damage: float, source: StringName) -> float:
+	var dealt := target.take_damage(damage)
+	if dealt > 0.0:
+		target.last_source = source
+	return dealt
 
 
 func _resolve_purify() -> void:
@@ -203,8 +219,15 @@ func _resolve_purify() -> void:
 		e.alive = false
 		enemies.erase(e)
 		stats["purified"] += 1
-		run.add_gold(gold_per_kill())
-		enemy_purified.emit(e, SOURCE_MANUAL)
+		var gold := resolver.gold_for_kill(gold_per_kill())
+		wave_gold += gold
+		run.add_gold(gold)
+		var kill := resolver.on_kill(e, e.last_source, enemies)
+		if kill["heal"] > 0.0:
+			run.heal_stability(kill["heal"])
+		for hit in kill["derived"]:
+			_apply_hit(hit["target"], hit["damage"], hit["source"])
+		enemy_purified.emit(e, e.last_source)
 		e.play_purify()
 		_retire(e, 0.2)
 	if not dead.is_empty():
@@ -226,6 +249,7 @@ func _advance_enemies(delta: float) -> void:
 		var limit: float = INF
 		if lead_progress.has(key):
 			limit = lead_progress[key] - db.balance.enemy_min_spacing
+		e.speed_mult = resolver.speed_mult_for(e)
 		if e.advance(delta, limit):
 			reached.append(e)
 		lead_progress[key] = e.progress
@@ -236,7 +260,7 @@ func _advance_enemies(delta: float) -> void:
 		stats["reached"] += 1
 		enemy_reached.emit(e)
 		_retire(e, 0.0)
-		run.damage_stability(db.balance.reach_damage)
+		run.damage_stability(resolver.stability_damage(db.balance.reach_damage))
 		if run.phase != RunController.Phase.COMBAT:
 			break
 	if not reached.is_empty():
