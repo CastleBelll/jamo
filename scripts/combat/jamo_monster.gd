@@ -102,3 +102,95 @@ func is_hit_by(world_pos: Vector2, radius: float) -> bool:
 func play_purify() -> void:
 	if anim.has_animation("purify"):
 		anim.play("purify")
+
+
+# --- statuses (B1): burn, poison stacks, slow. Times are wave-clock seconds. -----------------
+
+var burn := {}            # {"dps": float, "until": float, "next_tick": float}
+var poison_stacks: Array[float] = []   # expiry times
+var poison_dps: float = 0.0
+var poison_next_tick: float = -1.0
+var slow := {}            # {"ratio": float, "until": float}
+## Source of the most recent damage, so purify can tell a manual kill from a status tick.
+var last_source: StringName = &""
+
+
+## Burn re-application keeps the larger dps and the longer remaining time; the tick clock
+## is never delayed (first tick 1s after the first application).
+func apply_burn(dps: float, duration: float, now: float) -> void:
+	if burn.is_empty() or burn["until"] < now:
+		burn = {"dps": dps, "until": now + duration, "next_tick": now + 1.0}
+		return
+	burn["dps"] = maxf(burn["dps"], dps)
+	burn["until"] = maxf(burn["until"], now + duration)
+
+
+## Each stack has its own life; ticks share one clock from the first application. At max
+## stacks the shortest remaining stack is refreshed instead of adding one.
+func apply_poison(duration: float, max_stacks: int, dps_per_stack: float, now: float) -> void:
+	poison_dps = dps_per_stack
+	_expire_poison(now)
+	if poison_stacks.is_empty():
+		poison_next_tick = now + 1.0
+	if poison_stacks.size() >= max_stacks:
+		var shortest := 0
+		for i in poison_stacks.size():
+			if poison_stacks[i] < poison_stacks[shortest]:
+				shortest = i
+		poison_stacks[shortest] = now + duration
+	else:
+		poison_stacks.append(now + duration)
+
+
+## Strongest ratio wins; the duration refreshes only when the same strength re-applies.
+func apply_slow(ratio: float, duration: float, now: float) -> void:
+	if slow.is_empty() or slow["until"] < now or ratio > slow["ratio"]:
+		slow = {"ratio": ratio, "until": now + duration}
+	elif is_equal_approx(ratio, slow["ratio"]):
+		slow["until"] = maxf(slow["until"], now + duration)
+
+
+func strongest_slow(now: float) -> float:
+	if slow.is_empty() or slow["until"] < now:
+		return 0.0
+	return slow["ratio"]
+
+
+func burn_active(now: float) -> bool:
+	return not burn.is_empty() and burn["until"] >= now
+
+
+func poison_count(now: float) -> int:
+	_expire_poison(now)
+	return poison_stacks.size()
+
+
+## Status damage due at `now`. A stack whose expiry equals the tick time still pays that tick.
+func tick_statuses(now: float) -> float:
+	var total := 0.0
+	if not burn.is_empty():
+		while burn["next_tick"] <= now and burn["next_tick"] <= burn["until"] + 0.0001:
+			total += burn["dps"]
+			burn["next_tick"] += 1.0
+		if burn["until"] < now and burn["next_tick"] > burn["until"]:
+			burn = {}
+	if not poison_stacks.is_empty() and poison_next_tick >= 0.0:
+		while poison_next_tick <= now and not poison_stacks.is_empty():
+			var live := 0
+			for until in poison_stacks:
+				if until >= poison_next_tick - 0.0001:
+					live += 1
+			total += poison_dps * live
+			poison_next_tick += 1.0
+			_expire_poison(poison_next_tick - 1.0 + 0.0001)
+		if poison_stacks.is_empty():
+			poison_next_tick = -1.0
+	return total
+
+
+func _expire_poison(now: float) -> void:
+	var kept: Array[float] = []
+	for until in poison_stacks:
+		if until >= now:
+			kept.append(until)
+	poison_stacks = kept

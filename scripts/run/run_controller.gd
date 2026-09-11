@@ -111,12 +111,13 @@ func build_reward() -> RewardService:
 
 
 ## Spawns done and no enemies/patterns left (G2). W20 skips CLEAR/FORGE entirely.
-func on_wave_cleared() -> bool:
+## `heal` is the full clear heal (base + word bonuses); negative means base only.
+func on_wave_cleared(heal: float = -1.0) -> bool:
 	if phase != Phase.COMBAT:
 		return _reject("on_wave_cleared")
 	if wave >= LAST_WAVE:
 		return _end(EndReason.COMPLETED)
-	_set_stability(stability + db.balance.clear_heal)
+	_set_stability(stability + (heal if heal >= 0.0 else db.balance.clear_heal))
 	return _go(Phase.COMBAT, Phase.CLEAR)
 
 

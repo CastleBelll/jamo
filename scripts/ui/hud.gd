@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var enemies_label: Label = %EnemiesLabel
 @onready var gold_label: Label = %GoldLabel
 @onready var drops_label: Label = %DropsLabel
+@onready var build_bar: HBoxContainer = $Root/BuildBar
 
 
 func bind(run: RunController) -> void:
@@ -19,6 +20,22 @@ func bind(run: RunController) -> void:
 	_on_gold_changed(run.gold_run)
 	set_enemies_left(0)
 	set_temp_drops(0)
+
+
+## 빌드 아이콘 (G10): one slot per held word with its Rank; empty slots stay blank.
+func set_build(build: BuildState, db: ContentDB) -> void:
+	for i in build_bar.get_child_count():
+		var slot := build_bar.get_child(i)
+		for ch in slot.get_children():
+			ch.queue_free()
+		if i < build.words.size():
+			var word: WordData = db.words[build.words[i]["id"]]
+			var l := Label.new()
+			l.text = "%s
+R%d" % [word.name, build.words[i]["rank"]]
+			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			l.set_anchors_preset(Control.PRESET_FULL_RECT)
+			slot.add_child(l)
 
 
 func set_enemies_left(count: int) -> void:
