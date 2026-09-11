@@ -155,6 +155,16 @@ static func sentence_text(db: ContentDB) -> String:
 	return db.narrative.sentence_stages[sentence_stage()]
 
 
+## S5 S_RETURN: the first library visit after 침묵 was purified records the line. Returns
+## the line to show once, or "" when nothing new happened.
+static func record_return(db: ContentDB) -> String:
+	if "S_SILENCE" in Meta.events and "S_RETURN" not in Meta.events:
+		Meta.events.append("S_RETURN")
+		Meta.save()
+		return db.narrative.line("S_RETURN")
+	return ""
+
+
 ## Event lines in unlock order for the 기록 tab.
 static func event_lines(db: ContentDB) -> Array[String]:
 	var out: Array[String] = []

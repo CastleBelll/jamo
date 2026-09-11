@@ -176,6 +176,22 @@ func _check_screen() -> void:
 	_expect(lib.get_node("%RunSetup").visible and lib.get_node("%DeckRows").get_child_count() == 2, "setup lists both starters")
 	_expect(lib.get_node("%DeckRows").get_child(1).disabled, "Starter B disabled until researched")
 	lib.free()
+	# S_RETURN: first library visit after 침묵, recorded and shown once.
+	Meta.events = ["S_SILENCE"]
+	lib = LIBRARY.instantiate()
+	add_child(lib)
+	_expect("S_RETURN" in Meta.events and lib.get_node("%NoticeLabel").visible and lib.get_node("%NoticeLabel").text == "우리의 기록에는 서로 다른 목소리가 있었다.", "S_RETURN recorded on the library visit after 침묵")
+	lib.free()
+	lib = LIBRARY.instantiate()
+	add_child(lib)
+	_expect(not lib.get_node("%NoticeLabel").visible and Meta.events.count("S_RETURN") == 1, "S_RETURN shown once, recorded once")
+	lib.free()
+	Meta.codex["C01"] = {"mastery": 0, "best_rank": 1, "first_at": "d"}
+	lib = LIBRARY.instantiate()
+	add_child(lib)
+	lib._set_codex_tab("compound")
+	_expect("최초 발견 기록" in lib.get_node("%CodexDetail").text, "compound codex shows a discovery record, no 복원도")
+	lib.free()
 	Meta.events = ["S_SILENCE"]
 	var game := RUN_GAME.instantiate()
 	game.set_physics_process(false)

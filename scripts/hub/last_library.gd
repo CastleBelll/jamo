@@ -22,7 +22,10 @@ func _ready() -> void:
 	%SetupStartButton.pressed.connect(_start_run)
 	%SetupPinOption.item_selected.connect(func(i): Meta.pinned_word = String(%SetupPinOption.get_item_metadata(i)); _refresh_setup())
 	%OpeningStartButton.pressed.connect(_start_first_run)
+	var returned := LibraryService.record_return(db)
 	_refresh()
+	%NoticeLabel.text = returned
+	%NoticeLabel.visible = returned != ""
 	if not Meta.first_run_done and not Meta.has_run():
 		_show_opening()
 
@@ -154,7 +157,9 @@ func _refresh_codex_detail() -> void:
 	if w.is_compound and row["condition"] != "":
 		lines.append("레시피: %s" % row["condition"])
 	lines.append_array(row["effects"])
-	if row["discovered"]:
+	if row["discovered"] and w.is_compound:
+		lines.append("최초 발견 기록 · 첫 합성 %s" % row["first_at"])  # B10: 합성은 복원도 없이 발견 기록만
+	elif row["discovered"]:
 		lines.append("복원도 %s (%d회) · 최고 Rank %d · 첫 복원 %s" % [row["tier"], row["mastery"], row["best_rank"], row["first_at"]])
 	else:
 		lines.append("아직 복원한 적 없음")

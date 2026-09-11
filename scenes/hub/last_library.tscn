@@ -101,6 +101,14 @@ layout_mode = 2
 horizontal_alignment = 1
 text = ""
 
+[node name="NoticeLabel" type="Label" parent="Margin/Tabs/서고"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
+text = ""
+
 [node name="CorruptLabel" type="Label" parent="Margin/Tabs/서고"]
 unique_name_in_owner = true
 layout_mode = 2
