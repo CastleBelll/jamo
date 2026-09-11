@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MotionProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/motion_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"GLIDE"
+jamo = Array[String](["ㅏ", "ㅓ", "ㅗ", "ㅜ", "ㅣ", "ㅕ", "ㅛ"])
+rotation_deg = 0.0
+period = 1.0
+bob_px = 2.0
+land_scale = Vector2(1.0, 1.0)
+land_time = 0.0

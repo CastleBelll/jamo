@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MotionProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/motion_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"BOUNCE"
+jamo = Array[String](["ㅁ", "ㅂ"])
+rotation_deg = 0.0
+period = 0.55
+bob_px = 6.0
+land_scale = Vector2(1.06, 0.92)
+land_time = 0.1

@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"damage_lane_front_other"
+trigger = &"manual_hit"
+value = 1.0
+every_n = 3
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"damage_lane_front_other"
+trigger = &"manual_hit"
+value = 1.8
+every_n = 3
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"damage_lane_front_other"
+trigger = &"manual_hit"
+value = 1.8
+every_n = 2
+
+[resource]
+script = ExtResource("1")
+id = &"W07"
+name = "창"
+required_jamo = Array[String](["ㅊ", "ㅏ", "ㅇ"])
+category = &"E"
+tags = Array[StringName]([&"무기"])
+role = "줄 공격"
+rank1 = Array[Resource]([SubResource("r1_0")])
+rank2 = Array[Resource]([SubResource("r2_0")])
+rank3 = Array[Resource]([SubResource("r3_0")])
+unlock = &"start"
+related_boss = &"B_IEUNG"
+compound_id = &""
+is_compound = false
+requires_any_word = Array[StringName]([])

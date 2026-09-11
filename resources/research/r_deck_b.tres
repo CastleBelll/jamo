@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ResearchData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/research_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"R_DECK_B"
+name = "다른 활자 상자"
+price = 45
+description = "Starter B 선택 해금"
+requires_research = &""
+requires_reach_wave = 5
+effect = {"unlock_deck": "starter_b"}

@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"apply_poison"
+trigger = &"manual_hit"
+value = 0.35
+duration = 4.0
+max_stacks = 3
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"apply_poison"
+trigger = &"manual_hit"
+value = 0.45
+duration = 4.0
+max_stacks = 4
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"apply_poison"
+trigger = &"manual_hit"
+value = 0.55
+duration = 4.0
+max_stacks = 5
+
+[resource]
+script = ExtResource("1")
+id = &"W03"
+name = "독"
+required_jamo = Array[String](["ㄷ", "ㅗ", "ㄱ"])
+category = &"S"
+tags = Array[StringName]([&"지속"])
+role = "보스 축적"
+rank1 = Array[Resource]([SubResource("r1_0")])
+rank2 = Array[Resource]([SubResource("r2_0")])
+rank3 = Array[Resource]([SubResource("r3_0")])
+unlock = &"start"
+related_boss = &"B_GREED"
+compound_id = &""
+is_compound = false
+requires_any_word = Array[StringName]([])

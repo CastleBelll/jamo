@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/boss_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"B_IEUNG"
+name = "질주 ㅇ"
+wave = 15
+hp = 220.0
+pattern_first_at = 5.0
+pattern_period = 8.0
+pattern_period_p2 = 8.0
+warn_time = 2.5
+warn_time_p2 = 2.5
+respond_count = 3
+respond_count_p2 = 4
+fail_damage = 16.0
+seal_duration = 0.0
+gold = 50
+boss_position = Vector2(1200.0, 260.0)
+marker_positions = Array[Vector2]([Vector2(480.0, 260.0), Vector2(960.0, 260.0), Vector2(1440.0, 260.0)])
+minion_schedule = Array[Dictionary]([{"t": 8.0, "count": 2, "jamo": "ㅇ"}, {"t": 16.0, "count": 2, "jamo": "ㅇ"}, {"t": 24.0, "count": 2, "jamo": "ㅇ"}])
+minion_hp = 7.0
+minion_travel_time = 12.0
+minion_gold = 2
+body_drop = Array[String](["ㅇ", "ㅇ"])
+minion_concurrent_max = 4

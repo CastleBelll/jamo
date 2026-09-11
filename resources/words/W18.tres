@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"shield"
+trigger = &"wave_start"
+value = 5.0
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"shield"
+trigger = &"wave_start"
+value = 8.0
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"shield"
+trigger = &"wave_start"
+value = 11.0
+
+[resource]
+script = ExtResource("1")
+id = &"W18"
+name = "봄"
+required_jamo = Array[String](["ㅂ", "ㅗ", "ㅁ"])
+category = &"R"
+tags = Array[StringName]([&"방어"])
+role = "무피해 유지"
+rank1 = Array[Resource]([SubResource("r1_0")])
+rank2 = Array[Resource]([SubResource("r2_0")])
+rank3 = Array[Resource]([SubResource("r3_0")])
+unlock = &"start"
+related_boss = &"B_MIEUM"
+compound_id = &""
+is_compound = false
+requires_any_word = Array[StringName]([])

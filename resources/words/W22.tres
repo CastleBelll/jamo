@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="WordData" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/word_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/effect_data.gd" id="2"]
+
+[sub_resource type="Resource" id="r1_0"]
+script = ExtResource("2")
+kind = &"auto_period_mult"
+trigger = &"passive"
+value = 0.8
+
+[sub_resource type="Resource" id="r1_1"]
+script = ExtResource("2")
+kind = &"enemy_speed_mult"
+trigger = &"passive"
+value = 1.1
+
+[sub_resource type="Resource" id="r2_0"]
+script = ExtResource("2")
+kind = &"auto_period_mult"
+trigger = &"passive"
+value = 0.7
+
+[sub_resource type="Resource" id="r2_1"]
+script = ExtResource("2")
+kind = &"enemy_speed_mult"
+trigger = &"passive"
+value = 1.15
+
+[sub_resource type="Resource" id="r3_0"]
+script = ExtResource("2")
+kind = &"auto_period_mult"
+trigger = &"passive"
+value = 0.6
+
+[sub_resource type="Resource" id="r3_1"]
+script = ExtResource("2")
+kind = &"enemy_speed_mult"
+trigger = &"passive"
+value = 1.2
+
+[resource]
+script = ExtResource("1")
+id = &"W22"
+name = "폭주"
+required_jamo = Array[String](["ㅍ", "ㅗ", "ㄱ", "ㅈ", "ㅜ"])
+category = &"X"
+tags = Array[StringName]([&"자동", &"위험"])
+role = "자동 빌드 변형"
+rank1 = Array[Resource]([SubResource("r1_0"), SubResource("r1_1")])
+rank2 = Array[Resource]([SubResource("r2_0"), SubResource("r2_1")])
+rank3 = Array[Resource]([SubResource("r3_0"), SubResource("r3_1")])
+unlock = &"after_mieum"
+related_boss = &"B_GREED"
+compound_id = &""
+is_compound = false
+requires_any_word = Array[StringName]([&"W06", &"W17"])

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MotionProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/motion_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"LIGHT_STEP"
+jamo = Array[String](["ㅅ", "ㅈ", "ㅊ"])
+rotation_deg = 5.0
+period = 0.3
+bob_px = 3.0
+land_scale = Vector2(1.0, 1.0)
+land_time = 0.0

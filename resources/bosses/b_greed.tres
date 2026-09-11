@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/boss_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"B_GREED"
+name = "탐욕"
+wave = 20
+hp = 380.0
+pattern_first_at = 6.0
+pattern_period = 10.0
+pattern_period_p2 = 8.0
+warn_time = 3.0
+warn_time_p2 = 3.0
+respond_count = 4
+respond_count_p2 = 4
+fail_damage = 16.0
+seal_duration = 0.0
+gold = 100
+boss_position = Vector2(960.0, 260.0)
+marker_positions = Array[Vector2]([Vector2(1260.0, 260.0)])
+minion_schedule = Array[Dictionary]([{"t": 8.0, "count": 2, "jamo": ""}, {"t": 16.0, "count": 2, "jamo": ""}, {"t": 24.0, "count": 2, "jamo": ""}, {"t": 32.0, "count": 2, "jamo": ""}, {"t": 40.0, "count": 2, "jamo": ""}])
+minion_hp = 9.0
+minion_travel_time = 12.0
+minion_gold = 2
+body_drop = Array[String]([])
+shield_per_minion = 3.0
+shield_cap = 24.0
+shield_lockout = 4.0
+minion_concurrent_max = 4

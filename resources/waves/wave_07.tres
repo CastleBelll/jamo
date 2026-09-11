@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WaveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wave_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+wave = 7
+is_boss = false
+enemy_count = 14
+concurrent_max = 6
+spawn_interval = 1.6
+base_hp = 4.0
+travel_time = 13.0
+variant_chance = 0.1
