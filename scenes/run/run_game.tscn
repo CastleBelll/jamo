@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/run_game.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/run/run_controller.gd" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4"]
 [ext_resource type="Theme" path="res://resources/ui/theme.tres" id="5"]
 [ext_resource type="Script" path="res://scripts/combat/combat_director.gd" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/reward_panel.tscn" id="7"]
 
 [node name="RunGame" type="Node"]
 process_mode = 3
@@ -64,30 +65,10 @@ custom_minimum_size = Vector2(260, 64)
 layout_mode = 2
 text = "시작"
 
-[node name="ClearPanel" type="PanelContainer" parent="Panels/Center"]
+[node name="ClearPanel" parent="Panels/Center" instance=ExtResource("7")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-
-[node name="Box" type="VBoxContainer" parent="Panels/Center/ClearPanel"]
-layout_mode = 2
-theme_override_constants/separation = 24
-
-[node name="ClearLabel" type="Label" parent="Panels/Center/ClearPanel/Box"]
-layout_mode = 2
-horizontal_alignment = 1
-text = "Wave Clear"
-
-[node name="ClearHint" type="Label" parent="Panels/Center/ClearPanel/Box"]
-layout_mode = 2
-horizontal_alignment = 1
-text = "자모 정리 (P1에서 구현)"
-
-[node name="FinishClearButton" type="Button" parent="Panels/Center/ClearPanel/Box"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
-layout_mode = 2
-text = "정리 완료"
 
 [node name="ForgePanel" type="PanelContainer" parent="Panels/Center"]
 unique_name_in_owner = true

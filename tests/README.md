@@ -12,4 +12,6 @@ godot --headless --path . tests/test_content.tscn
 godot --headless --path . tests/test_run_controller.tscn
 # W1 combat: spawn coordinates/lanes, click overlap + cooldown, purify/reach once, spacing, clear vs defeat
 godot --headless --path . tests/test_combat.tscn
+# deck tokens, drop pity/cap/rate, reward picks/replace/remove, 자모 정리 panel flow
+godot --headless --path . tests/test_deck.tscn
 ```
