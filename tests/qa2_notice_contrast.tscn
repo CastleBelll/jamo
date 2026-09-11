@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://tests/qa2_notice_contrast.gd" id="1_qa2"]
-
-[node name="Qa2NoticeContrast" type="Node"]
-script = ExtResource("1_qa2")

@@ -1,8 +1,0 @@
-### A1 static load
-Godot Engine v4.7.stable.official.5b4e0cb0f - https://godotengine.org
-
-ERROR: Resource file not found: res://art/fonts/NotoSansKR-Regular.ttf (expected type: unknown)
-   at: _load (core/io/resource_loader.cpp:325)
-ERROR: Error loading custom project font 'res://art/fonts/NotoSansKR-Regular.ttf'
-   at: initialize_theme (scene/theme/theme_db.cpp:84)
-EXIT=0

@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scripts/wave/wave_controller.gd" id="1_wave"]
-
-[node name="WaveController" type="Node"]
-script = ExtResource("1_wave")
-wave_clear_delay = 1.4

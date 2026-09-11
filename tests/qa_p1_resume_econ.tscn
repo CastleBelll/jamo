@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://tests/qa_p1_resume_econ.gd" id="1"]
-
-[node name="QAP1ResumeEcon" type="Node"]
-script = ExtResource("1")
