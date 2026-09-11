@@ -1,19 +1,13 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/objective/sentence_core.gd" id="1_core"]
-[ext_resource type="Material" path="res://materials/jamo_ink.tres" id="2_ink"]
-[ext_resource type="Material" path="res://materials/jamo_gold.tres" id="3_gold"]
+[ext_resource type="PackedScene" path="res://art/objective/sentence_core.glb" id="2_model"]
+[ext_resource type="Material" path="res://materials/core_hit.tres" id="3_hit"]
 
-; Stand-in primitives. The asset branch delivers the real 문장핵 model; drop it
-; under VisualRoot and delete these two meshes. Nothing else references them.
-[sub_resource type="CylinderMesh" id="Mesh_pillar"]
-top_radius = 0.28
-bottom_radius = 0.4
-height = 0.9
-
-[sub_resource type="BoxMesh" id="Mesh_cap"]
-size = Vector3(0.36, 0.36, 0.36)
-
+; Hit feedback, all authored here: VisualRoot squashes and jolts, and the
+; CorePaper part of the model flashes core_hit.tres through material_override
+; for the first 0.18s (art/objective/README.md section 3). The model itself is
+; never edited; the override is cleared by the last key.
 [sub_resource type="Animation" id="Animation_hit"]
 resource_name = "hit"
 length = 0.3
@@ -41,6 +35,18 @@ tracks/1/keys = {
 "update": 0,
 "values": [Vector3(0, 0, 0), Vector3(0.06, 0, -0.04), Vector3(-0.05, 0, 0.03), Vector3(0, 0, 0)]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("VisualRoot/Model/CorePaper:material_override")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.18),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("3_hit"), null]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_core"]
 _data = {
@@ -50,22 +56,19 @@ _data = {
 [node name="SentenceCore" type="Node3D" node_paths=PackedStringArray("visual_root")]
 script = ExtResource("1_core")
 visual_root = NodePath("VisualRoot")
-reach_radius = 0.9
+reach_radius = 1.1
 hit_shake_strength = 0.06
 hit_shake_duration = 0.2
 
 [node name="VisualRoot" type="Node3D" parent="."]
 
-[node name="Pillar" type="MeshInstance3D" parent="VisualRoot"]
-position = Vector3(0, 0.45, 0)
-mesh = SubResource("Mesh_pillar")
-surface_material_override/0 = ExtResource("2_ink")
-
-[node name="Cap" type="MeshInstance3D" parent="VisualRoot"]
-position = Vector3(0, 1.08, 0)
-rotation = Vector3(0.7854, 0.7854, 0)
-mesh = SubResource("Mesh_cap")
-surface_material_override/0 = ExtResource("3_gold")
+; The 문장핵 model (art/objective/sentence_core.glb): origin at the floor
+; centre, +Z facing the camera, 2.54 x 1.96 x 1.68 at scale 1. Scaled here, not
+; on VisualRoot, because the hit animation keys VisualRoot:scale in absolute
+; terms. 0.75 keeps the book's back corners on the paper slab with the core at
+; z = -2.2 in game_world.tscn (corner |x|+|z| 3.78 of the slab's 3.96).
+[node name="Model" parent="VisualRoot" instance=ExtResource("2_model")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0)
 
 [node name="HitAnchor" type="Marker3D" parent="."]
 position = Vector3(0, 1.1, 0)
@@ -74,3 +77,5 @@ position = Vector3(0, 1.1, 0)
 libraries = {
 &"": SubResource("AnimationLibrary_core")
 }
+
+[editable path="VisualRoot/Model"]

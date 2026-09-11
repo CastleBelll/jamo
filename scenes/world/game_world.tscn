@@ -29,9 +29,10 @@ death_fx_pool = NodePath("FXRoot/DeathFXPool")
 [node name="Arena" parent="." instance=ExtResource("2_arena")]
 
 ; The 문장핵 sits at the rear of the slab (-Z is away from the camera), so the
-; approach reads bottom-to-top on screen. Doc v0.4 sections 6.1 and 39.
+; approach reads bottom-to-top on screen. -2.2 leaves the book model's back
+; corners on the paper at its 0.75 scale. Doc v0.4 sections 6.1 and 39.
 [node name="SentenceCore" parent="." node_paths=PackedStringArray("camera_rig") instance=ExtResource("18_core")]
-position = Vector3(0, 0, -2.4)
+position = Vector3(0, 0, -2.2)
 camera_rig = NodePath("../CameraRig")
 
 ; Outer spawn points, one per remaining corner of the diamond slab. The

@@ -5,11 +5,11 @@ extends Node3D
 ##
 ## The HP itself is run state and lives in RunState.core_hp; this node is the
 ## thing in the world that monsters walk to, and the place hit feedback plays.
-## Everything under VisualRoot is a stand-in primitive: the real model from the
-## asset branch replaces that subtree and nothing else.
+## Everything under VisualRoot is the model from art/objective; the hit look
+## (squash, jolt, paper flash) is authored in sentence_core.tscn's AnimationPlayer.
 
-## Root of the placeholder look. Swap the children of this node for the real
-## asset; the script never reaches past it. Doc v0.4 section 46.
+## Root of the look. Swap the children of this node for another asset; the
+## script never reaches past it. Doc v0.4 section 46.
 @export var visual_root: Node3D
 ## Horizontal distance at which an approaching monster counts as having reached
 ## the core, in metres. Doc v0.4 section 6.1.

@@ -85,7 +85,7 @@ v0.4 는 장르 전환이다. 기존 코드를 전부 버리지 않고 다음과
 
 근거: §5, §6, §7, §25, §48 Phase 1
 
-- [~] S1 `scenes/objective/sentence_core.tscn` — 문장핵, HP, 피격 연출 (임시 프리미티브, `VisualRoot` 교체 지점)
+- [~] S1 `scenes/objective/sentence_core.tscn` — 문장핵, HP, 피격 연출 (`VisualRoot/Model` = `art/objective/sentence_core.glb`, P1-DEV-3)
 - [~] S2 자모 적이 문장핵으로 접근하는 AI (기존 보행 프로필 유지, 목적지만 변경, 도달 시 `core_damage`)
 - [~] S3 `WaveData.tres` 스키마 + Wave 1~5 데이터 (`resources/waves/`, §25)
 - [~] S4 `scenes/run/wave_controller.tscn` — Spawn / Clear / Fail 판정, P2 훅 `_between_waves()`
@@ -119,8 +119,12 @@ v0.4 는 장르 전환이다. 기존 코드를 전부 버리지 않고 다음과
 
 - **Wave Clear 사이 단계 없음**: `WaveController._between_waves()` 가 빈 훅이다. P2 가 보상
   선택과 Word Forge 를 여기에 끼운다 (§31).
-- **문장핵 애셋**: `sentence_core.tscn` 의 `VisualRoot` 아래 실린더+큐브 프리미티브. blender
-  워크트리의 애셋이 오면 그 자식만 교체한다.
+- **문장핵 애셋**: P1-DEV-3 에서 `art/objective/sentence_core.glb` 를 `VisualRoot/Model`
+  (scale 0.75, 문장핵 z = -2.2) 로 연결했다. 피격 시 `CorePaper` 의 `material_override` 에
+  `materials/core_hit.tres` 를 0.18 초 씌우는 것까지 `hit` 애니메이션 트랙으로 처리한다
+  (스크립트는 여전히 `visual_root` 너머를 참조하지 않는다). `reach_radius` 0.9 → 1.1.
+  HP 구간별 손상 표현(균열·먹 번짐)은 넣지 않았다 — 애셋에 단계 모델이 없고 §41 VFX 와
+  같이 다룰 항목.
 - **`monster_capacity` 업그레이드가 무효**: 동시 수는 `WaveData.max_alive` 가 결정한다.
   `MetaState.get_monster_capacity()` 는 F5 하네스만 쓴다. P1-DEV-2 에서
   `UpgradeData.is_retired = true` 로 상점에서 숨기고 구매를 막았다 (트랙·저장 레벨은 유지).
@@ -135,9 +139,10 @@ v0.4 는 장르 전환이다. 기존 코드를 전부 버리지 않고 다음과
   즉시 적립되는 §14 와 맞물려 중단/재개 반복으로 골드를 무한히 캘 수 있어 채택하지 않았다.
 
 ### P1 이월 (LOW)
-- [ ] `spawn_manager.gd:358` 삼항 타입 불일치 에디터 경고
+- [x] `spawn_manager.gd:358` 삼항 타입 불일치 에디터 경고 (P1-DEV-3, `String(id)`)
 - [ ] Core HP 영구 업그레이드 `.tres` 미작성 (읽기 구조만, P5)
-- [ ] `max_energy.tres` 값 11~20 정정 필요 (가격은 P5)
+- [x] `max_energy.tres` 값 11~20 정정 필요 (가격은 P5) — P1-DEV-3 확인: 값은 이미 기본 10 기준
+  11~20 (레벨당 +1, 커밋 4397951). v0.4 에 값 표가 없어 그대로 둔다. 다른 곡선이 필요하면 P5 가격 재산출과 함께
 - [ ] Wave 6+ 는 마지막 Wave 반복 (P9/P12 에서 확장)
 
 ## P2. 자모 슬롯 보드 (Word Forge)  `[~]`

@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; 문장핵 hit flash. Swapped onto the CorePaper part's material_override by the
+; "hit" animation in sentence_core.tscn for a few frames, then cleared again.
+; Cinnabar with a small emission lift so the flash reads from the 3/4 camera;
+; the world Environment has no glow pass, so this never blooms.
+[resource]
+resource_name = "CoreHit"
+albedo_color = Color(0.86, 0.24, 0.16, 1)
+roughness = 0.9
+emission_enabled = true
+emission = Color(1, 0.35, 0.2, 1)
+emission_energy_multiplier = 0.6

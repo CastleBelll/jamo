@@ -355,7 +355,7 @@ func _watch_for_stall(delta: float) -> void:
 			survivors.append("<freed>")
 			continue
 		survivors.append("%s state=%s hp=%.0f pos=(%.2f, %.2f)" % [
-			monster.monster_data.id if monster.monster_data != null else "?",
+			String(monster.monster_data.id) if monster.monster_data != null else "?",
 			JamoMonster.State.keys()[monster.get_state()], monster.hp,
 			monster.global_position.x, monster.global_position.z,
 		])
