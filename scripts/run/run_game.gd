@@ -40,6 +40,7 @@ func _ready() -> void:
 	%StartWaveButton.pressed.connect(func(): run.begin_combat())
 	forge_panel.finished.connect(func(): run.finish_forge())
 	%ResultLibraryButton.pressed.connect(_on_return_to_library)
+	%RetryButton.pressed.connect(func(): run.retry_run())
 	%ResumeButton.pressed.connect(_close_pause)
 	%AbandonButton.pressed.connect(_on_abandon)
 	pause_panel.visible = false
@@ -89,6 +90,7 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 		RunController.Phase.WAVE_PREP:
 			hud.set_build(run.build, db_ref)
 			prep_label.text = "Wave %d%s" % [run.wave, " 보스" if run.is_boss_wave() else ""]
+			%PrepHint.text = _prep_hint()
 			%StartWaveButton.grab_focus()
 		RunController.Phase.COMBAT:
 			director.set_hold(false)
@@ -112,19 +114,74 @@ func _clear_stats_text() -> String:
 
 ## Data first, then the 회수 feedback (G12): the drop is counted before the glyph floats.
 func _on_enemy_purified(monster: JamoMonster, _source: StringName) -> void:
+	if monster is Boss:
+		return  # boss bodies only give their guaranteed B9 drops, handled by the director
 	if run.on_purified(monster.jamo):
 		hud.set_temp_drops(run.drops.drops.size())
 		director.spawn_text(monster.global_position, "+" + monster.jamo, Color(0.95, 0.75, 0.2))
 
 
+## 보스 등장 (G10): name plus the one response line, shown only before combat starts.
+func _prep_hint() -> String:
+	if not run.is_boss_wave():
+		# The W1 guidance belongs to the first RUN only (G2: 재도전은 안내를 다시 보이지 않는다).
+		return "자모를 눌러 마지막 문장을 지키세요" if run.wave == 1 and run.first_run else ""
+	var b: BossData = db_ref.bosses[run.wave_data().boss_id]
+	return "%s 등장. 표식이 나타나면 %d번 눌러 대응하세요." % [b.name, b.respond_count]
+
+
+## RUN Result (G9): reason, reached/cleared Wave, top loss causes, build, discoveries, Gold,
+## and exactly one next goal. Gold shows the integer part that would be settled.
 func _result_text(reason: RunController.EndReason) -> String:
+	var head := ""
 	match reason:
 		RunController.EndReason.COMPLETED:
-			return "첫 문서 복원 완료. 도달 Wave %d" % run.wave
+			head = "첫 문서 복원 완료."
 		RunController.EndReason.ABANDONED:
-			return "귀환. 도달 Wave %d" % run.wave
+			head = "귀환."
 		_:
-			return "이번 페이지의 연결이 끊어졌다. 서고의 기록은 남아 있다.\n도달 Wave %d" % run.wave
+			head = "이번 페이지의 연결이 끊어졌다. 서고의 기록은 남아 있다."
+	var lines: Array[String] = [head, "도달 Wave %d · 클리어 Wave %d" % [run.wave, run.waves_cleared]]
+	var causes: Array[String] = []
+	var keys := run.damage_causes.keys()
+	keys.sort_custom(func(a, b): return run.damage_causes[a] > run.damage_causes[b])
+	for k in keys.slice(0, 2):
+		causes.append("%s %.1f" % [_cause_name(k), run.damage_causes[k]])
+	lines.append("안정도 피해 원인: %s" % (", ".join(causes) if not causes.is_empty() else "없음"))
+	var build_parts: Array[String] = []
+	for held in run.build.words:
+		build_parts.append("%s R%d" % [db_ref.words[held["id"]].name, held["rank"]])
+	lines.append("대표 빌드: %s" % (", ".join(build_parts) if not build_parts.is_empty() else "없음"))
+	var found: Array[String] = []
+	for id in run.discovered:
+		found.append(db_ref.words[id].name)
+	lines.append("신규 복원: %s" % (", ".join(found) if not found.is_empty() else "없음"))
+	lines.append("획득 Gold: %d G" % int(run.gold_run))
+	lines.append("다음 목표: %s" % _next_goal())
+	return "\n".join(lines)
+
+
+func _cause_name(cause: StringName) -> String:
+	match cause:
+		&"reach": return "적 도달"
+		&"pattern": return "보스 패턴"
+	return String(cause)
+
+
+## One suggestion (G9): the pinned word if it still lacks jamo, else the first compound recipe
+## whose materials are not both held, else W5.
+func _next_goal() -> String:
+	if run.pinned_word != &"":
+		var lacking := run.pin_lacking()
+		if not lacking.is_empty():
+			return "%s에 부족한 자모 %s 회수" % [db_ref.words[run.pinned_word].name, ", ".join(lacking)]
+	var ids := db_ref.compounds.keys()
+	ids.sort()
+	for id in ids:
+		var c: CompoundData = db_ref.compounds[id]
+		if not (run.build.has(c.material_a) and run.build.has(c.material_b)):
+			return "%s과 %s을 함께 복원하면 새로운 뜻을 엮을 수 있다" % [db_ref.words[c.material_a].name, db_ref.words[c.material_b].name]
+	return "거대한 ㅁ에 도전하기"
 
 
 func _open_pause() -> void:

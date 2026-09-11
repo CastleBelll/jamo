@@ -37,6 +37,11 @@ var build := BuildState.new()
 var pinned_word: StringName = &""
 var forge_fail_bonus: int = 0
 var forge: ForgeService
+## Result-screen records (G9): words first restored this RUN, stability loss by cause,
+## and the highest Wave actually cleared.
+var discovered: Array[StringName] = []
+var damage_causes: Dictionary = {}
+var waves_cleared: int = 0
 
 
 func setup(content: ContentDB, max_stability: float = -1.0) -> void:
@@ -75,6 +80,9 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	build.setup(db.balance)
 	forge = null
 	forge_fail_bonus = 0
+	discovered.clear()
+	damage_causes.clear()
+	waves_cleared = 0
 	# B5: drop and spawn streams are independent; both derive from run_seed through distinct labels.
 	drops.setup(db.balance, hash("drop:%d" % run_seed))
 	_set_stability(stability_max)
@@ -106,7 +114,7 @@ func build_reward() -> RewardService:
 	var picks := db.balance.reward_picks_boss if boss else db.balance.reward_picks_normal
 	if not boss:
 		picks += CombatResolver.reward_pick_bonus(db, build)  # SY_ECON, normal Waves only (B8)
-	var removes := db.balance.reward_removes_boss if boss else 0
+	var removes := db.balance.reward_removes_boss if boss else CombatResolver.extra_removes(db, build, wave)  # 복 (B7)
 	var replace_allowed := not (first_run and wave == FIRST_WAVE)
 	reward.start(deck, drops.drops, picks, removes, replace_allowed)
 	return reward
@@ -117,6 +125,7 @@ func build_reward() -> RewardService:
 func on_wave_cleared(heal: float = -1.0) -> bool:
 	if phase != Phase.COMBAT:
 		return _reject("on_wave_cleared")
+	waves_cleared = wave
 	if wave >= LAST_WAVE:
 		return _end(EndReason.COMPLETED)
 	_set_stability(stability + (heal if heal >= 0.0 else db.balance.clear_heal))
@@ -185,6 +194,8 @@ func finish_forge() -> bool:
 	if forge != null:
 		if forge.restored_word != &"":
 			forge_fail_bonus = 0
+			if forge.restored_word not in discovered:
+				discovered.append(forge.restored_word)
 		elif forge.is_failed():
 			heal_stability(db.balance.forge_fail_heal)
 			forge_fail_bonus = mini(forge_fail_bonus + db.balance.forge_fail_bonus_reroll, db.balance.forge_fail_bonus_reroll_cap)
@@ -204,14 +215,24 @@ func return_to_library() -> bool:
 	return _go(Phase.RESULT, Phase.LIBRARY)
 
 
+## 재도전 (G2): straight into a new RUN with the same deck; the goal pin is kept and the
+## first-run tutorial rules are over.
+func retry_run() -> bool:
+	if phase != Phase.RESULT:
+		return _reject("retry_run")
+	phase = Phase.RUN_SETUP
+	return confirm_setup(deck_id)
+
+
 # --- stability -----------------------------------------------------------------------
 
 ## Final stability damage after B1 reductions have been applied by the caller.
 ## Depletion during COMBAT ends the run immediately (G7: defeat wins over clear).
-func damage_stability(amount: float) -> void:
+func damage_stability(amount: float, cause: StringName = &"reach") -> void:
 	if amount <= 0.0 or phase != Phase.COMBAT:
 		return
 	wave_damage_taken += minf(amount, stability)
+	damage_causes[cause] = damage_causes.get(cause, 0.0) + minf(amount, stability)
 	_set_stability(stability - amount)
 	if stability <= 0.0:
 		_end(EndReason.FAILED)
@@ -246,6 +267,7 @@ func _go(from: Phase, to: Phase) -> bool:
 func _end(reason: EndReason) -> bool:
 	var from := phase
 	end_reason = reason
+	first_run = false
 	phase = Phase.RESULT
 	phase_changed.emit(from, Phase.RESULT)
 	run_ended.emit(reason)

@@ -82,6 +82,18 @@ static func active_synergies(content: ContentDB, run_build: BuildState) -> Array
 	return out
 
 
+## 복 (B7): one extra remove on normal Waves whose number is a multiple of every_n. Boss
+## Waves keep their own remove instead (no stacking).
+static func extra_removes(content: ContentDB, run_build: BuildState, wave: int) -> int:
+	var removes := 0
+	for held in run_build.words:
+		var word: WordData = content.words[held["id"]]
+		for e in word.effects_at(held["rank"]):
+			if e is EffectData and e.kind == &"extra_remove_every_n" and e.every_n > 0 and wave % e.every_n == 0:
+				removes += 1
+	return removes
+
+
 ## Extra 자모 picks on normal Wave rewards from active synergies (SY_ECON).
 static func reward_pick_bonus(content: ContentDB, run_build: BuildState) -> int:
 	var bonus := 0
@@ -167,9 +179,11 @@ func manual_damage(target: JamoMonster) -> Dictionary:
 	for e in lowhp_bonuses:
 		if target.hp <= target.hp_max * e.value2:
 			bonus += e.value
-	for e in near_end_bonuses:
-		if target.remaining_path() <= target.path_length * e.value2:
-			bonus += e.value
+	# 돌: the boss never satisfies the remaining-path condition (G7).
+	if not (target is Boss):
+		for e in near_end_bonuses:
+			if target.remaining_path() <= target.path_length * e.value2:
+				bonus += e.value
 	bonus = minf(bonus, db.balance.manual_damage_bonus_cap)
 	var crit := crit_chance > 0.0 and rng.randf() < crit_chance
 	var damage := db.balance.manual_base_damage * (1.0 + bonus) * (db.balance.crit_multiplier if crit else 1.0)

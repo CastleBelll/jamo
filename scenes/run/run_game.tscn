@@ -56,6 +56,7 @@ horizontal_alignment = 1
 text = "Wave 1"
 
 [node name="PrepHint" type="Label" parent="Panels/Center/PrepPanel/Box"]
+unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 text = "자모를 눌러 마지막 문장을 지키세요"
@@ -91,7 +92,18 @@ layout_mode = 2
 horizontal_alignment = 1
 text = "RUN 결과"
 
-[node name="ResultLibraryButton" type="Button" parent="Panels/Center/ResultPanel/Box"]
+[node name="ResultButtons" type="HBoxContainer" parent="Panels/Center/ResultPanel/Box"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="RetryButton" type="Button" parent="Panels/Center/ResultPanel/Box/ResultButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+text = "재도전"
+
+[node name="ResultLibraryButton" type="Button" parent="Panels/Center/ResultPanel/Box/ResultButtons"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 64)
 layout_mode = 2
