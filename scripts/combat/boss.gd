@@ -14,6 +14,9 @@ var next_pattern_at: float = 0.0
 var patterns_started: int = 0
 ## Boss pattern rotation for W15 (index into marker_positions); other bosses use index 0.
 var marker_index: int = 0
+## 탐욕 (B9): shield gained per designated minion purify, cleared by a broken ring.
+var shield: float = 0.0
+var shield_lockout_until: float = -1.0
 
 @onready var hp_bar: ProgressBar = $HpBar
 @onready var name_label: Label = $NameLabel
@@ -70,12 +73,34 @@ func is_hit_by(world_pos: Vector2, _radius: float) -> bool:
 	return Vector2(x, 0).distance_to(local) <= CAPSULE_RADIUS
 
 
+## Shield absorbs before HP (B9); the boss stays attackable while shielded.
 func take_damage(amount: float) -> float:
+	if shield > 0.0 and amount > 0.0:
+		var absorbed := minf(shield, amount)
+		shield -= absorbed
+		amount -= absorbed
+		hp_changed.emit(hp, hp_max)
+		if amount <= 0.0:
+			return 0.0
 	var dealt := super.take_damage(amount)
 	# Phase 2 applies from the next scheduled pattern only (B9).
 	if not phase2 and hp <= hp_max * data.phase2_hp_ratio:
 		phase2 = true
 	return dealt
+
+
+func add_shield(amount: float, clock: float) -> void:
+	if data.shield_per_minion <= 0.0 or clock < shield_lockout_until:
+		return
+	shield = minf(shield + amount, data.shield_cap)
+	hp_changed.emit(hp, hp_max)
+
+
+## Ring broken (pattern defused): shield gone and no gain for the lockout window.
+func break_ring(clock: float) -> void:
+	shield = 0.0
+	shield_lockout_until = clock + data.shield_lockout
+	hp_changed.emit(hp, hp_max)
 
 
 func warn_time() -> float:
@@ -97,7 +122,9 @@ func poll_pattern(clock: float) -> Dictionary:
 		return {}
 	var marker: Vector2 = data.marker_positions[marker_index % data.marker_positions.size()]
 	var spec := {"marker": marker, "required": respond_count(), "duration": warn_time(),
-		"fail_damage": data.fail_damage, "seal": data.seal_duration > 0.0, "index": patterns_started}
+		"fail_damage": data.fail_damage, "seal": data.seal_duration > 0.0, "seal_duration": data.seal_duration,
+		"ring": data.shield_per_minion > 0.0, "index": patterns_started,
+		"lane_x": marker.x if data.marker_positions.size() > 1 else -1.0}
 	patterns_started += 1
 	if data.marker_positions.size() > 1:
 		marker_index = (marker_index + 1) % data.marker_positions.size()

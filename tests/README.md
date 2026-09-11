@@ -22,4 +22,6 @@ godot --headless --path . tests/test_effects.tscn
 godot --headless --path . tests/test_boss.tscn
 # variants LIGHT/HEAVY/GUARD, 합성 recipes/preview/once-per-confirm, 위험 pool snapshot, HUD hover
 godot --headless --path . tests/test_variants.tscn
+# W10 침묵 seal, W15 질주 ㅇ lane markers, W20 탐욕 shield/ring, W20 completion
+godot --headless --path . tests/test_bosses_late.tscn
 ```

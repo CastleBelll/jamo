@@ -36,6 +36,10 @@ var counters: Dictionary = {}       # effect key -> int
 var timers: Dictionary = {}         # effect key -> next fire time
 var clock: float = 0.0
 var shield: float = 0.0
+## 침묵 (G8): sealed word id -> expiry clock. Sealed words stop new triggers, passive
+## numbers and synergy tags; statuses already on enemies run out on their own.
+var sealed: Dictionary = {}
+var last_sealed: StringName = &""
 
 
 func setup(content: ContentDB, run_build: BuildState, seed: int) -> void:
@@ -50,22 +54,73 @@ func setup(content: ContentDB, run_build: BuildState, seed: int) -> void:
 func active_effects() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for held in build.words:
+		if is_sealed(held["id"]):
+			continue
 		var word: WordData = db.words[held["id"]]
 		var effects := word.effects_at(held["rank"])
 		for i in effects.size():
 			var e := effects[i] as EffectData
 			if e != null:
 				out.append({"key": "%s:%d" % [word.id, i], "word": word, "rank": held["rank"], "effect": e})
-	for syn in active_synergies(db, build):
+	for syn in active_synergies(db, build, sealed_ids()):
 		out.append({"key": "SYN:%s" % syn.id, "word": null, "rank": 0, "effect": syn.effect})
 	return out
 
 
+func is_sealed(word_id: StringName) -> bool:
+	return sealed.has(word_id) and sealed[word_id] > clock
+
+
+func sealed_ids() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for id in sealed:
+		if sealed[id] > clock:
+			out.append(id)
+	return out
+
+
+## Words 침묵 may seal: held, active (not already sealed) and not 위험 (G8). With two or more
+## options the previous target is skipped (연속 동일 대상 금지).
+func sealable_words() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for held in build.words:
+		var id: StringName = held["id"]
+		if db.words[id].is_risk() or is_sealed(id):
+			continue
+		out.append(id)
+	if out.size() >= 2 and last_sealed in out:
+		out.erase(last_sealed)
+	return out
+
+
+## Seal one word for `duration`; passives drop immediately, timers restart on release.
+func seal(word_id: StringName, duration: float) -> void:
+	sealed[word_id] = clock + duration
+	last_sealed = word_id
+	refresh()
+
+
+## Releases expired seals; a released periodic word restarts from a fresh period (G8).
+func update_seals() -> void:
+	var released := false
+	for id in sealed.keys():
+		if sealed[id] <= clock:
+			sealed.erase(id)
+			released = true
+			for a in effects_with(&"periodic"):
+				if a["word"] != null and a["word"].id == id:
+					timers[a["key"]] = clock + a["effect"].interval * auto_period_mult
+	if released:
+		refresh()
+
+
 ## B8 synergies whose tag thresholds the build meets. Tags are counted per distinct word id;
 ## Rank never adds tags (G6). Sealed words will be excluded here when 침묵 lands (P3).
-static func active_synergies(content: ContentDB, run_build: BuildState) -> Array[SynergyData]:
+static func active_synergies(content: ContentDB, run_build: BuildState, excluded: Array[StringName] = []) -> Array[SynergyData]:
 	var tag_counts := {}
 	for held in run_build.words:
+		if held["id"] in excluded:
+			continue
 		for t in content.words[held["id"]].tags:
 			tag_counts[t] = tag_counts.get(t, 0) + 1
 	var out: Array[SynergyData] = []
@@ -155,6 +210,8 @@ func refresh() -> void:
 
 
 func start_wave() -> void:
+	sealed.clear()
+	last_sealed = &""
 	refresh()
 	clock = 0.0
 	counters.clear()
@@ -290,11 +347,14 @@ func on_kill(victim: JamoMonster, source: StringName, enemies: Array[JamoMonster
 ## Advances the wave clock and returns every scheduled hit due in this tick, in entity order.
 func scheduled_damage(delta: float, enemies: Array[JamoMonster]) -> Array[Dictionary]:
 	clock += delta
+	update_seals()
 	var hits: Array[Dictionary] = []
 	for a in effects_with(&"periodic"):
 		var e: EffectData = a["effect"]
 		var key: String = a["key"]
-		while timers.has(key) and clock >= timers[key]:
+		if not timers.has(key):
+			timers[key] = clock + e.interval * auto_period_mult
+		while clock >= timers[key]:
 			timers[key] += e.interval * auto_period_mult
 			if e.kind == &"damage_front":
 				for t in _front_enemies(enemies, e.target_count):

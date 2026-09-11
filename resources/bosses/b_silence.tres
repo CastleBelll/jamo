@@ -18,6 +18,7 @@ respond_count_p2 = 3
 fail_damage = 10.0
 seal_duration = 4.0
 gold = 70
+response_hint = "봉인선이 단어에 이어지면 끊기 표식을 3번 눌러 봉인을 막으세요."
 boss_position = Vector2(960.0, 260.0)
 marker_positions = Array[Vector2]([Vector2(1260.0, 260.0)])
 minion_schedule = Array[Dictionary]([{"t": 8.0, "count": 2, "jamo": ""}, {"t": 16.0, "count": 2, "jamo": ""}, {"t": 24.0, "count": 2, "jamo": ""}, {"t": 32.0, "count": 2, "jamo": ""}])

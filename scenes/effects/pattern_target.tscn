@@ -10,6 +10,12 @@ points = PackedVector2Array(45.0, 0.0, 43.5, 11.6, 39.0, 22.5, 31.8, 31.8, 22.5,
 width = 6.0
 default_color = Color(0.8, 0.15, 0.1, 0.9)
 
+[node name="LanePreview" type="Line2D" parent="."]
+visible = false
+points = PackedVector2Array(0, 60, 0, 590)
+width = 3.0
+default_color = Color(0.8, 0.15, 0.1, 0.35)
+
 [node name="Cross" type="Line2D" parent="."]
 points = PackedVector2Array(-24, -24, 24, 24)
 width = 4.0
