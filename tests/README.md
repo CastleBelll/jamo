@@ -26,4 +26,6 @@ godot --headless --path . tests/test_variants.tscn
 godot --headless --path . tests/test_bosses_late.tscn
 # persistence: atomic save + backup recovery, Meta round trip, RUN snapshot/resume, checkpoint, settlement dedupe, research, library
 godot --headless --path . tests/test_save.tscn
+# library: research rules, codex rows/tiers, starter decks, layers/badges, sentence stages, S5 lines, screen wiring
+godot --headless --path . tests/test_library.tscn
 ```

@@ -19,6 +19,8 @@ var events: Array = []              # S5 record ids in unlock order
 var settled_results: Array = []     # result ids already paid (G14)
 var mieum_purified: bool = false
 var first_run_done: bool = false
+## Goal pin survives RUNs (G2 재도전은 목표 핀을 유지한다).
+var pinned_word: String = ""
 var run: Dictionary = {}            # suspended RUN snapshot, empty when none
 ## Session-only handoff from the library: resume the suspended RUN / which starter to use.
 var resume_pending: bool = false
@@ -83,7 +85,7 @@ func to_dict() -> Dictionary:
 	return {"gold": gold, "research": research.duplicate(), "codex": codex.duplicate(true),
 		"boss_records": boss_records.duplicate(), "best_reached": best_reached, "best_cleared": best_cleared,
 		"events": events.duplicate(), "settled_results": settled_results.duplicate(),
-		"mieum_purified": mieum_purified, "first_run_done": first_run_done}
+		"mieum_purified": mieum_purified, "first_run_done": first_run_done, "pinned_word": pinned_word}
 
 
 func from_dict(d: Dictionary) -> void:
@@ -97,3 +99,4 @@ func from_dict(d: Dictionary) -> void:
 	settled_results = Array(d.get("settled_results", []))
 	mieum_purified = bool(d.get("mieum_purified", false))
 	first_run_done = bool(d.get("first_run_done", false))
+	pinned_word = String(d.get("pinned_word", ""))

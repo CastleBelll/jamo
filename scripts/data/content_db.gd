@@ -18,6 +18,7 @@ var synergies: Dictionary = {}      # id -> SynergyData
 var compounds: Dictionary = {}      # id -> CompoundData
 var research: Dictionary = {}       # id -> ResearchData
 var motion_profiles: Dictionary = {}  # id -> MotionProfile
+var narrative: NarrativeData
 var load_errors: Array[String] = []
 
 
@@ -48,6 +49,9 @@ static func load_all() -> ContentDB:
 		db._put(db.research, r, "id")
 	for r in db._load_dir("motion_profiles"):
 		db._put(db.motion_profiles, r, "id")
+	db.narrative = load(ROOT + "narrative/events.tres") as NarrativeData
+	if db.narrative == null:
+		db.load_errors.append("narrative/events.tres missing or wrong script")
 	return db
 
 
@@ -87,6 +91,8 @@ func validate() -> Array[String]:
 	errors.append_array(_validate_synergies_compounds())
 	errors.append_array(_validate_research())
 	errors.append_array(_validate_motion())
+	if narrative != null:
+		errors.append_array(narrative.validate())
 	return errors
 
 
