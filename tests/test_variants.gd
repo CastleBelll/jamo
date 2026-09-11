@@ -195,6 +195,31 @@ func _check_compounds() -> void:
 	_expect(run3.stability == 58.0 and run3.forge_fail_bonus == 1, "failure heal and pity survive a 합성 (stability %s, bonus %d)" % [run3.stability, run3.forge_fail_bonus])
 	_expect(&"C01" in run3.discovered, "compound discovery recorded on a failed Forge too")
 	run3.free()
+	# A max-Rank material the hand could craft: 합성 frees it, but the failure verdict stays.
+	var run4 := RunController.new()
+	run4.setup(db)
+	run4.open_run_setup()
+	run4.confirm_setup(&"starter_a")
+	run4.build.add(&"W02")
+	run4.build.words[0]["rank"] = 3
+	run4.build.add(&"W16")
+	run4.begin_combat()
+	run4.on_wave_cleared()
+	run4.finish_clear()
+	var f4 := run4.start_forge()
+	f4.pool = [db.words["W02"]]
+	f4.hand = [{"id": 900, "jamo": "ㅂ"}, {"id": 901, "jamo": "ㅜ"}, {"id": 902, "jamo": "ㄹ"}]
+	f4.draw = run4.deck.tokens.slice(0, 17)
+	f4.discard = []
+	f4.rerolls_left = 0
+	_expect(f4.candidates().is_empty() and f4.is_failed(), "불 at max Rank: no candidate, Forge failed")
+	_expect(f4.compound(&"C01"), "합성 불길 frees 불")
+	_expect(not f4.candidates().is_empty(), "불 is craftable again after the 합성")
+	_expect(f4.is_failed(), "failure verdict latched at the 합성 (B3 settlement stable)")
+	run4.stability = 50.0
+	run4.finish_forge()
+	_expect(run4.stability == 58.0 and run4.forge_fail_bonus == 1, "latched failure still pays +8 and +1 reroll")
+	run4.free()
 
 
 func _check_risk_pool() -> void:

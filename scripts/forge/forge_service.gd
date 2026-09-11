@@ -24,6 +24,8 @@ var restored_word: StringName = &""
 var pinned: StringName = &""
 ## One 합성 per 빌드 확정 (G6); it never counts as the Forge restore.
 var compounded: StringName = &""
+## Failure verdict frozen when 합성 changes the build, so the B3 settlement cannot flip.
+var failed_latched: bool = false
 
 
 func start(run_deck: DeckService, content: ContentDB, run_build: BuildState, word_pool: Array[WordData],
@@ -39,6 +41,7 @@ func start(run_deck: DeckService, content: ContentDB, run_build: BuildState, wor
 	restores_left = db.balance.restores_per_forge
 	restored_word = &""
 	compounded = &""
+	failed_latched = false
 	locked.clear()
 	hand.clear()
 	discard.clear()
@@ -241,6 +244,8 @@ func compound_preview(compound_id: StringName) -> Dictionary:
 func compound(compound_id: StringName) -> bool:
 	if not can_compound():
 		return false
+	# The restore step is closed: settle its verdict now, before the build changes.
+	failed_latched = is_failed()
 	if not build.apply_compound(db, compound_id):
 		return false
 	compounded = compound_id
@@ -250,6 +255,8 @@ func compound(compound_id: StringName) -> bool:
 
 ## 복원 실패 (G5): no reroll left, nothing restorable, nothing restored.
 func is_failed() -> bool:
+	if compounded != &"":
+		return failed_latched
 	return restored_word == &"" and rerolls_left <= 0 and candidates().is_empty()
 
 
