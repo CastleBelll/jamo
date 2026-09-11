@@ -142,13 +142,16 @@ func _check_compounds() -> void:
 	run.on_wave_cleared()
 	run.finish_clear()
 	var forge := run.start_forge()
-	_expect(forge.can_compound(), "Forge offers the 합성")
+	_expect(not forge.can_compound() and not forge.compound(&"C01"), "no 합성 before the restore step is closed (G6)")
+	forge.skip_restore()
+	_expect(forge.can_compound() and not forge.can_restore(), "복원 건너뛰기 closes the restore and opens 합성")
 	var pv := forge.compound_preview(&"C01")
 	_expect(pv["result"].id == &"C01" and pv["material_a_rank"] == 2 and pv["material_b_rank"] == 1, "preview shows lost materials and Ranks")
 	_expect(forge.compound(&"C01"), "합성 applies")
 	_expect(build.has(&"C01") and build.rank_of(&"C01") == 1 and not build.has(&"W02") and not build.has(&"W16"), "materials leave, 불길 enters at Rank 1")
 	_expect(build.words.size() == 1, "two slots became one")
 	_expect(not forge.compound(&"C02") and not forge.can_compound(), "one 합성 per 빌드 확정")
+	_expect(not forge.restore(&"W01"), "no restore into the freed slot after 합성")
 	_expect(forge.candidate_for(&"C01").is_empty(), "compound results are never direct Forge candidates")
 	_expect(&"화염" in db.words["C01"].tags and &"방어" in db.words["C01"].tags, "불길 tags: 화염·방어")
 	run.finish_forge()
@@ -163,12 +166,35 @@ func _check_compounds() -> void:
 	b2.add(&"W18")
 	var f2 := ForgeService.new()
 	f2.start(run.deck, db, b2, run.word_pool(), 9, 0)
+	f2.skip_restore()
 	var pv2 := f2.compound_preview(&"C02")
 	_expect(pv2["synergies_lost"].is_empty(), "눈물 keeps the 방어 tag: SY_GUARD stays on")
 	_expect(f2.compound(&"C02") and CombatResolver.active_synergies(db, b2).size() == 1, "synergy recount after 합성")
 	_expect(not b2.apply_compound(db, &"C02"), "result held: recipe unavailable")
 	# Result max Rank 1: never a rank-up candidate.
 	_expect(db.words["C02"].max_rank() == 1 and not b2.rank_up(&"C02", db.words["C02"].max_rank()), "compound result cannot rank up")
+	# A failed Forge still pays the B3 failure heal/pity even when a 합성 happened.
+	var run3 := RunController.new()
+	run3.setup(db)
+	run3.open_run_setup()
+	run3.confirm_setup(&"starter_a")
+	run3.build.add(&"W02")
+	run3.build.words[0]["rank"] = 2
+	run3.build.add(&"W16")
+	run3.begin_combat()
+	run3.on_wave_cleared()
+	run3.finish_clear()
+	var f3 := run3.start_forge()
+	f3.pool = []
+	f3.reroll()
+	f3.reroll()
+	_expect(f3.is_failed() and f3.can_compound(), "failed Forge: restore closed, 합성 available")
+	_expect(f3.compound(&"C01"), "합성 in a failed Forge")
+	run3.stability = 50.0
+	run3.finish_forge()
+	_expect(run3.stability == 58.0 and run3.forge_fail_bonus == 1, "failure heal and pity survive a 합성 (stability %s, bonus %d)" % [run3.stability, run3.forge_fail_bonus])
+	_expect(&"C01" in run3.discovered, "compound discovery recorded on a failed Forge too")
+	run3.free()
 
 
 func _check_risk_pool() -> void:
@@ -178,10 +204,15 @@ func _check_risk_pool() -> void:
 		ids.append(String(w.id))
 	_expect(ids.size() == 19 and "W20" not in ids, "new profile: 19 words, 위험 locked")
 	_expect(db.spawn_weights(false).size() == 17, "17 spawn jamo types before the unlock")
-	run.risk_unlocked = true
+	Meta.mieum_purified = false
+	run.on_boss_purified(&"B_SILENCE")
+	_expect(not Meta.mieum_purified, "other bosses do not unlock 위험 words")
+	run.on_boss_purified(&"B_MIEUM")
+	_expect(Meta.mieum_purified and not run.risk_unlocked, "ㅁ purified: unlock recorded, current RUN pool unchanged")
 	_expect(run.word_pool().size() == 19, "pool snapshot does not widen mid-RUN")
 	run.abandon()
 	run.retry_run()
+	_expect(run.risk_unlocked, "next RUN reads the unlock from Meta")
 	ids.clear()
 	for w in run.word_pool():
 		ids.append(String(w.id))

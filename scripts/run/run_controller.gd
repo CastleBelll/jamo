@@ -80,6 +80,9 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	gold_run = 0.0
 	end_reason = EndReason.NONE
 	deck = DeckService.from_deck_data(db.decks[chosen_deck], db.balance)
+	# B5: the 위험 pool opens only for a RUN that starts after 거대한 ㅁ was first purified.
+	risk_unlocked = Meta.risk_unlocked_for_new_run()
+	first_run = not Meta.first_run_done
 	build = BuildState.new()
 	build.setup(db.balance)
 	forge = null
@@ -204,13 +207,14 @@ func finish_forge() -> bool:
 			forge_fail_bonus = 0
 			if forge.restored_word not in discovered:
 				discovered.append(forge.restored_word)
+		elif forge.is_failed():
+			heal_stability(db.balance.forge_fail_heal)
+			forge_fail_bonus = mini(forge_fail_bonus + db.balance.forge_fail_bonus_reroll, db.balance.forge_fail_bonus_reroll_cap)
+		# 합성 is a separate action (G6): it never changes the restore failure/success settlement.
 		if forge.compounded != &"":
 			var result_id: StringName = db.compounds[forge.compounded].result
 			if result_id not in discovered:
 				discovered.append(result_id)
-		elif forge.is_failed():
-			heal_stability(db.balance.forge_fail_heal)
-			forge_fail_bonus = mini(forge_fail_bonus + db.balance.forge_fail_bonus_reroll, db.balance.forge_fail_bonus_reroll_cap)
 		forge.finish()
 		forge = null
 	return confirm_build()
@@ -276,10 +280,17 @@ func _go(from: Phase, to: Phase) -> bool:
 	return true
 
 
+## Boss purified this RUN (director hook): records the profile facts behind unlocks (B5).
+func on_boss_purified(boss_id: StringName) -> void:
+	if boss_id == &"B_MIEUM":
+		Meta.mieum_purified = true
+
+
 func _end(reason: EndReason) -> bool:
 	var from := phase
 	end_reason = reason
 	first_run = false
+	Meta.first_run_done = true
 	phase = Phase.RESULT
 	phase_changed.emit(from, Phase.RESULT)
 	run_ended.emit(reason)

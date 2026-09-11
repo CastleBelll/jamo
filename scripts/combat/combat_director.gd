@@ -292,6 +292,7 @@ func _resolve_purify() -> void:
 		run.add_gold(gold)
 		if e is Boss:
 			_on_boss_purified(e as Boss)
+			run.on_boss_purified(boss_data.id)
 		var kill := resolver.on_kill(e, e.last_source, enemies)
 		if kill["heal"] > 0.0:
 			run.heal_stability(kill["heal"])

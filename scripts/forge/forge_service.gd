@@ -197,8 +197,20 @@ func restore(word_id: StringName, replace_id: StringName = &"") -> bool:
 	return true
 
 
+## 복원 건너뛰기: closes the restore step voluntarily (no pity, G5) so 합성 can follow.
+func skip_restore() -> void:
+	if restored_word == &"":
+		restores_left = 0
+
+
+## The restore step is over: a word was restored, or the player closed it, or it failed.
+func restore_closed() -> bool:
+	return restored_word != &"" or restores_left <= 0 or is_failed()
+
+
+## 합성 happens after the restore step (G6: Forge 복원 후 빌드 확정 화면에서 선택).
 func can_compound() -> bool:
-	return compounded == &"" and not build.compound_options(db).is_empty()
+	return compounded == &"" and restore_closed() and not build.compound_options(db).is_empty()
 
 
 ## 합성 preview (G6): what leaves, what enters, and which synergies switch off/on.
@@ -227,11 +239,12 @@ func compound_preview(compound_id: StringName) -> Dictionary:
 
 ## Applies the recipe once per 빌드 확정; cancelling before this call costs nothing.
 func compound(compound_id: StringName) -> bool:
-	if compounded != &"":
+	if not can_compound():
 		return false
 	if not build.apply_compound(db, compound_id):
 		return false
 	compounded = compound_id
+	restores_left = 0  # no restore into the freed slot afterwards (G6)
 	return true
 
 

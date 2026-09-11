@@ -10,6 +10,10 @@ config/description="한글 단어 조합 x 슬롯/덱빌딩 x 로그라이트 x 
 config/features=PackedStringArray("4.7", "Forward Plus")
 run/main_scene="res://scenes/hub/last_library.tscn"
 
+[autoload]
+
+Meta="*res://scripts/persistence/meta_store.gd"
+
 [display]
 
 window/size/viewport_width=1920

@@ -24,6 +24,7 @@ var replace_target: StringName = &""
 @onready var compound_box: VBoxContainer = %CompoundBox
 @onready var compound_label: Label = %CompoundLabel
 @onready var compound_button: Button = %CompoundButton
+@onready var skip_restore_button: Button = %SkipRestoreButton
 var selected_compound: StringName = &""
 @onready var finish_button: Button = %FinishButton
 
@@ -34,6 +35,7 @@ func _ready() -> void:
 	pin_option.item_selected.connect(_on_pin_selected)
 	finish_button.pressed.connect(func(): finished.emit())
 	compound_button.pressed.connect(_on_compound)
+	skip_restore_button.pressed.connect(func(): forge.skip_restore(); _refresh())
 
 
 func open(controller: RunController, content: ContentDB) -> void:
@@ -75,6 +77,8 @@ func _refresh() -> void:
 	var needs_swap: bool = not c.is_empty() and (c["needs_replace"] or c["replace_risk"])
 	restore_button.disabled = c.is_empty() or not forge.can_restore() or (needs_swap and replace_target == &"")
 	restore_button.text = "복원" if not needs_swap else "교체하고 복원"
+	# 복원 건너뛰기 only matters while a restore is still open and a 합성 is waiting (G6 order).
+	skip_restore_button.visible = not forge.restore_closed() and not forge.build.compound_options(db).is_empty()
 	compare_label.text = _compare_text(c)
 	pin_label.text = _pin_text()
 	status_label.text = _status_text()
@@ -248,6 +252,10 @@ func _rebuild_compounds() -> void:
 		return
 	if options.is_empty():
 		compound_label.text = ""
+		compound_button.disabled = true
+		return
+	if not forge.restore_closed():
+		compound_label.text = "합성은 복원을 마친 뒤(또는 복원 건너뛰기 뒤) 빌드 확정 화면에서 선택합니다."
 		compound_button.disabled = true
 		return
 	if selected_compound == &"" or db.compounds.get(selected_compound) == null or not (db.compounds[selected_compound] in options):

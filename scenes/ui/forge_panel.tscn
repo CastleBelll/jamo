@@ -118,6 +118,13 @@ custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
 text = "복원"
 
+[node name="SkipRestoreButton" type="Button" parent="Box/ActionRow"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(220, 64)
+layout_mode = 2
+text = "복원 건너뛰기"
+
 [node name="CompoundButton" type="Button" parent="Box/ActionRow"]
 unique_name_in_owner = true
 visible = false
