@@ -1,0 +1,215 @@
+{
+  "assets": [
+    {
+      "id": "arena_square_8",
+      "triangles": 233,
+      "mesh_nodes": 1,
+      "surfaces": 4,
+      "bounds_min": [
+        -4.119999885559082,
+        -0.25,
+        -4.119999885559082
+      ],
+      "bounds_max": [
+        4.119999885559082,
+        0.04700000584125519,
+        4.119999885559082
+      ],
+      "bytes": 605568,
+      "sha256": "eb4b510a6bb41a894e605df70354088ba2aa7b516e8fd8de7bb3f5cdb7d01884",
+      "notes": {
+        "paper_width": 8,
+        "paper_depth": 8,
+        "top_y": 0,
+        "desk_y": -0.25,
+        "scale_xz_range": [
+          0.8,
+          1.25
+        ]
+      }
+    },
+    {
+      "id": "arena_wide_10x8",
+      "triangles": 233,
+      "mesh_nodes": 1,
+      "surfaces": 4,
+      "bounds_min": [
+        -5.119999885559082,
+        -0.25,
+        -4.119999885559082
+      ],
+      "bounds_max": [
+        5.119999885559082,
+        0.04700000584125519,
+        4.119999885559082
+      ],
+      "bytes": 605056,
+      "sha256": "1ec1768e62de855c427828693ebe9dff3d8bf397c884790775b553e8abe26794",
+      "notes": {
+        "paper_width": 10,
+        "paper_depth": 8,
+        "top_y": 0,
+        "desk_y": -0.25,
+        "scale_xz_range": [
+          0.8,
+          1.25
+        ]
+      }
+    },
+    {
+      "id": "arena_large_12x9",
+      "triangles": 233,
+      "mesh_nodes": 1,
+      "surfaces": 4,
+      "bounds_min": [
+        -6.119999885559082,
+        -0.25,
+        -4.619999885559082
+      ],
+      "bounds_max": [
+        6.119999885559082,
+        0.04700000584125519,
+        4.619999885559082
+      ],
+      "bytes": 604868,
+      "sha256": "4ebe2a3f770b3364a866ccd7fb40789317124a83cc6afeb0029128af69114767",
+      "notes": {
+        "paper_width": 12,
+        "paper_depth": 9,
+        "top_y": 0,
+        "desk_y": -0.25,
+        "scale_xz_range": [
+          0.8,
+          1.25
+        ]
+      }
+    },
+    {
+      "id": "prop_book_stack",
+      "triangles": 988,
+      "mesh_nodes": 1,
+      "surfaces": 5,
+      "bounds_min": [
+        -0.9420897364616394,
+        0.0,
+        -0.7178339958190918
+      ],
+      "bounds_max": [
+        0.9403911232948303,
+        0.9470000267028809,
+        0.8799999356269836
+      ],
+      "bytes": 415732,
+      "sha256": "84adac551fdb1dabe0b2efbe3cf7a7d3990f85c999b904ef7e796dea8079c10a",
+      "notes": {
+        "role": "back-left perimeter",
+        "bottom_y": 0
+      }
+    },
+    {
+      "id": "prop_lantern",
+      "triangles": 564,
+      "mesh_nodes": 1,
+      "surfaces": 3,
+      "bounds_min": [
+        -0.4000000059604645,
+        0.0,
+        -0.4000000059604645
+      ],
+      "bounds_max": [
+        0.4000000059604645,
+        1.836673378944397,
+        0.4000000059604645
+      ],
+      "bytes": 37352,
+      "sha256": "c63126dcf7049b202ccc41f584b61d5abfde6344ff738a9c7fd8c6affa29aea5",
+      "notes": {
+        "role": "back-left beyond books",
+        "bottom_y": 0,
+        "real_light": false
+      }
+    },
+    {
+      "id": "prop_brush_inkstone",
+      "triangles": 432,
+      "mesh_nodes": 1,
+      "surfaces": 4,
+      "bounds_min": [
+        -0.625,
+        0.0,
+        -0.7647985816001892
+      ],
+      "bounds_max": [
+        0.625,
+        0.3518672585487366,
+        1.2185094356536865
+      ],
+      "bytes": 266732,
+      "sha256": "14fb4a5d3507191d0eefdfacd39ad4cd0486fcca7bd12d0c0dbfdce6838a5bc5",
+      "notes": {
+        "role": "right edge outside play surface",
+        "bottom_y": 0
+      }
+    },
+    {
+      "id": "prop_potted_plant",
+      "triangles": 272,
+      "mesh_nodes": 1,
+      "surfaces": 3,
+      "bounds_min": [
+        -0.7674510478973389,
+        0.0,
+        -0.7925612926483154
+      ],
+      "bounds_max": [
+        0.7861984968185425,
+        1.6100000143051147,
+        0.7595154047012329
+      ],
+      "bytes": 21284,
+      "sha256": "0af2c57e84905f52c0b12bbd4f79fb1662e47bce9a7022464632cc4ce7535b67",
+      "notes": {
+        "role": "back-right perimeter",
+        "bottom_y": 0
+      }
+    },
+    {
+      "id": "desk_background",
+      "triangles": 396,
+      "mesh_nodes": 1,
+      "surfaces": 1,
+      "bounds_min": [
+        -16.0,
+        -0.23999999463558197,
+        -8.996500015258789
+      ],
+      "bounds_max": [
+        16.0,
+        0.0,
+        8.996500015258789
+      ],
+      "bytes": 256956,
+      "sha256": "3757b1a68d286fdb52bfce9c0f4225e57fadadd37c78026decf749a183c8db16",
+      "notes": {
+        "role": "continuous desk below arena",
+        "top_y": 0,
+        "recommended_y": -0.255
+      }
+    }
+  ],
+  "environment_budget_triangles": 4000,
+  "active_environment_triangles": 2885,
+  "combat_baseline_triangles": 18460,
+  "provenance": "Original procedural geometry and color maps; existing project assets read-only in preview; no external service",
+  "preview_camera": {
+    "godot_position": [
+      0,
+      15.49,
+      13
+    ],
+    "pitch_degrees": -50,
+    "width": 15.6
+  },
+  "preview_floor": "arena_wide_10x8",
+  "preview_characters": 8
+}
