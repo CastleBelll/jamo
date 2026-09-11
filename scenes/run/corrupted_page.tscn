@@ -1,0 +1,100 @@
+[gd_scene load_steps=7 format=3]
+
+[sub_resource type="Curve2D" id="curve_l_a"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 415, 370, 0, 0, 0, 0, 480, 850),
+"tilts": PackedFloat32Array(0, 0)
+}
+[sub_resource type="Curve2D" id="curve_l_b"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 545, 370, 0, 0, 0, 0, 480, 850),
+"tilts": PackedFloat32Array(0, 0)
+}
+[sub_resource type="Curve2D" id="curve_c_a"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 895, 370, 0, 0, 0, 0, 960, 850),
+"tilts": PackedFloat32Array(0, 0)
+}
+[sub_resource type="Curve2D" id="curve_c_b"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 1025, 370, 0, 0, 0, 0, 960, 850),
+"tilts": PackedFloat32Array(0, 0)
+}
+[sub_resource type="Curve2D" id="curve_r_a"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 1375, 370, 0, 0, 0, 0, 1440, 850),
+"tilts": PackedFloat32Array(0, 0)
+}
+[sub_resource type="Curve2D" id="curve_r_b"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 1505, 370, 0, 0, 0, 0, 1440, 850),
+"tilts": PackedFloat32Array(0, 0)
+}
+
+[node name="CorruptedPage" type="Node2D"]
+
+[node name="Paper" type="Polygon2D" parent="."]
+color = Color(0.96, 0.94, 0.88, 1)
+polygon = PackedVector2Array(0, 0, 1920, 0, 1920, 1080, 0, 1080)
+
+[node name="Overlays" type="Node2D" parent="."]
+
+[node name="LaneGuideL" type="Line2D" parent="Overlays"]
+points = PackedVector2Array(480, 370, 480, 850)
+width = 2.0
+default_color = Color(0.55, 0.5, 0.42, 0.35)
+
+[node name="LaneGuideC" type="Line2D" parent="Overlays"]
+points = PackedVector2Array(960, 370, 960, 850)
+width = 2.0
+default_color = Color(0.55, 0.5, 0.42, 0.35)
+
+[node name="LaneGuideR" type="Line2D" parent="Overlays"]
+points = PackedVector2Array(1440, 370, 1440, 850)
+width = 2.0
+default_color = Color(0.55, 0.5, 0.42, 0.35)
+
+[node name="Paths" type="Node2D" parent="."]
+
+[node name="L_A" type="Path2D" parent="Paths"]
+curve = SubResource("curve_l_a")
+
+[node name="L_B" type="Path2D" parent="Paths"]
+curve = SubResource("curve_l_b")
+
+[node name="C_A" type="Path2D" parent="Paths"]
+curve = SubResource("curve_c_a")
+
+[node name="C_B" type="Path2D" parent="Paths"]
+curve = SubResource("curve_c_b")
+
+[node name="R_A" type="Path2D" parent="Paths"]
+curve = SubResource("curve_r_a")
+
+[node name="R_B" type="Path2D" parent="Paths"]
+curve = SubResource("curve_r_b")
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="BossAnchor" type="Marker2D" parent="."]
+position = Vector2(960, 260)
+
+[node name="LastSentence" type="Node2D" parent="."]
+position = Vector2(0, 910)
+
+[node name="Row" type="Line2D" parent="LastSentence"]
+points = PackedVector2Array(220, 0, 1700, 0)
+width = 3.0
+default_color = Color(0.2, 0.18, 0.15, 1)
+
+[node name="Text" type="Label" parent="LastSentence"]
+offset_left = 220.0
+offset_top = -60.0
+offset_right = 1700.0
+offset_bottom = -8.0
+theme_override_colors/font_color = Color(0.2, 0.18, 0.15, 1)
+theme_override_font_sizes/font_size = 36
+text = "「□□□ □□□ □□□□□.」"
+horizontal_alignment = 1
+
+[node name="Effects" type="Node2D" parent="."]

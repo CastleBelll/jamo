@@ -1,0 +1,171 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/run/run_game.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/run/run_controller.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/run/corrupted_page.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4"]
+[ext_resource type="Theme" path="res://resources/ui/theme.tres" id="5"]
+
+[node name="RunGame" type="Node"]
+process_mode = 3
+script = ExtResource("1")
+
+[node name="RunController" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="CorruptedPage" parent="." instance=ExtResource("3")]
+process_mode = 1
+
+[node name="HUD" parent="." instance=ExtResource("4")]
+
+[node name="Panels" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme = ExtResource("5")
+
+[node name="DebugClearButton" type="Button" parent="Panels"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -420.0
+offset_top = 130.0
+offset_right = -40.0
+offset_bottom = 194.0
+text = "[디버그] Wave 클리어"
+
+[node name="Center" type="CenterContainer" parent="Panels"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="PrepPanel" type="PanelContainer" parent="Panels/Center"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Box" type="VBoxContainer" parent="Panels/Center/PrepPanel"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="PrepLabel" type="Label" parent="Panels/Center/PrepPanel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+text = "Wave 1"
+
+[node name="PrepHint" type="Label" parent="Panels/Center/PrepPanel/Box"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "자모를 눌러 마지막 문장을 지키세요"
+
+[node name="StartWaveButton" type="Button" parent="Panels/Center/PrepPanel/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+text = "시작"
+
+[node name="ClearPanel" type="PanelContainer" parent="Panels/Center"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Box" type="VBoxContainer" parent="Panels/Center/ClearPanel"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="ClearLabel" type="Label" parent="Panels/Center/ClearPanel/Box"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "Wave Clear"
+
+[node name="ClearHint" type="Label" parent="Panels/Center/ClearPanel/Box"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "자모 정리 (P1에서 구현)"
+
+[node name="FinishClearButton" type="Button" parent="Panels/Center/ClearPanel/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+text = "정리 완료"
+
+[node name="ForgePanel" type="PanelContainer" parent="Panels/Center"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Box" type="VBoxContainer" parent="Panels/Center/ForgePanel"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="ForgeLabel" type="Label" parent="Panels/Center/ForgePanel/Box"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "단어 복원 (P1에서 구현)"
+
+[node name="ConfirmBuildButton" type="Button" parent="Panels/Center/ForgePanel/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+text = "빌드 확정"
+
+[node name="ResultPanel" type="PanelContainer" parent="Panels/Center"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Box" type="VBoxContainer" parent="Panels/Center/ResultPanel"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="ResultLabel" type="Label" parent="Panels/Center/ResultPanel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+text = "RUN 결과"
+
+[node name="ResultLibraryButton" type="Button" parent="Panels/Center/ResultPanel/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+text = "서고로"
+
+[node name="PausePanel" type="PanelContainer" parent="Panels/Center"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Box" type="VBoxContainer" parent="Panels/Center/PausePanel"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="PauseLabel" type="Label" parent="Panels/Center/PausePanel/Box"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "일시정지"
+
+[node name="PauseHint" type="Label" parent="Panels/Center/PausePanel/Box"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "전투 중 종료하면 현재 Wave부터 다시 시작합니다"
+
+[node name="ResumeButton" type="Button" parent="Panels/Center/PausePanel/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+text = "계속하기"
+
+[node name="AbandonButton" type="Button" parent="Panels/Center/PausePanel/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+text = "포기하고 귀환"
+

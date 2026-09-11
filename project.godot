@@ -8,13 +8,16 @@ config_version=5
 config/name="JAMO"
 config/description="한글 단어 조합 x 슬롯/덱빌딩 x 로그라이트 x 클릭커"
 config/features=PackedStringArray("4.7", "Forward Plus")
+run/main_scene="res://scenes/hub/last_library.tscn"
 
 [display]
 
-window/size/viewport_width=1280
-window/size/viewport_height=720
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/window_width_override=1280
+window/size/window_height_override=720
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/stretch/aspect="keep"
 
 [input]
 
