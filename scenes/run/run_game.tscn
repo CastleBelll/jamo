@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/run_game.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/run/run_controller.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/run/corrupted_page.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4"]
 [ext_resource type="Theme" path="res://resources/ui/theme.tres" id="5"]
+[ext_resource type="Script" path="res://scripts/combat/combat_director.gd" id="6"]
 
 [node name="RunGame" type="Node"]
 process_mode = 3
@@ -16,6 +17,10 @@ script = ExtResource("2")
 [node name="CorruptedPage" parent="." instance=ExtResource("3")]
 process_mode = 1
 
+[node name="CombatDirector" type="Node" parent="."]
+process_mode = 1
+script = ExtResource("6")
+
 [node name="HUD" parent="." instance=ExtResource("4")]
 
 [node name="Panels" type="Control" parent="."]
@@ -25,19 +30,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 theme = ExtResource("5")
-
-[node name="DebugClearButton" type="Button" parent="Panels"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -420.0
-offset_top = 130.0
-offset_right = -40.0
-offset_bottom = 194.0
-text = "[디버그] Wave 클리어"
 
 [node name="Center" type="CenterContainer" parent="Panels"]
 layout_mode = 1
