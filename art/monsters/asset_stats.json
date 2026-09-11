@@ -1,0 +1,222 @@
+{
+  "blender_version": "5.2.1 LTS",
+  "assets": [
+    {
+      "id": "giyeok",
+      "glyph": "ㄱ",
+      "motion_profile": "SWAY",
+      "triangles": 68,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.5,
+        0.6,
+        0.11
+      ],
+      "glb_bytes": 5712
+    },
+    {
+      "id": "nieun",
+      "glyph": "ㄴ",
+      "motion_profile": "HEAVY_STEP",
+      "triangles": 68,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.5,
+        0.6,
+        0.11
+      ],
+      "glb_bytes": 5716
+    },
+    {
+      "id": "digeut",
+      "glyph": "ㄷ",
+      "motion_profile": "HEAVY_STEP",
+      "triangles": 92,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.5,
+        0.6,
+        0.11
+      ],
+      "glb_bytes": 7012
+    },
+    {
+      "id": "rieul",
+      "glyph": "ㄹ",
+      "motion_profile": "SWAY",
+      "triangles": 140,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.5,
+        0.6,
+        0.11
+      ],
+      "glb_bytes": 9608
+    },
+    {
+      "id": "mieum",
+      "glyph": "ㅁ",
+      "motion_profile": "BOUNCE",
+      "triangles": 88,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.5,
+        0.6,
+        0.11
+      ],
+      "glb_bytes": 5836
+    },
+    {
+      "id": "bieup",
+      "glyph": "ㅂ",
+      "motion_profile": "HEAVY_STEP",
+      "triangles": 180,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.5,
+        0.6,
+        0.11
+      ],
+      "glb_bytes": 12152
+    },
+    {
+      "id": "siot",
+      "glyph": "ㅅ",
+      "motion_profile": "LIGHT_STEP",
+      "triangles": 80,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.55574,
+        0.6,
+        0.11
+      ],
+      "glb_bytes": 6396
+    },
+    {
+      "id": "ieung",
+      "glyph": "ㅇ",
+      "motion_profile": "ROLL",
+      "triangles": 512,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.54,
+        0.6,
+        0.11
+      ],
+      "glb_bytes": 26468
+    },
+    {
+      "id": "hieut",
+      "glyph": "ㅎ",
+      "motion_profile": "BOUNCE",
+      "triangles": 472,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.5,
+        0.6225,
+        0.11
+      ],
+      "glb_bytes": 25436
+    },
+    {
+      "id": "eo",
+      "glyph": "ㅓ",
+      "motion_profile": "SWAY",
+      "triangles": 88,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.376,
+        0.508,
+        0.11
+      ],
+      "glb_bytes": 7020
+    },
+    {
+      "id": "yeo",
+      "glyph": "ㅕ",
+      "motion_profile": "SWAY",
+      "triangles": 132,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.376,
+        0.508,
+        0.11
+      ],
+      "glb_bytes": 9588
+    },
+    {
+      "id": "o",
+      "glyph": "ㅗ",
+      "motion_profile": "GLIDE",
+      "triangles": 88,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.54,
+        0.55,
+        0.11
+      ],
+      "glb_bytes": 7016
+    },
+    {
+      "id": "u",
+      "glyph": "ㅜ",
+      "motion_profile": "GLIDE",
+      "triangles": 88,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.54,
+        0.554,
+        0.11
+      ],
+      "glb_bytes": 7016
+    },
+    {
+      "id": "eu",
+      "glyph": "ㅡ",
+      "motion_profile": "GLIDE",
+      "triangles": 44,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.6,
+        0.092,
+        0.11
+      ],
+      "glb_bytes": 4444
+    },
+    {
+      "id": "i",
+      "glyph": "ㅣ",
+      "motion_profile": "SWAY",
+      "triangles": 44,
+      "mesh_nodes": 1,
+      "surfaces": 2,
+      "dimensions_godot_xyz": [
+        0.092,
+        0.508,
+        0.11
+      ],
+      "glb_bytes": 4444
+    }
+  ],
+  "triangle_budget_per_monster": 1000,
+  "worst_case_20_plus_core": 13020,
+  "provenance": "Original procedural geometry and solid materials; no external assets, fonts, textures, rigs or animations.",
+  "slots": [
+    "Jamo_Ink",
+    "Jamo_Pressed_Hanji_Edge"
+  ]
+}
