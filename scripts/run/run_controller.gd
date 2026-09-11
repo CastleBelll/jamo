@@ -44,6 +44,9 @@ var discovered: Array[StringName] = []
 ## is snapshotted at RUN start and never widens mid-RUN.
 var risk_unlocked: bool = false
 var run_pool: Array[WordData] = []
+## Persistence (G14): stable id for settlement dedupe, and bosses purified this RUN.
+var run_id: String = ""
+var bosses_purified: Array[String] = []
 var damage_causes: Dictionary = {}
 var waves_cleared: int = 0
 
@@ -83,6 +86,9 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	# B5: the 위험 pool opens only for a RUN that starts after 거대한 ㅁ was first purified.
 	risk_unlocked = Meta.risk_unlocked_for_new_run()
 	first_run = not Meta.first_run_done
+	stability_max = Meta.stability_max(db)
+	run_id = "%d-%d" % [Time.get_unix_time_from_system(), run_seed]
+	bosses_purified.clear()
 	build = BuildState.new()
 	build.setup(db.balance)
 	forge = null
@@ -282,6 +288,7 @@ func _go(from: Phase, to: Phase) -> bool:
 
 ## Boss purified this RUN (director hook): records the profile facts behind unlocks (B5).
 func on_boss_purified(boss_id: StringName) -> void:
+	bosses_purified.append(String(boss_id))
 	if boss_id == &"B_MIEUM":
 		Meta.mieum_purified = true
 
@@ -291,6 +298,7 @@ func _end(reason: EndReason) -> bool:
 	end_reason = reason
 	first_run = false
 	Meta.first_run_done = true
+	settle()
 	phase = Phase.RESULT
 	phase_changed.emit(from, Phase.RESULT)
 	run_ended.emit(reason)
@@ -300,3 +308,108 @@ func _end(reason: EndReason) -> bool:
 func _reject(what: String) -> bool:
 	push_warning("RunController: %s ignored in phase %s" % [what, Phase.keys()[phase]])
 	return false
+
+
+# --- persistence (G14) ---------------------------------------------------------------
+
+## Settles the finished RUN into Meta exactly once per result id: Gold integer part, best
+## Waves, codex records (base words gain 복원도, compounds/bosses get a first-discovery
+## record), S5 events, and the suspended-RUN snapshot is dropped.
+func settle() -> void:
+	var result_id := "%s:%d" % [run_id, wave]
+	if result_id in Meta.settled_results:
+		return
+	Meta.settled_results.append(result_id)
+	Meta.gold += int(gold_run)
+	Meta.best_reached = maxi(Meta.best_reached, wave)
+	Meta.best_cleared = maxi(Meta.best_cleared, waves_cleared)
+	var had_codex := not Meta.codex.is_empty()
+	for id in discovered:
+		var key := String(id)
+		var entry: Dictionary = Meta.codex.get(key, {"mastery": 0, "best_rank": 0, "first_at": Time.get_datetime_string_from_system()})
+		if not db.words[id].is_compound:
+			entry["mastery"] = int(entry["mastery"]) + 1
+		entry["best_rank"] = maxi(int(entry["best_rank"]), build.rank_of(id))
+		Meta.codex[key] = entry
+	for boss_id in bosses_purified:
+		Meta.boss_records[boss_id] = int(Meta.boss_records.get(boss_id, 0)) + 1
+	if not had_codex and not discovered.is_empty():
+		_record_event("S_WORD")
+	if "B_MIEUM" in bosses_purified:
+		_record_event("S_M")
+	if "B_SILENCE" in bosses_purified:
+		_record_event("S_SILENCE")
+	if "B_GREED" in bosses_purified:
+		_record_event("S_GREED")
+	if end_reason == EndReason.COMPLETED:
+		_record_event("S_SLICE_END")
+	Meta.run = {}
+	Meta.save()
+
+
+func _record_event(id: String) -> void:
+	if id not in Meta.events:
+		Meta.events.append(id)
+
+
+## Full logical state of the RUN for the atomic save points (G14).
+func snapshot() -> Dictionary:
+	var d := {"run_id": run_id, "phase": phase, "wave": wave, "deck_id": String(deck_id),
+		"stability": stability, "stability_max": stability_max, "gold_run": gold_run,
+		"deck": deck.snapshot() if deck != null else {}, "build": build.words.duplicate(true),
+		"pinned": String(pinned_word), "forge_fail_bonus": forge_fail_bonus, "drops": drops.snapshot(),
+		"discovered": [], "damage_causes": damage_causes.duplicate(), "waves_cleared": waves_cleared,
+		"risk_unlocked": risk_unlocked, "first_run": first_run, "run_seed": run_seed,
+		"bosses_purified": bosses_purified.duplicate(), "wave_damage_taken": wave_damage_taken}
+	for id in discovered:
+		d["discovered"].append(String(id))
+	d["forge"] = forge.snapshot() if forge != null else {}
+	return d
+
+
+## Rebuilds the RUN from a snapshot; a FORGE snapshot returns to the same hand and RNG.
+func load_snapshot(d: Dictionary) -> void:
+	run_id = String(d.get("run_id", ""))
+	run_seed = int(d.get("run_seed", 0))
+	deck_id = StringName(String(d.get("deck_id", "starter_a")))
+	wave = int(d.get("wave", FIRST_WAVE))
+	stability_max = float(d.get("stability_max", db.balance.stability_max))
+	stability = float(d.get("stability", stability_max))
+	gold_run = float(d.get("gold_run", 0.0))
+	deck = DeckService.from_snapshot(d.get("deck", {}), db.balance)
+	build = BuildState.new()
+	build.setup(db.balance)
+	for w in d.get("build", []):
+		build.words.append({"id": StringName(String(w["id"])), "rank": int(w["rank"])})
+	pinned_word = StringName(String(d.get("pinned", "")))
+	forge_fail_bonus = int(d.get("forge_fail_bonus", 0))
+	drops.setup(db.balance, hash("drop:%d" % run_seed))
+	drops.restore(d.get("drops", {}))
+	discovered.clear()
+	for id in d.get("discovered", []):
+		discovered.append(StringName(String(id)))
+	damage_causes = Dictionary(d.get("damage_causes", {}))
+	waves_cleared = int(d.get("waves_cleared", 0))
+	risk_unlocked = bool(d.get("risk_unlocked", false))
+	first_run = bool(d.get("first_run", false))
+	wave_damage_taken = float(d.get("wave_damage_taken", 0.0))
+	bosses_purified.clear()
+	for b in d.get("bosses_purified", []):
+		bosses_purified.append(String(b))
+	run_pool.clear()
+	run_pool = word_pool()
+	end_reason = EndReason.NONE
+	var target := int(d.get("phase", Phase.WAVE_PREP))
+	# A combat-time save never exists: resume lands on the WAVE_PREP checkpoint (G14).
+	if target == Phase.COMBAT or target == Phase.LIBRARY or target == Phase.RUN_SETUP or target == Phase.RESULT:
+		target = Phase.WAVE_PREP
+	var from := phase
+	phase = target
+	if target == Phase.FORGE and not d.get("forge", {}).is_empty():
+		forge = ForgeService.new()
+		forge.load_snapshot(d["forge"], deck, db, build, word_pool())
+		forge.pinned = pinned_word
+	gold_changed.emit(gold_run)
+	wave_changed.emit(wave)
+	stability_changed.emit(stability, stability_max)
+	phase_changed.emit(from, phase)

@@ -1,7 +1,7 @@
 # Tests
 
 Headless Godot 4.7 scenes. Each prints `PASS`/`FAIL` and exits non-zero on failure.
-Run them one at a time; a GDScript parse error can hang a headless run, so wrap in `timeout`.
+Every test redirects Meta.saver.path to its own user:// file and deletes it at exit, so the real profile is untouched. Run them one at a time; a GDScript parse error can hang a headless run, so wrap in `timeout`.
 
 ```powershell
 # once per fresh checkout: build .godot/ class cache
@@ -24,4 +24,6 @@ godot --headless --path . tests/test_boss.tscn
 godot --headless --path . tests/test_variants.tscn
 # W10 침묵 seal, W15 질주 ㅇ lane markers, W20 탐욕 shield/ring, W20 completion
 godot --headless --path . tests/test_bosses_late.tscn
+# persistence: atomic save + backup recovery, Meta round trip, RUN snapshot/resume, checkpoint, settlement dedupe, research, library
+godot --headless --path . tests/test_save.tscn
 ```

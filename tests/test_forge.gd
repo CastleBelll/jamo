@@ -8,6 +8,9 @@ var db: ContentDB
 
 
 func _ready() -> void:
+	# Isolate persistence: never touch the real profile from a test (G14).
+	Meta.saver.path = "user://test_forge.json"
+	Meta.new_profile()
 	db = ContentDB.load_all()
 	if not db.validate().is_empty():
 		failures.append("content invalid")
@@ -23,6 +26,7 @@ func _ready() -> void:
 		printerr("FAIL: " + f)
 	print("test_forge: %s (%d failures)" % ["PASS" if failures.is_empty() else "FAIL", failures.size()])
 	get_tree().paused = false
+	Meta.saver.delete_all()
 	get_tree().quit(0 if failures.is_empty() else 1)
 
 

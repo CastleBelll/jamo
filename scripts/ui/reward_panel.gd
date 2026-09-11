@@ -3,6 +3,7 @@ extends PanelContainer
 ## Talks only to RewardService; the deck token list is rebuilt from it after every change.
 
 signal finished
+signal state_changed
 
 const DECK_COLUMNS := 13
 
@@ -43,6 +44,7 @@ func open(new_reward: RewardService, content: ContentDB, stats_text: String = ""
 	selected_candidate = 0 if not reward.candidates.is_empty() else -1
 	mode = &""
 	reward.changed.connect(_refresh)
+	reward.changed.connect(func(): state_changed.emit())
 	_refresh()
 	finish_button.grab_focus()
 

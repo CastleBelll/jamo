@@ -53,3 +53,17 @@ func roll(jamo: String) -> bool:
 ## Boss body drops (B4) bypass the cap and never touch the pity counter.
 func add_guaranteed(jamo: String) -> void:
 	drops.append(jamo)
+
+
+func snapshot() -> Dictionary:
+	return {"drops": drops.duplicate(), "misses": misses, "rng_state": rng.state, "bonus": bonus}
+
+
+func restore(d: Dictionary) -> void:
+	drops.clear()
+	for j in d.get("drops", []):
+		drops.append(String(j))
+	misses = int(d.get("misses", 0))
+	bonus = float(d.get("bonus", 0.0))
+	if d.has("rng_state"):
+		rng.state = int(d["rng_state"])
