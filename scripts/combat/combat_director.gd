@@ -433,6 +433,8 @@ func _pick_slot() -> int:
 	var sub_base := lane * SUB_LANE_COUNT
 	var sub := _fewest([sub_counts[sub_base], sub_counts[sub_base + 1]], sub_rotation)
 	for e in enemies:
+		if e is Boss:
+			continue  # the boss sits above the paths and never occupies a spawn spot
 		if e.lane == lane and e.sub_lane == sub and e.progress < db.balance.enemy_min_spacing:
 			return -1
 	lane_rotation = (lane + 1) % LANE_COUNT

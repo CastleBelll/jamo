@@ -179,9 +179,11 @@ func manual_damage(target: JamoMonster) -> Dictionary:
 	for e in lowhp_bonuses:
 		if target.hp <= target.hp_max * e.value2:
 			bonus += e.value
-	for e in near_end_bonuses:
-		if target.remaining_path() <= target.path_length * e.value2:
-			bonus += e.value
+	# 돌: the boss never satisfies the remaining-path condition (G7).
+	if not (target is Boss):
+		for e in near_end_bonuses:
+			if target.remaining_path() <= target.path_length * e.value2:
+				bonus += e.value
 	bonus = minf(bonus, db.balance.manual_damage_bonus_cap)
 	var crit := crit_chance > 0.0 and rng.randf() < crit_chance
 	var damage := db.balance.manual_base_damage * (1.0 + bonus) * (db.balance.crit_multiplier if crit else 1.0)

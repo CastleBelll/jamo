@@ -84,6 +84,18 @@ func _check_boss_wave_setup() -> void:
 	_click(Vector2(960, 260))
 	_expect(is_equal_approx(hp - b.hp, 1.0), "boss takes manual damage")
 	_expect(director.pattern_targets.is_empty(), "no pattern before t=5")
+	# 돌 never applies to the boss (G7), and the boss never blocks a spawn slot.
+	run.build.add(&"W05")
+	run.build.words[-1]["rank"] = 3
+	director.resolver.refresh()
+	hp = b.hp
+	_click(Vector2(960, 260))
+	_expect(is_equal_approx(hp - b.hp, 1.0), "돌 R3 gives no bonus against the boss (dealt %s)" % (hp - b.hp))
+	run.build.remove(&"W05")
+	director.resolver.refresh()
+	director.lane_rotation = 1
+	director.sub_rotation = 0
+	_expect(director._pick_slot() == 2, "lane C sub A is free even though the boss reports lane 1 / sub 0")
 
 
 func _check_patterns() -> void:
@@ -179,6 +191,7 @@ func _check_result_and_retry() -> void:
 	_expect(not run.first_run, "first run over after the result")
 	game.get_node("%RetryButton").pressed.emit()
 	_expect(run.phase == RunController.Phase.WAVE_PREP and run.wave == 1 and run.stability == 100.0, "재도전 restarts at W1")
+	_expect(game.get_node("%PrepHint").text == "", "retry shows no W1 guidance line (G2)")
 	_expect(run.pinned_word == &"W08" and run.deck.size() == 20 and run.build.words.is_empty(), "pin kept, deck and build reset")
 	run.on_wave_cleared()
 	run.begin_combat()
