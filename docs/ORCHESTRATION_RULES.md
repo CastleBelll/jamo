@@ -217,3 +217,26 @@ orca orchestration worker-start --task <id> --worktree current --agent claude --
 - 애셋 에이전트는 Codex 계열이므로 Claude 모델 id(fable/opus)를 넘기지 않는다.
 - 재시도(`--retry-of`) 시에도 같은 모델을 유지한다.
 - 검증(QA)은 판정 품질이 결과를 좌우하므로 모델을 낮추지 않는다.
+
+## 10. 애셋 제작 도구 — Blender MCP
+
+애셋 워커는 **Blender MCP** 로 작업한다. codex 전역 설정에 등록돼 있다.
+
+```toml
+[mcp_servers.blender]
+command = "C:/Users/sjkim/.local/bin/uvx.exe"
+args = ["blender-mcp"]
+BLENDER_HOST = "127.0.0.1"   BLENDER_PORT = "9876"
+```
+
+### 규칙
+
+- **라이브 Blender 세션을 조작한다.** 뷰포트 스크린샷으로 형태를 눈으로 확인하며 반복하라.
+  헤드리스 `blender -b -P script.py` 만으로 끝내지 마라 — 결과를 못 보고 만들게 된다.
+- 사용자가 Blender 를 띄워 두어야 MCP 가 붙는다. 연결이 안 되면 작업을 지어내지 말고
+  `escalation` 으로 보고하라.
+- MCP 로 만들었더라도 **재생성 스크립트를 함께 남겨라.** 세션 상태에만 의존하면
+  나중에 수정·재생성이 불가능하다.
+- PolyHaven / Sketchfab / Hyper3D 등 외부 애셋 도구는 총지휘자 승인 없이 쓰지 않는다.
+  라이선스와 프로젝트 톤 일치를 먼저 판단해야 한다.
+- Godot import 검증은 여전히 필수다.
