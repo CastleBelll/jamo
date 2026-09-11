@@ -22,6 +22,8 @@ var path_length: float = 1.0
 ## Base px/s before slow/speed multipliers (B2 travel time).
 var base_speed: float = 0.0
 var speed_mult: float = 1.0
+## B2 variant speed factor (LIGHT 1.25, HEAVY 0.8), applied under the resolver multiplier.
+var variant_speed_mult: float = 1.0
 ## Alive == still a valid target. Purified or reached enemies flip this once, so bookkeeping
 ## can never run twice for the same entity (G7).
 var alive: bool = true
@@ -55,10 +57,44 @@ func setup(id: int, jamo_char: String, max_hp: float, on_path: Path2D, travel_ti
 func _ready() -> void:
 	glyph.text = jamo
 	$FocusRing.visible = focused
+	_refresh_variant_mark()
 
 
 func speed() -> float:
-	return base_speed * speed_mult
+	return base_speed * speed_mult * variant_speed_mult
+
+
+## B2/G3 variants: HP and speed factors plus the visible cue (잔상 화살표 / 이중 외곽선 /
+## 끊어진 사각 테두리). GUARD has no stat change; its effect lives in the director.
+func apply_variant(v: Variant, balance: BalanceConfig) -> void:
+	variant = v
+	match v:
+		Variant.LIGHT:
+			hp_max *= balance.light_hp_mult
+			variant_speed_mult = balance.light_speed_mult
+		Variant.HEAVY:
+			hp_max *= balance.heavy_hp_mult
+			variant_speed_mult = balance.heavy_speed_mult
+		_:
+			pass
+	hp = hp_max
+	if is_node_ready():
+		_refresh_variant_mark()
+
+
+func variant_name() -> String:
+	return Variant.keys()[variant]
+
+
+func _refresh_variant_mark() -> void:
+	var mark := get_node_or_null("VisualPivot/VariantMark") as Label
+	if mark == null:
+		return
+	match variant:
+		Variant.LIGHT: mark.text = "▲"
+		Variant.HEAVY: mark.text = "▣"
+		Variant.GUARD: mark.text = "⌐"
+		_: mark.text = ""
 
 
 func remaining_path() -> float:

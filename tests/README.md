@@ -20,4 +20,6 @@ godot --headless --path . tests/test_forge.tscn
 godot --headless --path . tests/test_effects.tscn
 # W5 boss: capsule, patterns/대응물, minions, phase 2, purify cleanup + body drops, result screen, 재도전, 복 removes
 godot --headless --path . tests/test_boss.tscn
+# variants LIGHT/HEAVY/GUARD, 합성 recipes/preview/once-per-confirm, 위험 pool snapshot, HUD hover
+godot --headless --path . tests/test_variants.tscn
 ```

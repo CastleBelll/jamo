@@ -52,7 +52,9 @@ func _physics_process(delta: float) -> void:
 	# Root runs always (for Esc); the combat clock only advances while unpaused in COMBAT.
 	if get_tree().paused:
 		return
-	director.tick(delta, page.get_global_mouse_position())
+	var cursor := page.get_global_mouse_position()
+	director.tick(delta, cursor)
+	hud.set_hover(director.pick_target(cursor) if run.phase == RunController.Phase.COMBAT else null)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -96,6 +98,7 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			director.set_hold(false)
 			hud.set_temp_drops(0)
 			director.pin_lacking = run.pin_lacking()
+			director.risk_unlocked = run.risk_unlocked
 			director.start_wave(run.wave_data(), hash("spawn:%d:%d" % [run_seed, run.wave]))
 		RunController.Phase.CLEAR:
 			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text())

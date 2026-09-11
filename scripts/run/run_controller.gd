@@ -40,6 +40,10 @@ var forge: ForgeService
 ## Result-screen records (G9): words first restored this RUN, stability loss by cause,
 ## and the highest Wave actually cleared.
 var discovered: Array[StringName] = []
+## 위험 words join the pool only when 거대한 ㅁ was purified in an earlier RUN (B5); the pool
+## is snapshotted at RUN start and never widens mid-RUN.
+var risk_unlocked: bool = false
+var run_pool: Array[WordData] = []
 var damage_causes: Dictionary = {}
 var waves_cleared: int = 0
 
@@ -76,6 +80,9 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	gold_run = 0.0
 	end_reason = EndReason.NONE
 	deck = DeckService.from_deck_data(db.decks[chosen_deck], db.balance)
+	# B5: the 위험 pool opens only for a RUN that starts after 거대한 ㅁ was first purified.
+	risk_unlocked = Meta.risk_unlocked_for_new_run()
+	first_run = not Meta.first_run_done
 	build = BuildState.new()
 	build.setup(db.balance)
 	forge = null
@@ -83,6 +90,8 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	discovered.clear()
 	damage_causes.clear()
 	waves_cleared = 0
+	run_pool.clear()
+	run_pool = word_pool()
 	# B5: drop and spawn streams are independent; both derive from run_seed through distinct labels.
 	drops.setup(db.balance, hash("drop:%d" % run_seed))
 	_set_stability(stability_max)
@@ -149,9 +158,11 @@ func confirm_build() -> bool:
 ## Direct Forge candidates this RUN: start-unlocked base words (B5 snapshot; 위험 words and
 ## compound results are not in the pool until their unlock/recipe systems land).
 func word_pool() -> Array[WordData]:
+	if not run_pool.is_empty():
+		return run_pool
 	var out: Array[WordData] = []
 	for w in db.base_words():
-		if w.unlock == &"start":
+		if w.unlock == &"start" or (w.unlock == &"after_mieum" and risk_unlocked):
 			out.append(w)
 	return out
 
@@ -199,6 +210,11 @@ func finish_forge() -> bool:
 		elif forge.is_failed():
 			heal_stability(db.balance.forge_fail_heal)
 			forge_fail_bonus = mini(forge_fail_bonus + db.balance.forge_fail_bonus_reroll, db.balance.forge_fail_bonus_reroll_cap)
+		# 합성 is a separate action (G6): it never changes the restore failure/success settlement.
+		if forge.compounded != &"":
+			var result_id: StringName = db.compounds[forge.compounded].result
+			if result_id not in discovered:
+				discovered.append(result_id)
 		forge.finish()
 		forge = null
 	return confirm_build()
@@ -264,10 +280,17 @@ func _go(from: Phase, to: Phase) -> bool:
 	return true
 
 
+## Boss purified this RUN (director hook): records the profile facts behind unlocks (B5).
+func on_boss_purified(boss_id: StringName) -> void:
+	if boss_id == &"B_MIEUM":
+		Meta.mieum_purified = true
+
+
 func _end(reason: EndReason) -> bool:
 	var from := phase
 	end_reason = reason
 	first_run = false
+	Meta.first_run_done = true
 	phase = Phase.RESULT
 	phase_changed.emit(from, Phase.RESULT)
 	run_ended.emit(reason)

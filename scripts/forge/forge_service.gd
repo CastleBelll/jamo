@@ -22,6 +22,10 @@ var rerolls_left: int = 2
 var restores_left: int = 1
 var restored_word: StringName = &""
 var pinned: StringName = &""
+## One 합성 per 빌드 확정 (G6); it never counts as the Forge restore.
+var compounded: StringName = &""
+## Failure verdict frozen when 합성 changes the build, so the B3 settlement cannot flip.
+var failed_latched: bool = false
 
 
 func start(run_deck: DeckService, content: ContentDB, run_build: BuildState, word_pool: Array[WordData],
@@ -36,6 +40,8 @@ func start(run_deck: DeckService, content: ContentDB, run_build: BuildState, wor
 	rerolls_left = db.balance.reroll_base + bonus_rerolls
 	restores_left = db.balance.restores_per_forge
 	restored_word = &""
+	compounded = &""
+	failed_latched = false
 	locked.clear()
 	hand.clear()
 	discard.clear()
@@ -194,8 +200,63 @@ func restore(word_id: StringName, replace_id: StringName = &"") -> bool:
 	return true
 
 
+## 복원 건너뛰기: closes the restore step voluntarily (no pity, G5) so 합성 can follow.
+func skip_restore() -> void:
+	if restored_word == &"":
+		restores_left = 0
+
+
+## The restore step is over: a word was restored, or the player closed it, or it failed.
+func restore_closed() -> bool:
+	return restored_word != &"" or restores_left <= 0 or is_failed()
+
+
+## 합성 happens after the restore step (G6: Forge 복원 후 빌드 확정 화면에서 선택).
+func can_compound() -> bool:
+	return compounded == &"" and restore_closed() and not build.compound_options(db).is_empty()
+
+
+## 합성 preview (G6): what leaves, what enters, and which synergies switch off/on.
+func compound_preview(compound_id: StringName) -> Dictionary:
+	var c: CompoundData = db.compounds.get(compound_id)
+	if c == null:
+		return {}
+	var before: Array[StringName] = []
+	for syn in CombatResolver.active_synergies(db, build):
+		before.append(syn.id)
+	var trial := BuildState.new()
+	trial.slots = build.slots
+	trial.risk_max = build.risk_max
+	trial.words = build.words.duplicate(true)
+	trial.apply_compound(db, compound_id)
+	var after: Array[StringName] = []
+	for syn in CombatResolver.active_synergies(db, trial):
+		after.append(syn.id)
+	var lost: Array[StringName] = []
+	for id in before:
+		if id not in after:
+			lost.append(id)
+	return {"compound": c, "material_a_rank": build.rank_of(c.material_a), "material_b_rank": build.rank_of(c.material_b),
+		"result": db.words[c.result], "synergies_lost": lost}
+
+
+## Applies the recipe once per 빌드 확정; cancelling before this call costs nothing.
+func compound(compound_id: StringName) -> bool:
+	if not can_compound():
+		return false
+	# The restore step is closed: settle its verdict now, before the build changes.
+	failed_latched = is_failed()
+	if not build.apply_compound(db, compound_id):
+		return false
+	compounded = compound_id
+	restores_left = 0  # no restore into the freed slot afterwards (G6)
+	return true
+
+
 ## 복원 실패 (G5): no reroll left, nothing restorable, nothing restored.
 func is_failed() -> bool:
+	if compounded != &"":
+		return failed_latched
 	return restored_word == &"" and rerolls_left <= 0 and candidates().is_empty()
 
 

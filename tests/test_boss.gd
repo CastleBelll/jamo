@@ -171,6 +171,7 @@ func _check_boss_purify_and_reward() -> void:
 	var reward := run.build_reward()
 	_expect(reward.picks_left == 2 and reward.removes_left == 1, "boss reward: 2 picks + 1 remove")
 	_expect(director.stats["purified"] == 1, "removed minions are not counted as purified")
+	_expect(Meta.mieum_purified, "boss purify records the B5 unlock in Meta")
 
 
 func _check_result_and_retry() -> void:

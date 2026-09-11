@@ -64,6 +64,33 @@ func rank_up(id: StringName, max_rank: int) -> bool:
 	return true
 
 
+## 합성 (G6/B8): recipes whose two materials are held at the required Ranks and whose result
+## is not already held.
+func compound_options(db: ContentDB) -> Array[CompoundData]:
+	var out: Array[CompoundData] = []
+	var ids := db.compounds.keys()
+	ids.sort()
+	for id in ids:
+		var c: CompoundData = db.compounds[id]
+		if has(c.result):
+			continue
+		if rank_of(c.material_a) >= c.material_a_min_rank and rank_of(c.material_b) >= c.material_b_min_rank:
+			out.append(c)
+	return out
+
+
+## Applies one recipe as a single transaction: both materials leave (their Ranks are lost),
+## the result enters at Rank 1. Returns false when the recipe is not available.
+func apply_compound(db: ContentDB, compound_id: StringName) -> bool:
+	var c: CompoundData = db.compounds.get(compound_id)
+	if c == null or not (c in compound_options(db)):
+		return false
+	remove(c.material_a)
+	remove(c.material_b)
+	words.append({"id": c.result, "rank": 1})
+	return true
+
+
 func _index_of(id: StringName) -> int:
 	for i in words.size():
 		if words[i]["id"] == id:

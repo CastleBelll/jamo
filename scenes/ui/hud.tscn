@@ -62,6 +62,18 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "회수 0"
 
+[node name="HoverLabel" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 40.0
+offset_top = 100.0
+offset_right = -40.0
+offset_bottom = 136.0
+text = ""
+horizontal_alignment = 1
+
 [node name="BuildBar" type="HBoxContainer" parent="Root"]
 layout_mode = 1
 anchors_preset = 12
