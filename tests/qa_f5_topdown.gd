@@ -13,10 +13,19 @@ const ARTIFACT_DIR := "res://tests/qa_artifacts/f5"
 const BIG_MIEUM := "res://scenes/monsters/special/monster_big_mieum.tscn"
 const NORMAL_SCENES := [
 	"res://scenes/monsters/monster_giyeok.tscn",
-	"res://scenes/monsters/monster_mieum.tscn",
-	"res://scenes/monsters/monster_ieung.tscn",
+	"res://scenes/monsters/monster_nieun.tscn",
 	"res://scenes/monsters/monster_digeut.tscn",
+	"res://scenes/monsters/monster_rieul.tscn",
+	"res://scenes/monsters/monster_mieum.tscn",
+	"res://scenes/monsters/monster_bieup.tscn",
 	"res://scenes/monsters/monster_siot.tscn",
+	"res://scenes/monsters/monster_ieung.tscn",
+	"res://scenes/monsters/monster_hieut.tscn",
+	"res://scenes/monsters/monster_eo.tscn",
+	"res://scenes/monsters/monster_yeo.tscn",
+	"res://scenes/monsters/monster_o.tscn",
+	"res://scenes/monsters/monster_u.tscn",
+	"res://scenes/monsters/monster_eu.tscn",
 	"res://scenes/monsters/monster_i.tscn",
 ]
 ## An oversized glyph nothing in the data ships with, to prove the inset is

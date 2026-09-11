@@ -120,7 +120,7 @@ v0.4 는 장르 전환이다. 기존 코드를 전부 버리지 않고 다음과
 - **Wave Clear 사이 단계 없음**: `WaveController._between_waves()` 가 빈 훅이다. P2 가 보상
   선택과 Word Forge 를 여기에 끼운다 (§31).
 - **문장핵 애셋**: P1-DEV-3 에서 `art/objective/sentence_core.glb` 를 `VisualRoot/Model`
-  (scale 0.75, 문장핵 z = -2.2) 로 연결했다. 피격 시 `CorePaper` 의 `material_override` 에
+  (scale 0.75, 문장핵 z = -2.2 → P1-DEV-4 에서 -2.5) 로 연결했다. 피격 시 `CorePaper` 의 `material_override` 에
   `materials/core_hit.tres` 를 0.18 초 씌우는 것까지 `hit` 애니메이션 트랙으로 처리한다
   (스크립트는 여전히 `visual_root` 너머를 참조하지 않는다). `reach_radius` 0.9 → 1.1.
   HP 구간별 손상 표현(균열·먹 번짐)은 넣지 않았다 — 애셋에 단계 모델이 없고 §41 VFX 와
@@ -137,6 +137,17 @@ v0.4 는 장르 전환이다. 기존 코드를 전부 버리지 않고 다음과
   그 수만큼 건너뛴다. 에너지는 저장값 유지. 중단 시점에 살아 있던 개체는 스폰 지점에서
   풀 HP 로 다시 나온다 (부분 피해만 유실, 처치·골드는 보존). 에너지 회복 방식은 처치 골드가
   즉시 적립되는 §14 와 맞물려 중단/재개 반복으로 골드를 무한히 캘 수 있어 채택하지 않았다.
+
+### P1-DEV-4 — 캐릭터 자모 15종 + 맵 재설계 (§15, §16, §39)
+
+- 아레나: 45° 마름모 5.6 × 5.6 (31 m²) → 축 정렬 종이 12 × 7.5 (90 m²). 카메라는 그대로
+  (size 9.6, -50°). 근거·검수 절차는 `tests/qa_artifacts/p1/DEV_HANDOFF_4.md`.
+- 자모 6종 → 15종 (`scenes/monsters/monster_*.tscn`, `resources/monsters/*.tres`,
+  `resources/waves/wave_0N.tres` 풀). 캐릭터 GLB 의 다리는 `walk_library.tres` 트랙
+  `.:leg_swing` / `.:leg_tuck` 이 움직인다. 특수 3종은 `JamoMonsterData.glyph_material` + scale.
+- 환경 장식 5개는 프리미티브 임시물. 교체는 `Arena/Decor` 의 `ArenaDecor.replacements`.
+- Wave 1~5 곡선 수치는 손대지 않았다. 넓어진 맵에서도 실플레이 표(W1~2 전멸 / W3 누수 /
+  W5 생존 / W6 실패)가 같은 모양으로 나온다.
 
 ### P1 이월 (LOW)
 - [x] `spawn_manager.gd:358` 삼항 타입 불일치 에디터 경고 (P1-DEV-3, `String(id)`)

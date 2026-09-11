@@ -30,17 +30,33 @@ const MIN_WALKABLE_HALF_EXTENT := 0.5
 @export var motion_profile_override: MotionProfile
 
 @export_group("Field")
-## Half-diagonals of the paper slab itself, in metres. arena.tscn turns a
-## 5.6 x 5.6 square by 45 degrees, so its world footprint is the diamond
-## abs(x) / half_extents.x + abs(z) / half_extents.y <= 1 with 2.8 * sqrt(2)
-## on both axes. This is the slab, not the walkable area: each monster insets
-## it by its own body footprint in get_walkable_half_extents().
-## SpawnManager overwrites this at spawn time.
-@export var arena_half_extents: Vector2 = Vector2(3.95, 3.95)
+## Half-extents of the paper sheet itself, in metres: x is half its width, y
+## half its depth (world z). arena.tscn lays a 12 x 7.5 sheet flat on the desk
+## with no rotation, so its world footprint is the rectangle
+## abs(x) <= half_extents.x and abs(z) <= half_extents.y. This is the sheet, not
+## the walkable area: each monster insets it by its own body footprint in
+## get_walkable_half_extents(). SpawnManager overwrites this at spawn time.
+@export var arena_half_extents: Vector2 = Vector2(6.0, 3.75)
 ## The 문장핵 this monster walks to. Left empty the monster wanders the arena
 ## as it did in v0.3, which the arena harnesses rely on. SpawnManager sets it
 ## at spawn time. Doc v0.4 section 6.1.
 @export var objective: SentenceCore
+
+@export_group("Legs")
+## Forward/back swing of the character legs, in radians: Leg_L gets this and
+## Leg_R the opposite, so a positive key is a left-foot-forward stride. Keyed
+## by the walk animations in walk_library.tres; the legs themselves are found
+## by name inside the GLB (art/monsters/characters/README.md), so the timeline
+## never has to know the model's node path.
+@export var leg_swing: float = 0.0:
+	set(value):
+		leg_swing = value
+		_pose_legs()
+## Both legs bent the same way, in radians, for the crouch of a landing.
+@export var leg_tuck: float = 0.0:
+	set(value):
+		leg_tuck = value
+		_pose_legs()
 
 @onready var _visual_root: Node3D = $VisualRoot
 @onready var _click_shape: CollisionShape3D = $ClickArea/CollisionShape3D
@@ -68,6 +84,10 @@ var _body_meshes: Array[MeshInstance3D] = []
 ## animations lean, turn and squash the letter, so the rest pose alone would
 ## under-measure the footprint the arena clamp has to respect.
 var _body_extent: Vector2 = Vector2.ZERO
+
+## Leg parts of the character model, null on a model without legs.
+var _leg_left: Node3D
+var _leg_right: Node3D
 
 var _state: State = State.SPAWN
 var _profile: MotionProfile
@@ -107,6 +127,7 @@ func _ready() -> void:
 		* monster_data.speed_multiplier * wave_speed
 	_lifetime_left = monster_data.lifetime_seconds
 	_visual_root.scale = Vector3.ONE * monster_data.visual_scale
+	_bind_character_parts()
 	_collect_body_meshes()
 	_measure_body()
 	_apply_click_radius(monster_data.click_radius)
@@ -124,6 +145,32 @@ func _roll_stats() -> void:
 		RunState.get_current_wave_data(), monster_data.hp_multiplier
 	)
 	hp = max_hp
+
+
+## Finds the legs and the glyph body by name, the contract of
+## art/monsters/characters/README.md, and gives the glyph its data material.
+## Only surface 0 (the ink face) is overridden, so the paper edge, eyes and
+## legs keep their own look. Doc v0.4 section 16: specials differ by material.
+func _bind_character_parts() -> void:
+	_leg_left = _visual_root.find_child("Leg_L", true, false) as Node3D
+	_leg_right = _visual_root.find_child("Leg_R", true, false) as Node3D
+	_pose_legs()
+	if monster_data.glyph_material == null:
+		return
+	var glyph := _visual_root.find_child("Glyph", true, false) as MeshInstance3D
+	if glyph == null:
+		push_warning("JamoMonster %s has a glyph_material but no Glyph mesh." % monster_data.id)
+		return
+	glyph.set_surface_override_material(0, monster_data.glyph_material)
+
+
+## Applies leg_swing / leg_tuck to the leg pivots. Each leg turns about its
+## own hip (local X), so the feet lift instead of sinking into the paper.
+func _pose_legs() -> void:
+	if _leg_left != null:
+		_leg_left.rotation.x = leg_tuck + leg_swing
+	if _leg_right != null:
+		_leg_right.rotation.x = leg_tuck - leg_swing
 
 
 func _apply_click_radius(radius: float) -> void:
@@ -265,7 +312,7 @@ func _begin_walk() -> void:
 
 
 ## Where the next walk goes: the 문장핵, pulled onto this monster's own
-## walkable diamond so the clamp and the destination never disagree. With no
+## walkable rectangle so the clamp and the destination never disagree. With no
 ## objective the v0.3 wander is kept as is. Doc v0.4 section 15.
 func _pick_target() -> Vector3:
 	var extents := get_walkable_half_extents()
@@ -296,22 +343,17 @@ func get_body_half_extents() -> Vector2:
 	return _body_extent
 
 
-## The arena diamond this monster's centre may walk in: the slab with its own
-## body footprint and arena_margin taken off, so no part of the glyph hangs
-## over the paper whatever its visual_scale is.
-##
-## The slab is a square turned 45 degrees, so in world space it is the diamond
-## abs(x) + abs(z) <= half_extent. A body that stays axis aligned while the
-## slab does not raises that sum by half its width plus half its depth
-## wherever its centre stands, which is why both are subtracted rather than
-## just the larger one. Read by SpawnManager as well, so spawning and
-## wandering agree. Doc v0.3 section 27.
+## The arena rectangle this monster's centre may walk in: the sheet with its
+## own body footprint and arena_margin taken off, so no part of the glyph hangs
+## over the paper whatever its visual_scale is. The sheet and the body are both
+## axis aligned, so each axis is inset by the body's own half-extent on that
+## axis. Read by SpawnManager as well, so spawning and walking agree.
+## Doc v0.3 section 27.
 func get_walkable_half_extents() -> Vector2:
 	var margin: float = monster_data.arena_margin if monster_data != null else 0.0
-	var inset := _body_extent.x + _body_extent.y + margin
 	return Vector2(
-		maxf(MIN_WALKABLE_HALF_EXTENT, arena_half_extents.x - inset),
-		maxf(MIN_WALKABLE_HALF_EXTENT, arena_half_extents.y - inset)
+		maxf(MIN_WALKABLE_HALF_EXTENT, arena_half_extents.x - _body_extent.x - margin),
+		maxf(MIN_WALKABLE_HALF_EXTENT, arena_half_extents.y - _body_extent.y - margin)
 	)
 
 
@@ -338,31 +380,38 @@ func _measure_body() -> void:
 		))
 
 
-## Pulls the body back onto its walkable diamond. Neighbour separation pushes
-## outward and a crowd of 20 can otherwise shove a big glyph past the slab edge
-## faster than it picks a new target. Doc v0.3 section 27.
+## Pulls the body back onto its walkable rectangle. Neighbour separation
+## pushes outward and a crowd of 20 can otherwise shove a big glyph past the
+## paper edge faster than it picks a new target. Doc v0.3 section 27.
 func _clamp_to_arena() -> void:
 	_measure_body()
 	global_position = clamp_point_to_arena(global_position, get_walkable_half_extents())
 
 
-## Pulls a point back onto the diamond abs(x) / hx + abs(z) / hz <= 1 along the
-## line to the centre, leaving y alone. Shared by the walk clamp, the target
-## pick and the spawner so all three agree on the edge.
+## How far outside the rectangle a point is, as a fraction of the half-extents:
+## <= 1 is inside. Shared with the harnesses so they judge the same edge.
+static func arena_spill(point: Vector3, half_extents: Vector2) -> float:
+	return maxf(absf(point.x) / half_extents.x, absf(point.z) / half_extents.y)
+
+
+## Pulls a point back onto the rectangle abs(x) <= hx, abs(z) <= hz, leaving y
+## alone. Shared by the walk clamp, the target pick and the spawner so all
+## three agree on the edge.
 static func clamp_point_to_arena(point: Vector3, half_extents: Vector2) -> Vector3:
-	var spill := absf(point.x) / half_extents.x + absf(point.z) / half_extents.y
-	if spill <= 1.0:
-		return point
-	return Vector3(point.x / spill, point.y, point.z / spill)
+	return Vector3(
+		clampf(point.x, -half_extents.x, half_extents.x),
+		point.y,
+		clampf(point.z, -half_extents.y, half_extents.y)
+	)
 
 
-## Uniform random point inside the diamond footprint of the rotated arena slab.
-## Mapping the unit square through (u+v, u-v) turns it into the diamond, which
-## keeps the corners reachable instead of clipping to an inscribed box.
+## Uniform random point inside the rectangle footprint of the paper sheet.
 static func random_point_in_arena(half_extents: Vector2, y: float) -> Vector3:
-	var u := randf_range(-1.0, 1.0)
-	var v := randf_range(-1.0, 1.0)
-	return Vector3((u + v) * 0.5 * half_extents.x, y, (u - v) * 0.5 * half_extents.y)
+	return Vector3(
+		randf_range(-half_extents.x, half_extents.x),
+		y,
+		randf_range(-half_extents.y, half_extents.y)
+	)
 
 
 func _play_if_not_current(anim_name: StringName) -> void:

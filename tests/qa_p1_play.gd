@@ -262,12 +262,10 @@ func _measure_frame_rate(spawner: SpawnManager) -> void:
 		if monster == null or not monster.is_inside_tree():
 			continue
 		var extents: Vector2 = monster.get_walkable_half_extents()
-		var spill: float = absf(monster.global_position.x) / extents.x \
-			+ absf(monster.global_position.z) / extents.y
-		if spill > 1.02:
+		if JamoMonster.arena_spill(monster.global_position, extents) > 1.02:
 			outside += 1
 	_check(outside == 0, "no monster escaped the arena on a full field, %d did" % outside)
-	print("    monsters outside their walkable diamond: %d" % outside)
+	print("    monsters outside their walkable rectangle: %d" % outside)
 	spawner.stop()
 	spawner.clear_field()
 

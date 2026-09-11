@@ -12,10 +12,9 @@ extends Node
 
 const MAIN_SCENE := "res://scenes/main/main.tscn"
 const BIG_MIEUM := "res://scenes/monsters/special/monster_big_mieum.tscn"
-## Half-extent of the paper in the slab's own frame (PaperTop is a 5.6 x 5.6
-## box). arena.tscn turns the slab 45 degrees, so overhang has to be measured
-## in that frame, not against a world-axis-aligned square.
-const SLAB_HALF := 2.8
+## Half-extents (x, z) of the paper in the sheet's own frame, read from the
+## PaperTop BoxMesh in arena.tscn so a resized sheet is measured as built.
+var _slab_half: Vector2 = Vector2.ZERO
 const FILL_FRAMES := 900
 const OBSERVE_FRAMES := 1500
 
@@ -34,7 +33,11 @@ func _ready() -> void:
 	var world: Node3D = main.get_node("World/GameWorld")
 	_monster_root = world.get_node("MonsterRoot")
 	_spawn = world.get_node("SpawnManager")
-	_to_slab = (world.get_node("Arena") as Node3D).global_transform.affine_inverse()
+	var arena: Node3D = world.get_node("Arena")
+	_to_slab = arena.global_transform.affine_inverse()
+	var paper := arena.get_node("PaperTop") as MeshInstance3D
+	var box := paper.mesh as BoxMesh
+	_slab_half = Vector2(box.size.x, box.size.z) * 0.5
 	_spawn.monster_scenes = [load(BIG_MIEUM)]
 	_spawn.special_scenes = []
 	_spawn.golden_scenes = []
@@ -84,7 +87,7 @@ func _force_margin(margin: float) -> void:
 			monster.monster_data.arena_margin = margin
 
 
-## Measured in the slab's own frame; see SLAB_HALF.
+## Measured in the sheet's own frame; see _slab_half.
 func _overhang(monster: JamoMonster) -> float:
 	var box := _world_aabb(monster)
 	if box.size == Vector3.ZERO:
@@ -92,7 +95,9 @@ func _overhang(monster: JamoMonster) -> float:
 	var worst := 0.0
 	for corner_index in 8:
 		var corner: Vector3 = _to_slab * box.get_endpoint(corner_index)
-		worst = maxf(worst, maxf(absf(corner.x), absf(corner.z)) - SLAB_HALF)
+		worst = maxf(worst, maxf(
+			absf(corner.x) - _slab_half.x, absf(corner.z) - _slab_half.y
+		))
 	return maxf(0.0, worst)
 
 

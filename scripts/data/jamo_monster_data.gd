@@ -42,6 +42,11 @@ enum SpecialType { NORMAL, SPECIAL, GOLDEN }
 ## Radius of the click Area3D. Doc v0.3 section 8.3: keep it slightly larger
 ## than the visual so small jamo stay fair to click.
 @export_range(0.1, 3.0, 0.05) var click_radius: float = 0.45
+## Material put on surface 0 (the ink face) of the character's Glyph mesh.
+## Empty keeps the paper body baked into the GLB. This is how the special
+## individuals differ without their own model: 빠른 ㅇ wears
+## jamo_special_fast.tres, 황금 ㅎ jamo_gold.tres. Doc v0.4 section 16.
+@export var glyph_material: Material
 
 @export_group("Spawning")
 ## Which pool this monster is drawn from. Doc v0.3 section 28.

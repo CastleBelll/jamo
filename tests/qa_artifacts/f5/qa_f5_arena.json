@@ -1,40 +1,43 @@
 {
 	"big_mieum": {
-		"furthest_centre_from_origin_m": 2.43972754478455,
+		"furthest_centre_from_origin_m": 5.78915786743164,
 		"offenders": {},
 		"peak_monster_count": 20,
-		"worst_body_overhang_m": 0.0,
-		"worst_centre_axis_m": 2.43588137626648
+		"worst_body_overhang_m": 0.000000476837158203125,
+		"worst_centre_axis_m": 5.32499980926514
 	},
 	"mixed": {
-		"furthest_centre_from_origin_m": 2.96827077865601,
+		"furthest_centre_from_origin_m": 5.89724683761597,
 		"offenders": {},
 		"peak_monster_count": 20,
 		"worst_body_overhang_m": 0.0,
-		"worst_centre_axis_m": 2.96799087524414
+		"worst_centre_axis_m": 5.55000019073486
 	},
 	"normal_jamo": {
-		"furthest_centre_from_origin_m": 3.03009843826294,
+		"furthest_centre_from_origin_m": 6.22723388671875,
 		"offenders": {},
 		"peak_monster_count": 20,
 		"worst_body_overhang_m": 0.0,
-		"worst_centre_axis_m": 3.01874470710754
+		"worst_centre_axis_m": 5.68149328231812
 	},
-	"slab_half_extent": 2.8,
-	"slab_rotation_y_rad": 0.785399973392487,
+	"slab_half_extents": [
+		6.0,
+		3.75
+	],
+	"slab_rotation_y_rad": 0.0,
 	"spawn_arena_half_extents": [
-		3.95000004768372,
-		3.95000004768372
+		6.0,
+		3.75
 	],
 	"worst_case_corner": {
 		"body_overhang_m": 0.0,
 		"position": [
-			2.57263112068176,
-			0.000188001882634126
+			5.20757150650024,
+			2.91386413574219
 		],
 		"walkable_half_extents": [
-			2.77701711654663,
-			2.77701711654663
+			5.32499980926514,
+			3.03776955604553
 		]
 	}
 }

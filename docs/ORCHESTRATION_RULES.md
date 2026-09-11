@@ -158,6 +158,31 @@ v0.3 기반으로 완료했던 F1~F9 이력은 `docs/DEV_ROADMAP_v03_archive.md`
 - **`monster_capacity` 는 상점에 보이지 않는다** (`UpgradeData.is_retired`). 트랙 파일과
   기존 세이브의 레벨은 남아 있다. 상점 행 수는 5 (에너지 / 클릭 피해 / 치명타 / 골드 / 리롤).
 
+### 7.4 P1-DEV-4 (캐릭터 자모 + 맵 재설계) 이후 QA 가 알아야 할 것
+
+- **아레나는 마름모가 아니라 직사각형이다.** `scenes/world/arena.tscn` 의 `PaperTop` 은
+  회전 없는 12 × 7.5 m 종이 한 장이고, `SpawnManager.arena_half_extents` 와
+  `JamoMonster.arena_half_extents` 는 `(6, 3.75)` 다. 클램프는
+  `JamoMonster.clamp_point_to_arena()` / `arena_spill()` 이 축별로 잰다. 몸통 크기 inset 은
+  그대로다(축별 half-extent 차감). 하네스에서 `|x| + |z|` 마름모 식을 보면 옛 코드다.
+- **문장핵은 `(0, 0, -2.5)`** (후방 중앙, 뒤쪽 여백 0.62 m). 스폰 마커는 7개
+  (`FrontLeft / Front / FrontRight / Left / Right / LeftRear / RightRear`).
+- **자모는 15종 전부 `art/monsters/characters/*.glb`** 를 `VisualRoot/Body/Lean/Model` 로
+  인스턴스한다. BoxMesh 획은 없다. 눈·다리는 GLB 파츠(`Eye_L/Eye_R/Leg_L/Leg_R`)이고
+  다리는 `walk_library.tres` 의 `.:leg_swing` / `.:leg_tuck` 트랙이 움직인다
+  (`JamoMonster` 의 export setter 가 두 다리 피벗에 반대 위상으로 적용). 걷는데 다리가
+  고정돼 있으면 FAIL.
+- **특수 3종은 데이터로만 구분한다.** `JamoMonsterData.glyph_material` 이 `Glyph` 표면 0 에
+  들어간다: 빠른 ㅇ = `jamo_special_fast.tres`, 황금 ㅎ = `jamo_gold.tres`, 큰 ㅁ = `visual_scale 2.7`.
+  눈·다리·종이 측면(표면 1)까지 색이 바뀌면 FAIL.
+- **환경 장식 5개는 프리미티브 임시물이다.** `Arena/Decor` 의 슬롯
+  (`BookStackLeft / BookStackRight / Lantern / Inkstone / Brush`) 에 애셋 워커가
+  `ArenaDecor.replacements` (Inspector Dictionary) 로 실제 씬을 꽂는다.
+- **하네스**: `tests/qa_p1_map.tscn` (창 모드, 약 3분) 이 캐릭터 파츠·다리·스폰 방향·문장핵
+  안착·HUD 값·Wave 1~5 실플레이·20마리 FPS·종이 밖 이탈을 한 번에 잰다. 스크린샷은
+  `tests/qa_artifacts/p1/map/`. `qa_f5_*` 는 `PaperTop` 메시 크기를 읽으므로 치수를 다시 적을
+  필요가 없다. 창 모드 하네스는 여전히 **한 번에 하나씩** 돌린다(세이브 파일 공유).
+
 ## 8. 애셋 작업 — 별도 워크트리
 
 애셋(3D 모델 / 텍스처 / 아이콘 / 오디오 등) 및 그에 준하는 제작 작업은

@@ -1,20 +1,15 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/monsters/jamo_monster_base.tscn" id="1_base"]
 [ext_resource type="Resource" path="res://resources/monsters/ieung.tres" id="2_data"]
-[ext_resource type="Material" path="res://materials/jamo_ink.tres" id="3_ink"]
-
-[sub_resource type="TorusMesh" id="Mesh_ring"]
-inner_radius = 0.145
-outer_radius = 0.23
-rings = 24
-ring_segments = 8
+[ext_resource type="PackedScene" path="res://art/monsters/characters/ieung.glb" id="3_model"]
 
 [node name="MonsterIeung" instance=ExtResource("1_base")]
 monster_data = ExtResource("2_data")
 
-[node name="Ring" type="MeshInstance3D" parent="VisualRoot/Body/Lean" index="0"]
-position = Vector3(0, 0.31, 0)
-rotation = Vector3(1.5708, 0, 0)
-mesh = SubResource("Mesh_ring")
-surface_material_override/0 = ExtResource("3_ink")
+; The ㅇ character model (art/monsters/characters/README.md): origin at the
+; floor centre, +Z facing the camera, scale 1. 0.0201 lifts it out of the paper
+; the -20 degree Lean would otherwise sink it into. Glyph / Eye_L / Eye_R /
+; Leg_L / Leg_R inside are found by name from jamo_monster.gd.
+[node name="Model" parent="VisualRoot/Body/Lean" index="0" instance=ExtResource("3_model")]
+position = Vector3(0, 0.0201, 0)

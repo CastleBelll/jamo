@@ -23,8 +23,9 @@ const FPS_FIELD := 20
 const FPS_SAMPLE_FRAMES := 300
 const MISS_BUDGET := 40
 const PLAY_TIME_SCALE := 3.0
-## Half diagonal of the 5.6 m paper slab, the arena diamond |x| + |z| <= this.
-const SLAB_HALF_DIAGONAL := 3.96
+## Half width / half depth of the 12 x 7.5 m paper sheet, the arena rectangle
+## |x| <= 6, |z| <= 3.75. Must match arena.tscn PaperTop.
+const SLAB_HALF_EXTENTS := Vector2(6.0, 3.75)
 const PARTS := ["Binding", "BookPages", "BindingThread", "SentenceInk", "CorePaper", "CoreInk", "Seal"]
 
 var _failures: int = 0
@@ -88,7 +89,7 @@ func _run() -> void:
 
 
 ## 1. The parts the asset README names, all under visual_root, and the book's
-## footprint inside the slab diamond. The old Pillar/Cap primitives are gone.
+## footprint inside the paper rectangle. The old Pillar/Cap primitives are gone.
 func _check_model(core: SentenceCore) -> void:
 	print("-- model under VisualRoot")
 	_check(core.visual_root.find_child("Pillar", true, false) == null
@@ -108,9 +109,12 @@ func _check_model(core: SentenceCore) -> void:
 	var worst := 0.0
 	for corner_x: float in [bounds.position.x, bounds.end.x]:
 		for corner_z: float in [bounds.position.z, bounds.end.z]:
-			worst = maxf(worst, absf(corner_x) + absf(corner_z))
-	print("    footprint corner |x|+|z| max %.2f of %.2f" % [worst, SLAB_HALF_DIAGONAL])
-	_check(worst <= SLAB_HALF_DIAGONAL, "the book's footprint stays on the paper slab")
+			worst = maxf(worst, JamoMonster.arena_spill(
+				Vector3(corner_x, 0.0, corner_z), SLAB_HALF_EXTENTS
+			))
+	print("    footprint corner spill max %.2f of 1.00 (half extents %s)"
+		% [worst, str(SLAB_HALF_EXTENTS)])
+	_check(worst <= 1.0, "the book's footprint stays on the paper sheet")
 	_check(bounds.size.y > 1.0, "the model stands taller than a monster, got %.2f m" % bounds.size.y)
 	var half_width: float = bounds.size.x * 0.5
 	print("    reach_radius %.2f vs half width %.2f, half depth %.2f"

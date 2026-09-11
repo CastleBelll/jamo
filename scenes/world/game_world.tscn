@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/game_world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/world/arena.tscn" id="2_arena"]
@@ -8,12 +8,21 @@
 [ext_resource type="PackedScene" path="res://scenes/fx/damage_number.tscn" id="6_number"]
 [ext_resource type="PackedScene" path="res://scenes/fx/hit_fx.tscn" id="7_hit"]
 [ext_resource type="PackedScene" path="res://scenes/fx/death_fx.tscn" id="8_death"]
-[ext_resource type="PackedScene" path="res://scenes/monsters/monster_giyeok.tscn" id="9_giyeok"]
-[ext_resource type="PackedScene" path="res://scenes/monsters/monster_digeut.tscn" id="10_digeut"]
-[ext_resource type="PackedScene" path="res://scenes/monsters/monster_mieum.tscn" id="11_mieum"]
-[ext_resource type="PackedScene" path="res://scenes/monsters/monster_siot.tscn" id="12_siot"]
-[ext_resource type="PackedScene" path="res://scenes/monsters/monster_ieung.tscn" id="13_ieung"]
-[ext_resource type="PackedScene" path="res://scenes/monsters/monster_i.tscn" id="14_i"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_giyeok.tscn" id="2_giyeok"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_nieun.tscn" id="3_nieun"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_digeut.tscn" id="4_digeut"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_rieul.tscn" id="5_rieul"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_mieum.tscn" id="6_mieum"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_bieup.tscn" id="7_bieup"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_siot.tscn" id="8_siot"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_ieung.tscn" id="9_ieung"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_hieut.tscn" id="10_hieut"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_eo.tscn" id="11_eo"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_yeo.tscn" id="12_yeo"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_o.tscn" id="13_o"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_u.tscn" id="14_u"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_eu.tscn" id="15_eu"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_i.tscn" id="16_i"]
 [ext_resource type="PackedScene" path="res://scenes/monsters/special/monster_big_mieum.tscn" id="15_big_mieum"]
 [ext_resource type="PackedScene" path="res://scenes/monsters/special/monster_fast_ieung.tscn" id="16_fast_ieung"]
 [ext_resource type="PackedScene" path="res://scenes/monsters/special/monster_golden_hieut.tscn" id="17_golden_hieut"]
@@ -28,26 +37,40 @@ death_fx_pool = NodePath("FXRoot/DeathFXPool")
 
 [node name="Arena" parent="." instance=ExtResource("2_arena")]
 
-; The 문장핵 sits at the rear of the slab (-Z is away from the camera), so the
-; approach reads bottom-to-top on screen. -2.2 leaves the book model's back
-; corners on the paper at its 0.75 scale. Doc v0.4 sections 6.1 and 39.
+; The 문장핵 sits at the rear centre of the paper sheet (-Z is away from the
+; camera), so the approach reads bottom-to-top on screen. At -2.5 the book
+; (1.26 deep at its 0.75 scale) keeps 0.6 m of paper behind it on the 7.5 m
+; sheet instead of hanging off a corner. Doc v0.4 sections 6.1 and 39.
 [node name="SentenceCore" parent="." node_paths=PackedStringArray("camera_rig") instance=ExtResource("18_core")]
-position = Vector3(0, 0, -2.2)
+position = Vector3(0, 0, -2.5)
 camera_rig = NodePath("../CameraRig")
 
-; Outer spawn points, one per remaining corner of the diamond slab. The
+; Outer spawn points along the front and both sides of the 12 x 7.5 sheet, so
+; a wave closes in on the 문장핵 from seven directions instead of one file. The
 ; SpawnManager jitters around whichever it picks and clamps the result onto the
-; monster's own walkable diamond. Move or add markers here. Doc v0.4 section 39.
+; monster's own walkable rectangle. Move or add markers here. Doc v0.4 §39.
 [node name="SpawnPoints" type="Node3D" parent="."]
 
+[node name="FrontLeft" type="Marker3D" parent="SpawnPoints"]
+position = Vector3(-4, 0, 3.3)
+
 [node name="Front" type="Marker3D" parent="SpawnPoints"]
-position = Vector3(0, 0, 3.1)
+position = Vector3(0, 0, 3.3)
+
+[node name="FrontRight" type="Marker3D" parent="SpawnPoints"]
+position = Vector3(4, 0, 3.3)
 
 [node name="Left" type="Marker3D" parent="SpawnPoints"]
-position = Vector3(-3.1, 0, 0.2)
+position = Vector3(-5.6, 0, 1.2)
 
 [node name="Right" type="Marker3D" parent="SpawnPoints"]
-position = Vector3(3.1, 0, 0.2)
+position = Vector3(5.6, 0, 1.2)
+
+[node name="LeftRear" type="Marker3D" parent="SpawnPoints"]
+position = Vector3(-5.6, 0, -1.6)
+
+[node name="RightRear" type="Marker3D" parent="SpawnPoints"]
+position = Vector3(5.6, 0, -1.6)
 
 [node name="MonsterRoot" type="Node3D" parent="."]
 
@@ -108,13 +131,13 @@ light_energy = 0.35
 
 [node name="SpawnManager" type="Node" parent="." node_paths=PackedStringArray("spawn_root", "spawn_point_root", "objective")]
 script = ExtResource("4_spawn")
-monster_scenes = Array[PackedScene]([ExtResource("9_giyeok"), ExtResource("10_digeut"), ExtResource("11_mieum"), ExtResource("12_siot"), ExtResource("13_ieung"), ExtResource("14_i")])
+monster_scenes = Array[PackedScene]([ExtResource("2_giyeok"), ExtResource("3_nieun"), ExtResource("4_digeut"), ExtResource("5_rieul"), ExtResource("6_mieum"), ExtResource("7_bieup"), ExtResource("8_siot"), ExtResource("9_ieung"), ExtResource("10_hieut"), ExtResource("11_eo"), ExtResource("12_yeo"), ExtResource("13_o"), ExtResource("14_u"), ExtResource("15_eu"), ExtResource("16_i")])
 special_scenes = Array[PackedScene]([ExtResource("15_big_mieum"), ExtResource("16_fast_ieung")])
 golden_scenes = Array[PackedScene]([ExtResource("17_golden_hieut")])
 spawn_root = NodePath("../MonsterRoot")
 spawn_point_root = NodePath("../SpawnPoints")
 objective = NodePath("../SentenceCore")
-arena_half_extents = Vector2(3.95, 3.95)
+arena_half_extents = Vector2(6, 3.75)
 spawn_jitter = 0.7
 spawn_height = 0.0
 min_spawn_distance = 1.3

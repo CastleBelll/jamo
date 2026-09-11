@@ -15,17 +15,25 @@ const ARTIFACT_DIR := "res://tests/qa_artifacts/f5"
 const BIG_MIEUM := "res://scenes/monsters/special/monster_big_mieum.tscn"
 const NORMAL_SCENES := [
 	"res://scenes/monsters/monster_giyeok.tscn",
-	"res://scenes/monsters/monster_mieum.tscn",
-	"res://scenes/monsters/monster_ieung.tscn",
+	"res://scenes/monsters/monster_nieun.tscn",
 	"res://scenes/monsters/monster_digeut.tscn",
+	"res://scenes/monsters/monster_rieul.tscn",
+	"res://scenes/monsters/monster_mieum.tscn",
+	"res://scenes/monsters/monster_bieup.tscn",
 	"res://scenes/monsters/monster_siot.tscn",
+	"res://scenes/monsters/monster_ieung.tscn",
+	"res://scenes/monsters/monster_hieut.tscn",
+	"res://scenes/monsters/monster_eo.tscn",
+	"res://scenes/monsters/monster_yeo.tscn",
+	"res://scenes/monsters/monster_o.tscn",
+	"res://scenes/monsters/monster_u.tscn",
+	"res://scenes/monsters/monster_eu.tscn",
 	"res://scenes/monsters/monster_i.tscn",
 ]
 
-## Half-extent of the paper in the slab's own frame (PaperTop is a 5.6 x 5.6
-## box). arena.tscn turns the slab 45 degrees, so overhang has to be measured
-## in that frame, not against a world-axis-aligned square.
-const SLAB_HALF := 2.8
+## Half-extents (x, z) of the paper in the sheet's own frame, read from the
+## PaperTop BoxMesh in arena.tscn so a resized sheet is measured as built.
+var _slab_half: Vector2 = Vector2.ZERO
 ## How long to watch a crowded field, in frames at 60 fps.
 const OBSERVE_FRAMES := 2100
 ## Frames given to the spawner to fill the field before observing.
@@ -51,8 +59,9 @@ func _ready() -> void:
 	_spawn = world.get_node("SpawnManager")
 	var arena: Node3D = world.get_node("Arena")
 	_to_slab = arena.global_transform.affine_inverse()
+	_slab_half = _paper_half_extents(arena)
 
-	_report["slab_half_extent"] = SLAB_HALF
+	_report["slab_half_extents"] = [_slab_half.x, _slab_half.y]
 	_report["slab_rotation_y_rad"] = arena.global_rotation.y
 	_report["spawn_arena_half_extents"] = [
 		_spawn.arena_half_extents.x, _spawn.arena_half_extents.y
@@ -119,8 +128,8 @@ func _observe(label: String, scene_paths: Array) -> Dictionary:
 	}
 
 
-## Puts a single 큰 ㅁ on the +X vertex of its own walkable diamond - the
-## furthest the clamp allows it to stand - and photographs it against the slab
+## Puts a single 큰 ㅁ on the +X, +Z corner of its own walkable rectangle - the
+## furthest the clamp allows it to stand - and photographs it against the paper
 ## edge, so the worst case is a picture rather than an average.
 func _worst_case_corner() -> Dictionary:
 	_spawn.clear_field()
@@ -140,7 +149,7 @@ func _worst_case_corner() -> Dictionary:
 	var monster: JamoMonster = monsters[0]
 	var extents := monster.get_walkable_half_extents()
 	for _frame in 90:
-		monster.global_position = Vector3(extents.x, monster.global_position.y, 0.0)
+		monster.global_position = Vector3(extents.x, monster.global_position.y, extents.y)
 		await get_tree().process_frame
 	await _shot("worst_case_corner")
 	return {
@@ -150,10 +159,10 @@ func _worst_case_corner() -> Dictionary:
 	}
 
 
-## How far the monster's own mesh sticks out past the slab edge, in metres.
+## How far the monster's own mesh sticks out past the paper edge, in metres.
 ## 0 means the whole body stayed on the paper. The corners are carried into the
-## slab's frame one at a time: re-bounding the whole box in a rotated frame
-## would inflate it and report an overhang that is not there.
+## sheet's frame one at a time, so the check still holds if the arena is ever
+## rotated again.
 func _body_overhang(monster: JamoMonster) -> float:
 	var aabb := _world_aabb(monster)
 	if aabb.size == Vector3.ZERO:
@@ -161,8 +170,17 @@ func _body_overhang(monster: JamoMonster) -> float:
 	var worst := 0.0
 	for corner_index in 8:
 		var corner: Vector3 = _to_slab * aabb.get_endpoint(corner_index)
-		worst = maxf(worst, maxf(absf(corner.x), absf(corner.z)) - SLAB_HALF)
+		worst = maxf(worst, maxf(
+			absf(corner.x) - _slab_half.x, absf(corner.z) - _slab_half.y
+		))
 	return maxf(0.0, worst)
+
+
+## Half width / half depth of the PaperTop box in arena.tscn.
+static func _paper_half_extents(arena: Node3D) -> Vector2:
+	var paper := arena.get_node("PaperTop") as MeshInstance3D
+	var box := paper.mesh as BoxMesh
+	return Vector2(box.size.x, box.size.z) * 0.5
 
 
 ## Union of every visual mesh under the monster, in world space.

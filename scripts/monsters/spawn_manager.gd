@@ -34,15 +34,15 @@ const SPAWN_PLACEMENT_ATTEMPTS := 12
 ## Node the spawned monsters are parented to.
 @export var spawn_root: Node3D
 ## Node whose Marker3D children are the outer spawn points. With none, spawns
-## are placed anywhere on the slab as in v0.3. Doc v0.4 section 39.
+## are placed anywhere on the sheet as in v0.3. Doc v0.4 section 39.
 @export var spawn_point_root: Node3D
 ## The 문장핵 every spawned monster walks to. Empty makes them wander.
 @export var objective: SentenceCore
-## Half-diagonals of the paper slab, in metres. arena.tscn turns a 5.6 x 5.6
-## square by 45 degrees, so both are 2.8 * sqrt(2). Each monster insets this by
-## its own body footprint, so keep it matching the slab rather than shrinking
-## it here. See JamoMonster.get_walkable_half_extents.
-@export var arena_half_extents: Vector2 = Vector2(3.95, 3.95)
+## Half-extents of the paper sheet, in metres: half width and half depth of
+## the 12 x 7.5 sheet in arena.tscn. Each monster insets this by its own body
+## footprint, so keep it matching the sheet rather than shrinking it here.
+## See JamoMonster.get_walkable_half_extents.
+@export var arena_half_extents: Vector2 = Vector2(6.0, 3.75)
 ## Random offset around the chosen spawn point, in metres, so a wave does not
 ## spawn in one file.
 @export_range(0.0, 3.0, 0.05) var spawn_jitter: float = 0.7
@@ -184,8 +184,8 @@ func _spawn_one() -> void:
 	monster.objective = objective
 	monster.died.connect(_on_monster_died)
 	spawn_root.add_child(monster)
-	# Placed with the monster's own walkable diamond, so a big glyph never
-	# starts life hanging over the slab edge. Doc v0.3 section 27.
+	# Placed with the monster's own walkable rectangle, so a big glyph never
+	# starts life hanging over the paper edge. Doc v0.3 section 27.
 	monster.global_position = _random_spawn_point(monster.get_walkable_half_extents())
 
 	if monster.monster_data != null:
@@ -213,7 +213,7 @@ func _random_spawn_point(half_extents: Vector2) -> Vector3:
 
 
 ## One candidate position: a jittered outer spawn point clamped onto the
-## monster's walkable diamond, or anywhere on the slab when no points exist.
+## monster's walkable rectangle, or anywhere on the sheet when no points exist.
 func _spawn_candidate(half_extents: Vector2) -> Vector3:
 	var marker: Node3D = _pick_spawn_point()
 	if marker == null:

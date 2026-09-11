@@ -1,29 +1,76 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=23 format=3]
+
+; The field: one 12 x 7.5 m sheet of paper lying flat on a desk, no rotation,
+; so its footprint is the rectangle abs(x) <= 6, abs(z) <= 3.75 that
+; JamoMonster / SpawnManager arena_half_extents (6, 3.75) describe. The
+; 문장핵 sits at the rear centre (game_world.tscn), spawn points along the
+; front and both sides. Doc v0.4 section 39. Resize PaperTop / SlabBody /
+; Ground / Walls together and update the two arena_half_extents exports.
 
 [ext_resource type="Material" path="res://materials/arena_paper.tres" id="1_paper"]
 [ext_resource type="Material" path="res://materials/arena_wood.tres" id="2_wood"]
 [ext_resource type="Material" path="res://materials/arena_edge.tres" id="3_edge"]
+[ext_resource type="Material" path="res://materials/jamo_ink.tres" id="4_ink"]
+[ext_resource type="Script" path="res://scripts/world/arena_decor.gd" id="5_decor"]
 
 [sub_resource type="BoxMesh" id="Mesh_top"]
-size = Vector3(5.6, 0.08, 5.6)
+size = Vector3(12, 0.08, 7.5)
 
 [sub_resource type="BoxMesh" id="Mesh_body"]
-size = Vector3(5.52, 0.52, 5.52)
+size = Vector3(11.9, 0.52, 7.4)
 
-[sub_resource type="BoxMesh" id="Mesh_plinth"]
-size = Vector3(6.2, 0.3, 6.2)
+[sub_resource type="BoxMesh" id="Mesh_desk"]
+size = Vector3(26, 0.3, 18)
 
 [sub_resource type="BoxShape3D" id="Shape_ground"]
-size = Vector3(5.6, 0.2, 5.6)
+size = Vector3(12, 0.2, 7.5)
 
 [sub_resource type="BoxShape3D" id="Shape_wall_x"]
-size = Vector3(0.4, 1.4, 6.0)
+size = Vector3(0.4, 1.4, 8.4)
 
 [sub_resource type="BoxShape3D" id="Shape_wall_z"]
-size = Vector3(6.0, 1.4, 0.4)
+size = Vector3(12.8, 1.4, 0.4)
+
+[sub_resource type="BoxMesh" id="Mesh_book_large"]
+size = Vector3(1.7, 0.32, 2.3)
+
+[sub_resource type="BoxMesh" id="Mesh_book_medium"]
+size = Vector3(1.6, 0.3, 2.2)
+
+[sub_resource type="BoxMesh" id="Mesh_book_small"]
+size = Vector3(1.5, 0.28, 2.1)
+
+[sub_resource type="BoxMesh" id="Mesh_lantern_base"]
+size = Vector3(0.7, 0.12, 0.7)
+
+[sub_resource type="BoxMesh" id="Mesh_lantern_shade"]
+size = Vector3(0.55, 0.9, 0.55)
+
+[sub_resource type="BoxMesh" id="Mesh_lantern_cap"]
+size = Vector3(0.75, 0.1, 0.75)
+
+[sub_resource type="CylinderMesh" id="Mesh_lantern_knob"]
+top_radius = 0.05
+bottom_radius = 0.08
+height = 0.16
+
+[sub_resource type="BoxMesh" id="Mesh_inkstone"]
+size = Vector3(1.5, 0.22, 1.05)
+
+[sub_resource type="BoxMesh" id="Mesh_ink_stick"]
+size = Vector3(0.25, 0.18, 0.9)
+
+[sub_resource type="CylinderMesh" id="Mesh_brush_handle"]
+top_radius = 0.07
+bottom_radius = 0.08
+height = 2.4
+
+[sub_resource type="CylinderMesh" id="Mesh_brush_tip"]
+top_radius = 0.02
+bottom_radius = 0.09
+height = 0.35
 
 [node name="Arena" type="Node3D"]
-rotation = Vector3(0, 0.7854, 0)
 
 [node name="PaperTop" type="MeshInstance3D" parent="."]
 position = Vector3(0, -0.04, 0)
@@ -35,9 +82,11 @@ position = Vector3(0, -0.34, 0)
 mesh = SubResource("Mesh_body")
 surface_material_override/0 = ExtResource("3_edge")
 
-[node name="Plinth" type="MeshInstance3D" parent="."]
+; The desk the sheet lies on. Big enough to fill the camera frame so the
+; background is wood, as on the title screen, rather than the clear colour.
+[node name="Desk" type="MeshInstance3D" parent="."]
 position = Vector3(0, -0.75, 0)
-mesh = SubResource("Mesh_plinth")
+mesh = SubResource("Mesh_desk")
 surface_material_override/0 = ExtResource("2_wood")
 
 [node name="Ground" type="StaticBody3D" parent="."]
@@ -48,24 +97,122 @@ collision_mask = 0
 position = Vector3(0, -0.1, 0)
 shape = SubResource("Shape_ground")
 
+; Boundary of the field, inner faces on the paper edge. They stop a shove
+; from carrying a body off the sheet between physics steps; the per-body
+; clamp in JamoMonster is what keeps every glyph fully on the paper.
 [node name="Walls" type="StaticBody3D" parent="."]
 collision_layer = 1
 collision_mask = 0
 
 [node name="WallLeft" type="CollisionShape3D" parent="Walls"]
-position = Vector3(-2.95, 0.7, 0)
+position = Vector3(-6.2, 0.7, 0)
 shape = SubResource("Shape_wall_x")
 
 [node name="WallRight" type="CollisionShape3D" parent="Walls"]
-position = Vector3(2.95, 0.7, 0)
+position = Vector3(6.2, 0.7, 0)
 shape = SubResource("Shape_wall_x")
 
 [node name="WallBack" type="CollisionShape3D" parent="Walls"]
-position = Vector3(0, 0.7, -2.95)
+position = Vector3(0, 0.7, -3.95)
 shape = SubResource("Shape_wall_z")
 
 [node name="WallFront" type="CollisionShape3D" parent="Walls"]
-position = Vector3(0, 0.7, 2.95)
+position = Vector3(0, 0.7, 3.95)
 shape = SubResource("Shape_wall_z")
 
+; Desk dressing, doc v0.4 section 39. Each slot is a swap point: the finished
+; asset goes into Decor's `replacements` under the slot name and the primitive
+; stand-in below it is dropped at load (scripts/world/arena_decor.gd). Slots
+; sit on the desk top (y = -0.6) outside the sheet.
 [node name="Decor" type="Node3D" parent="."]
+script = ExtResource("5_decor")
+
+[node name="BookStackLeft" type="Marker3D" parent="Decor"]
+position = Vector3(-7.6, -0.6, 0.9)
+rotation = Vector3(0, 0.12, 0)
+
+[node name="Book1" type="MeshInstance3D" parent="Decor/BookStackLeft"]
+position = Vector3(0, 0.16, 0)
+mesh = SubResource("Mesh_book_large")
+surface_material_override/0 = ExtResource("4_ink")
+
+[node name="Book2" type="MeshInstance3D" parent="Decor/BookStackLeft"]
+position = Vector3(0.08, 0.47, -0.05)
+rotation = Vector3(0, -0.08, 0)
+mesh = SubResource("Mesh_book_medium")
+surface_material_override/0 = ExtResource("3_edge")
+
+[node name="Book3" type="MeshInstance3D" parent="Decor/BookStackLeft"]
+position = Vector3(-0.05, 0.76, 0.04)
+rotation = Vector3(0, 0.15, 0)
+mesh = SubResource("Mesh_book_small")
+surface_material_override/0 = ExtResource("4_ink")
+
+[node name="BookStackRight" type="Marker3D" parent="Decor"]
+position = Vector3(7.7, -0.6, -2.4)
+rotation = Vector3(0, -0.2, 0)
+
+[node name="Book1" type="MeshInstance3D" parent="Decor/BookStackRight"]
+position = Vector3(0, 0.16, 0)
+mesh = SubResource("Mesh_book_large")
+surface_material_override/0 = ExtResource("3_edge")
+
+[node name="Book2" type="MeshInstance3D" parent="Decor/BookStackRight"]
+position = Vector3(-0.06, 0.47, 0.05)
+rotation = Vector3(0, 0.1, 0)
+mesh = SubResource("Mesh_book_medium")
+surface_material_override/0 = ExtResource("4_ink")
+
+[node name="Lantern" type="Marker3D" parent="Decor"]
+position = Vector3(-7.9, -0.6, -3.4)
+
+[node name="Base" type="MeshInstance3D" parent="Decor/Lantern"]
+position = Vector3(0, 0.06, 0)
+mesh = SubResource("Mesh_lantern_base")
+surface_material_override/0 = ExtResource("4_ink")
+
+[node name="Shade" type="MeshInstance3D" parent="Decor/Lantern"]
+position = Vector3(0, 0.57, 0)
+mesh = SubResource("Mesh_lantern_shade")
+surface_material_override/0 = ExtResource("1_paper")
+
+[node name="Cap" type="MeshInstance3D" parent="Decor/Lantern"]
+position = Vector3(0, 1.07, 0)
+mesh = SubResource("Mesh_lantern_cap")
+surface_material_override/0 = ExtResource("4_ink")
+
+[node name="Knob" type="MeshInstance3D" parent="Decor/Lantern"]
+position = Vector3(0, 1.2, 0)
+mesh = SubResource("Mesh_lantern_knob")
+surface_material_override/0 = ExtResource("4_ink")
+
+[node name="Inkstone" type="Marker3D" parent="Decor"]
+position = Vector3(7.5, -0.6, 1.5)
+rotation = Vector3(0, 0.1, 0)
+
+[node name="Stone" type="MeshInstance3D" parent="Decor/Inkstone"]
+position = Vector3(0, 0.11, 0)
+mesh = SubResource("Mesh_inkstone")
+surface_material_override/0 = ExtResource("4_ink")
+
+[node name="InkStick" type="MeshInstance3D" parent="Decor/Inkstone"]
+position = Vector3(-0.85, 0.09, 0.75)
+rotation = Vector3(0, 0.5, 0)
+mesh = SubResource("Mesh_ink_stick")
+surface_material_override/0 = ExtResource("4_ink")
+
+[node name="Brush" type="Marker3D" parent="Decor"]
+position = Vector3(3.8, -0.6, 4.7)
+rotation = Vector3(0, 0.35, 0)
+
+[node name="Handle" type="MeshInstance3D" parent="Decor/Brush"]
+position = Vector3(0, 0.08, 0)
+rotation = Vector3(0, 0, 1.5708)
+mesh = SubResource("Mesh_brush_handle")
+surface_material_override/0 = ExtResource("3_edge")
+
+[node name="Tip" type="MeshInstance3D" parent="Decor/Brush"]
+position = Vector3(-1.37, 0.08, 0)
+rotation = Vector3(0, 0, -1.5708)
+mesh = SubResource("Mesh_brush_tip")
+surface_material_override/0 = ExtResource("4_ink")
