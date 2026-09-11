@@ -24,6 +24,7 @@ func _ready() -> void:
 		_check_checkpoint_and_settlement()
 		_check_research_and_library()
 		_check_scene_resume()
+		_check_abandon_in_clear_then_retry()
 	for f in failures:
 		printerr("FAIL: " + f)
 	print("test_save: %s (%d failures)" % ["PASS" if failures.is_empty() else "FAIL", failures.size()])
@@ -296,3 +297,30 @@ func _check_scene_resume() -> void:
 	_expect(run4.forge.restores_left == 0 and run4.forge.restored_word == f3.restored_word, "restore state persists (no second restore after resume)")
 	run4.free()
 	game3.queue_free()
+
+
+## Abandoning during 자모 정리 and retrying must not reuse the old reward model (H1).
+func _check_abandon_in_clear_then_retry() -> void:
+	Meta.new_profile()
+	var run := RunController.new()
+	run.setup(db)
+	run.open_run_setup()
+	run.confirm_setup(&"starter_a")
+	run.begin_combat()
+	run.drops.pity_misses = 0
+	run.on_purified("ㄱ")
+	run.on_wave_cleared()
+	var stale := run.build_reward()
+	stale.add(0)
+	_expect(run.reward == stale and stale.picks_left == 0, "reward consumed in the old RUN")
+	run.abandon()
+	run.retry_run()
+	_expect(run.reward == null and run.forge == null, "new RUN starts with no leftover reward/forge")
+	run.begin_combat()
+	run.drops.pity_misses = 0  # confirm_setup re-reads the B4 pity from balance
+	run.on_purified("ㄴ")
+	run.on_purified("ㄷ")
+	run.on_wave_cleared()
+	var fresh := run.build_reward()
+	_expect(fresh != stale and fresh.picks_left == 1 and fresh.candidates.size() == 2 and fresh.deck == run.deck, "fresh reward built for the new RUN")
+	run.free()

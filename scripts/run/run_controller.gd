@@ -94,6 +94,7 @@ func confirm_setup(chosen_deck: StringName) -> bool:
 	build = BuildState.new()
 	build.setup(db.balance)
 	forge = null
+	reward = null
 	forge_fail_bonus = 0
 	discovered.clear()
 	damage_causes.clear()
