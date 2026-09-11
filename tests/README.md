@@ -10,4 +10,6 @@ godot --headless --path . --import
 godot --headless --path . tests/test_content.tscn
 # G2 state machine + screen skeleton (paths, HUD, phase panels)
 godot --headless --path . tests/test_run_controller.tscn
+# W1 combat: spawn coordinates/lanes, click overlap + cooldown, purify/reach once, spacing, clear vs defeat
+godot --headless --path . tests/test_combat.tscn
 ```

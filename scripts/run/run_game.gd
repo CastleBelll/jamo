@@ -1,10 +1,12 @@
 extends Node
-## Run screen root: wires RunController to the page, HUD and the per-phase panels (G2/G10).
-## Combat itself (spawns, input) is added in the next feature; this file owns screen flow.
+## Run screen root: wires RunController, CombatDirector, the page, HUD and per-phase panels
+## (G2/G3/G10). Screen flow lives here; combat rules live in CombatDirector.
 
 const LIBRARY_SCENE := "res://scenes/hub/last_library.tscn"
 
 @onready var run: RunController = $RunController
+@onready var director: CombatDirector = $CombatDirector
+@onready var page: Node2D = $CorruptedPage
 @onready var hud: CanvasLayer = $HUD
 @onready var prep_panel: PanelContainer = %PrepPanel
 @onready var prep_label: Label = %PrepLabel
@@ -13,7 +15,9 @@ const LIBRARY_SCENE := "res://scenes/hub/last_library.tscn"
 @onready var result_panel: PanelContainer = %ResultPanel
 @onready var result_label: Label = %ResultLabel
 @onready var pause_panel: PanelContainer = %PausePanel
-@onready var debug_clear_button: Button = %DebugClearButton
+
+## Spawn RNG seed per run; tests override it for reproducible waves.
+var run_seed: int = 0
 
 
 func _ready() -> void:
@@ -21,7 +25,11 @@ func _ready() -> void:
 	var errors := db.validate()
 	if not errors.is_empty():
 		push_error("content invalid: %s" % errors[0])
+	if run_seed == 0:
+		run_seed = int(Time.get_unix_time_from_system()) ^ Time.get_ticks_msec()
 	run.setup(db)
+	director.setup(run, db, page)
+	director.enemies_changed.connect(hud.set_enemies_left)
 	hud.bind(run)
 	run.phase_changed.connect(_on_phase_changed)
 	%StartWaveButton.pressed.connect(func(): run.begin_combat())
@@ -30,11 +38,16 @@ func _ready() -> void:
 	%ResultLibraryButton.pressed.connect(_on_return_to_library)
 	%ResumeButton.pressed.connect(_close_pause)
 	%AbandonButton.pressed.connect(_on_abandon)
-	# Skeleton only: until combat exists, the COMBAT phase is cleared by this button.
-	debug_clear_button.pressed.connect(func(): run.on_wave_cleared())
 	pause_panel.visible = false
 	run.open_run_setup()
 	run.confirm_setup(&"starter_a")
+
+
+func _physics_process(delta: float) -> void:
+	# Root runs always (for Esc); the combat clock only advances while unpaused in COMBAT.
+	if get_tree().paused:
+		return
+	director.tick(delta, page.get_global_mouse_position())
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -44,6 +57,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			_open_pause()
 		get_viewport().set_input_as_handled()
+		return
+	# Battlefield input only reaches here when no Control consumed it (G3) and combat runs.
+	if run.phase != RunController.Phase.COMBAT or get_tree().paused:
+		return
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		director.set_hold(event.pressed)
+		if event.pressed:
+			director.request_click(page.get_global_mouse_position())
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("cycle_target"):
+		director.cycle_focus()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("attack_key"):
+		director.request_keyboard_attack()
+		get_viewport().set_input_as_handled()
 
 
 func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> void:
@@ -51,18 +79,21 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 	clear_panel.visible = to == RunController.Phase.CLEAR
 	forge_panel.visible = to == RunController.Phase.FORGE
 	result_panel.visible = to == RunController.Phase.RESULT
-	debug_clear_button.visible = to == RunController.Phase.COMBAT
 	# The combat clock only runs during COMBAT (G2); every other phase keeps it paused.
 	get_tree().paused = pause_panel.visible or to != RunController.Phase.COMBAT
 	match to:
 		RunController.Phase.WAVE_PREP:
 			prep_label.text = "Wave %d%s" % [run.wave, " 보스" if run.is_boss_wave() else ""]
 			%StartWaveButton.grab_focus()
+		RunController.Phase.COMBAT:
+			director.set_hold(false)
+			director.start_wave(run.wave_data(), run_seed + run.wave)
 		RunController.Phase.CLEAR:
 			%FinishClearButton.grab_focus()
 		RunController.Phase.FORGE:
 			%ConfirmBuildButton.grab_focus()
 		RunController.Phase.RESULT:
+			director.set_hold(false)
 			result_label.text = _result_text(run.end_reason)
 			%ResultLibraryButton.grab_focus()
 
@@ -79,6 +110,7 @@ func _result_text(reason: RunController.EndReason) -> String:
 
 func _open_pause() -> void:
 	pause_panel.visible = true
+	director.set_hold(false)
 	get_tree().paused = true
 	%ResumeButton.grab_focus()
 
