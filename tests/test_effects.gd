@@ -342,9 +342,11 @@ func _check_synergies() -> void:
 	var reward := run.build_reward()
 	_expect(reward.picks_left == 0, "no drops: picks limited to 0 even with SY_ECON")
 	run.drops.drops = ["ㄱ", "ㄴ", "ㄷ"] as Array[String]
+	run.reward = null  # build_reward caches the live model while in CLEAR (G14 resume)
 	reward = run.build_reward()
 	_expect(reward.picks_left == 2, "SY_ECON: normal Wave picks 1 + 1 (got %d)" % reward.picks_left)
 	run.wave = 5
+	run.reward = null
 	reward = run.build_reward()
 	_expect(reward.picks_left == 2, "boss Wave keeps 2 picks, no SY_ECON stacking")
 

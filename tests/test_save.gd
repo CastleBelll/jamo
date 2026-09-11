@@ -23,6 +23,7 @@ func _ready() -> void:
 		_check_snapshot_resume()
 		_check_checkpoint_and_settlement()
 		_check_research_and_library()
+		_check_scene_resume()
 	for f in failures:
 		printerr("FAIL: " + f)
 	print("test_save: %s (%d failures)" % ["PASS" if failures.is_empty() else "FAIL", failures.size()])
@@ -227,3 +228,71 @@ func _check_research_and_library() -> void:
 	_expect(lib.get_node("%CorruptLabel").visible and lib.get_node("%NewProfileButton").visible, "corrupt profile: notice and consent button")
 	lib.free()
 	Meta.corrupt = false
+
+
+## Resume through the real screens: FORGE keeps the dealt hand, CLEAR keeps consumed picks,
+## the seed is re-synced, and 64-bit RNG state survives JSON.
+func _check_scene_resume() -> void:
+	Meta.new_profile()
+	Meta.first_run_done = true
+	var game := RUN_GAME.instantiate()
+	game.run_seed = 52
+	game.set_physics_process(false)
+	add_child(game)
+	var run: RunController = game.get_node("RunController")
+	var director: CombatDirector = game.get_node("CombatDirector")
+	run.begin_combat()
+	run.drops.pity_misses = 0
+	run.on_purified("ㄱ")
+	run.on_purified("ㄴ")
+	director.clear_enemies()
+	run.on_wave_cleared()
+	var panel := game.get_node("%ClearPanel")
+	panel.get_node("%AddButton").pressed.emit()
+	_expect(run.reward.picks_left == 0 and run.reward.candidates.size() == 1 and run.deck.size() == 21, "one pick consumed")
+	_expect(not Meta.run.is_empty() and int(Meta.run["phase"]) == RunController.Phase.CLEAR and Meta.run["reward"]["picks_left"] == 0, "pick saved atomically")
+	var saved: Dictionary = JSON.parse_string(JSON.stringify(Meta.run))
+	game.free()
+	Meta.run = saved
+	Meta.resume_pending = true
+	var game2 := RUN_GAME.instantiate()
+	game2.set_physics_process(false)
+	add_child(game2)
+	var run2: RunController = game2.get_node("RunController")
+	_expect(run2.phase == RunController.Phase.CLEAR and game2.get_node("%ClearPanel").visible, "resumed into CLEAR with the panel open")
+	_expect(run2.reward.picks_left == 0 and run2.reward.candidates.size() == 1 and run2.deck.size() == 21, "consumed pick stays consumed after resume (no refund)")
+	_expect(game2.run_seed == 52 and run2.run_seed == 52, "run_game seed re-synced from the snapshot")
+	game2.get_node("%ClearPanel").get_node("%FinishButton").pressed.emit()
+	_expect(run2.phase == RunController.Phase.FORGE and run2.forge != null, "into FORGE")
+	var forge := run2.forge
+	forge.toggle_lock(forge.hand[0]["id"])
+	game2.get_node("%ForgePanel")._on_reroll()
+	var hand_ids := []
+	for t in forge.hand:
+		hand_ids.append(t["id"])
+	var state_before: int = forge.rng.state
+	_expect(int(Meta.run["phase"]) == RunController.Phase.FORGE and Meta.run["forge"]["rerolls_left"] == 1, "reroll saved")
+	saved = JSON.parse_string(JSON.stringify(Meta.run))
+	game2.free()
+	Meta.run = saved
+	Meta.resume_pending = true
+	var game3 := RUN_GAME.instantiate()
+	game3.set_physics_process(false)
+	add_child(game3)
+	var run3: RunController = game3.get_node("RunController")
+	var f3 := run3.forge
+	_expect(run3.phase == RunController.Phase.FORGE and f3 != null and game3.get_node("%ForgePanel").forge == f3, "the panel reopens the restored Forge, not a new deal")
+	var ids3 := []
+	for t in f3.hand:
+		ids3.append(t["id"])
+	_expect(ids3 == hand_ids and f3.locked == forge.locked and f3.rerolls_left == 1 and f3.restores_left == 1, "same hand/lock/reroll after resume")
+	_expect(f3.rng.state == state_before, "64-bit RNG state survives the JSON round trip")
+	_expect(game3.get_node("%ForgePanel").get_node("%HandRow").get_child_count() == 7, "panel shows the restored hand")
+	f3.restore(&"W01") if not f3.candidate_for(&"W01").is_empty() else f3.skip_restore()
+	saved = JSON.parse_string(JSON.stringify(run3.snapshot()))
+	var run4 := RunController.new()
+	run4.setup(db)
+	run4.load_snapshot(saved)
+	_expect(run4.forge.restores_left == 0 and run4.forge.restored_word == f3.restored_word, "restore state persists (no second restore after resume)")
+	run4.free()
+	game3.queue_free()

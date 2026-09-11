@@ -37,6 +37,8 @@ var build := BuildState.new()
 var pinned_word: StringName = &""
 var forge_fail_bonus: int = 0
 var forge: ForgeService
+## Live 자모 정리 model while in CLEAR (persisted so a resume keeps consumed picks, G14).
+var reward: RewardService
 ## Result-screen records (G9): words first restored this RUN, stability loss by cause,
 ## and the highest Wave actually cleared.
 var discovered: Array[StringName] = []
@@ -124,7 +126,9 @@ func on_purified(jamo: String) -> bool:
 ## Reward budget for the Wave just cleared (B4): 1 pick normally, 2 picks + 1 remove after
 ## a boss Wave. The very first W1 forbids 교체 so the guaranteed tutorial hand survives (G2).
 func build_reward() -> RewardService:
-	var reward := RewardService.new()
+	if reward != null and phase == Phase.CLEAR:
+		return reward
+	reward = RewardService.new()
 	var boss := is_boss_wave()
 	var picks := db.balance.reward_picks_boss if boss else db.balance.reward_picks_normal
 	if not boss:
@@ -149,6 +153,9 @@ func on_wave_cleared(heal: float = -1.0) -> bool:
 
 ## 자모 정리 done -> Forge.
 func finish_clear() -> bool:
+	if phase != Phase.CLEAR:
+		return _reject("finish_clear")
+	reward = null
 	return _go(Phase.CLEAR, Phase.FORGE)
 
 
@@ -179,6 +186,8 @@ func start_forge() -> ForgeService:
 	if phase != Phase.FORGE:
 		_reject("start_forge")
 		return null
+	if forge != null:
+		return forge  # resumed from a snapshot: same hand, counts and RNG (G14)
 	forge = ForgeService.new()
 	var tutorial: Array[String] = []
 	if first_run and wave == FIRST_WAVE:
@@ -364,6 +373,7 @@ func snapshot() -> Dictionary:
 	for id in discovered:
 		d["discovered"].append(String(id))
 	d["forge"] = forge.snapshot() if forge != null else {}
+	d["reward"] = reward.snapshot() if reward != null and phase == Phase.CLEAR else {}
 	return d
 
 
@@ -405,10 +415,15 @@ func load_snapshot(d: Dictionary) -> void:
 		target = Phase.WAVE_PREP
 	var from := phase
 	phase = target
+	forge = null
+	reward = null
 	if target == Phase.FORGE and not d.get("forge", {}).is_empty():
 		forge = ForgeService.new()
 		forge.load_snapshot(d["forge"], deck, db, build, word_pool())
 		forge.pinned = pinned_word
+	if target == Phase.CLEAR and not d.get("reward", {}).is_empty():
+		reward = RewardService.new()
+		reward.load_snapshot(d["reward"], deck)
 	gold_changed.emit(gold_run)
 	wave_changed.emit(wave)
 	stability_changed.emit(stability, stability_max)

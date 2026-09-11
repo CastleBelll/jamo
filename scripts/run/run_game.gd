@@ -50,6 +50,7 @@ func _ready() -> void:
 	if Meta.resume_pending and Meta.has_run():
 		Meta.resume_pending = false
 		run.load_snapshot(Meta.run)
+		run_seed = run.run_seed  # same spawn/drop streams as the interrupted RUN
 	else:
 		Meta.resume_pending = false
 		run.open_run_setup()

@@ -56,7 +56,7 @@ func add_guaranteed(jamo: String) -> void:
 
 
 func snapshot() -> Dictionary:
-	return {"drops": drops.duplicate(), "misses": misses, "rng_state": rng.state, "bonus": bonus}
+	return {"drops": drops.duplicate(), "misses": misses, "rng_state": str(rng.state), "bonus": bonus}
 
 
 func restore(d: Dictionary) -> void:
@@ -66,4 +66,4 @@ func restore(d: Dictionary) -> void:
 	misses = int(d.get("misses", 0))
 	bonus = float(d.get("bonus", 0.0))
 	if d.has("rng_state"):
-		rng.state = int(d["rng_state"])
+		rng.state = String(d["rng_state"]).to_int()
