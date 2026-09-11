@@ -2,18 +2,13 @@ extends Control
 
 ## RUN 결과 화면. Doc v0.4 section 35.
 ##
-## Phase 0 shows the minimum the spec calls for: the wave that was reached, the
-## kills, and the gold that was earned and kept. The rest of the section 35
-## readout - new codex words, mastery gains, compounds, bosses, the run build -
-## needs systems that do not exist yet and arrives with the phase that adds them.
+## Shows the minimum the spec calls for: the wave that was reached, the kills,
+## and the gold that was earned and kept. The rest of the section 35 readout -
+## new codex words, mastery gains, compounds, bosses, the run build - needs
+## systems that do not exist yet and arrives with the phase that adds them.
 ##
-## PHASE 1 REVERT POINT. The SubtitleLabel in run_result.tscn names the stand-in
-## failure condition - running out of energy - because the 문장핵 is Phase 1 work
-## and nothing damages it yet (see Main.end_run_when_energy_depleted). It used to
-## read "문장핵이 무너졌다..." while the HUD still showed 문장핵 20/20, which was a
-## lie on screen. When Phase 1 turns that flag off and the core becomes the real
-## failure, set the subtitle back to
-##   "문장핵이 무너졌다. 다음 RUN 은 WAVE 1 부터 시작한다."
+## The SubtitleLabel in run_result.tscn names the one failure condition there
+## is: the 문장핵 fell. Doc v0.4 section 35.
 
 signal hub_requested()
 

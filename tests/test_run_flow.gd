@@ -8,6 +8,10 @@ extends Node
 ## hub -> RUN 시작 -> Wave 1 -> defeat -> 결과 화면 -> 메인 허브로 - including the
 ## engine scene swaps, so a broken wiring fails here rather than in play.
 ##
+## Phase 1: the defeat is the 문장핵 falling, and nothing else. Running the
+## energy out first is part of the walk, to prove it ends nothing. Doc v0.4
+## sections 7.1 and 35.
+##
 ## Each loaded scene is installed as the tree's current scene, because that is
 ## what change_scene_to_file() replaces. The test node itself therefore has to
 ## stay off that slot, or the first press would free the test mid-run.
@@ -32,7 +36,7 @@ func _ready() -> void:
 
 	SaveManager.delete_save()
 	if _failures == 0:
-		print("OK - Wave 1 started, the run failed, and the hub came back.")
+		print("OK - Wave 1 started, the core fell, and the hub came back.")
 		get_tree().quit(0)
 	else:
 		printerr("FAILED - %d check(s) failed." % _failures)
@@ -126,9 +130,23 @@ func _run() -> void:
 		"gold earned during the run lands in MetaState straight away"
 	)
 
-	# Phase 0 stands the defeat in with energy exhaustion; see main.gd.
+	# Energy 0 is not a defeat. Doc v0.4 section 7.1.
 	while RunState.spend_click_energy():
 		pass
+	_check(RunState.current_energy == 0, "the energy was actually spent to 0")
+	for _i in 30:
+		await get_tree().process_frame
+	_check(RunState.is_active, "running out of energy must not end the run")
+	_check(
+		not result.visible,
+		"the result screen must not appear when only the energy is gone"
+	)
+
+	# The one failure there is: the 문장핵 falls. Hit through the real node.
+	var core: SentenceCore = main.get_node("World/GameWorld/SentenceCore")
+	_check(core != null, "main.tscn carries the SentenceCore (doc v0.4 section 6.1)")
+	core.take_hit(RunState.core_max_hp)
+	_check(not RunState.is_active, "the core reaching 0 HP ends the run at once")
 	var waited := 0
 	while not result.visible and waited < WAIT_FRAME_BUDGET:
 		await get_tree().process_frame

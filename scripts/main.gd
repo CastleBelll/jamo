@@ -5,6 +5,10 @@ extends Node
 ##
 ## Main Hub -> RUN 시작 -> Wave 1 -> ... -> 문장핵 HP 0 -> 결과 화면 -> Main Hub.
 ## A failed run clears RunState; MetaState is never touched by a defeat.
+##
+## The waves themselves are run by WaveController; the only failure is the
+## 문장핵 reaching 0 HP, which RunState reports through SignalBus.run_failed.
+## Running out of energy ends nothing. Doc v0.4 sections 7.1 and 35.
 
 ## Scene the pause menu and the result screen go back to. Exported so the entry
 ## point can be repointed in the Inspector instead of in code.
@@ -13,14 +17,6 @@ extends Node
 ## Opacity of the screen dim shown behind the result panel.
 @export_range(0.0, 1.0, 0.01) var dim_opacity: float = 0.55
 @export_range(0.0, 2.0, 0.05) var dim_fade_seconds: float = 0.35
-
-## TEMPORARY, Phase 0 only. The 문장핵 is Phase 1 work, so nothing damages the
-## core yet and a run could never end. Until the wave controller exists, running
-## out of manual energy stands in for the core falling, which is what makes the
-## Phase 0 completion criterion - start Wave 1, fail, return to the hub -
-## reachable. Doc v0.4 section 7.1 is explicit that energy 0 must NOT end a wave
-## once real waves exist, so this has to be turned off in Phase 1.
-@export var end_run_when_energy_depleted: bool = true
 
 @onready var _world: Node3D = $World/GameWorld
 @onready var _hud: Control = $UI/HUD
@@ -33,7 +29,7 @@ var _run_ending: bool = false
 
 
 func _ready() -> void:
-	SignalBus.energy_depleted.connect(_on_energy_depleted)
+	SignalBus.run_failed.connect(_on_run_failed)
 	_hud.settings_pressed.connect(_settings.open)
 	_hud.pause_pressed.connect(_pause_menu.open)
 	_hud.codex_pressed.connect(_on_codex_pressed)
@@ -62,34 +58,28 @@ func _unhandled_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
-func _on_energy_depleted() -> void:
-	if not end_run_when_energy_depleted:
-		return
-	_fail_run()
-
-
-## Doc v0.4 section 35: the run ends, the RunState on disk is dropped, the
-## result is shown, and the player goes back to the hub.
-func _fail_run() -> void:
-	if _run_ending or not RunState.is_active:
+## Doc v0.4 section 35: the 문장핵 fell, RunState has already closed the run,
+## the RunState on disk is dropped, the result is shown, and the player goes
+## back to the hub.
+func _on_run_failed(wave: int, _kills: int, _gold_earned: float, is_record: bool) -> void:
+	if _run_ending:
 		return
 	_run_ending = true
-	# Let lingering damage-over-time resolve first; a kill it lands still pays.
+	_world.spawn_manager.stop()
+	# Let lingering damage-over-time resolve first; a kill it lands still pays
+	# into MetaState and into the counters the result screen reads below.
 	await get_tree().create_timer(MetaState.balance.run_end_settle_seconds).timeout
 
-	var reached_wave := RunState.current_wave
 	var kills := int(RunState.get_run_statistic("kills"))
 	var gold_earned := RunState.get_run_statistic("gold_earned")
-	var is_record := reached_wave > MetaState.highest_wave
 
-	RunState.end_run()
 	_world.spawn_manager.clear_field()
 	# The run leaves the disk before the result screen appears, so quitting out
 	# of the result cannot resurrect a run that already failed.
 	SaveManager.clear_run()
 
 	_set_dim(true)
-	_run_result.open(reached_wave, kills, gold_earned, is_record)
+	_run_result.open(wave, kills, gold_earned, is_record)
 
 
 func _on_codex_pressed() -> void:

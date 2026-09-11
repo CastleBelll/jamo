@@ -4,17 +4,14 @@
 
 [resource]
 script = ExtResource("1_script")
-start_max_energy = 20
+start_max_energy = 10
 click_energy_cost = 1
 low_energy_warning = 3
 base_click_damage = 1.0
 base_crit_multiplier = 2.0
-base_monster_hp = 3.0
-hp_growth_per_wave = 1.035
+base_monster_hp = 1.0
 base_monster_gold = 2.0
-gold_growth_per_wave = 1.035
 base_monster_capacity = 8
-special_spawn_chance = 0.02
 golden_spawn_chance = 0.02
 base_jamo_candidates = 2
 base_core_hp = 20.0

@@ -5,6 +5,12 @@ extends Control
 ## there is nothing to equip until the slot board arrives in Phase 2, so the
 ## rows are authored in hud.tscn and simply report an empty build for now.
 
+## Fraction of max 문장핵 HP below which the readout is tinted as a warning.
+const CORE_LOW_FRACTION := 0.25
+## Warning line while manual clicks are nearly out, and the line shown at 0.
+const ENERGY_LOW_TEXT := "⚠ 에너지 부족"
+const ENERGY_EMPTY_TEXT := "수동 클릭 불가 — WAVE 는 계속된다"
+
 signal codex_pressed()
 signal settings_pressed()
 signal pause_pressed()
@@ -23,6 +29,9 @@ signal pause_pressed()
 @onready var _energy_warn_anim: AnimationPlayer = %EnergyWarnAnim
 @onready var _gold_label: Label = %GoldLabel
 @onready var _kills_label: Label = %KillsLabel
+## The Wave Clear beat: a label the animation fades in and out. Doc v0.4 §31.
+@onready var _wave_clear_label: Label = %WaveClearLabel
+@onready var _wave_clear_anim: AnimationPlayer = %WaveClearAnim
 ## One static row per equipped word slot; the script only shows, hides and fills
 ## them, it never creates nodes. Doc v0.4 section 46.
 @onready var _word_rows: Array[Label] = [
@@ -34,6 +43,7 @@ signal pause_pressed()
 
 func _ready() -> void:
 	SignalBus.wave_started.connect(_on_wave_started)
+	SignalBus.wave_cleared.connect(_on_wave_cleared)
 	SignalBus.core_hp_changed.connect(_on_core_hp_changed)
 	SignalBus.energy_changed.connect(_on_energy_changed)
 	SignalBus.gold_changed.connect(_on_gold_changed)
@@ -83,12 +93,21 @@ func _on_wave_started(wave: int) -> void:
 	_refresh_equipped_words()
 
 
+func _on_wave_cleared(wave: int) -> void:
+	_wave_clear_label.text = "WAVE %d CLEAR" % wave
+	_wave_clear_anim.stop()
+	_wave_clear_anim.play(&"wave_clear")
+
+
 ## The 문장핵 readout. The number is always spelled out, so the bar is a
 ## reinforcement rather than the only cue. Doc v0.4 section 6.1.
 func _on_core_hp_changed(current: float, maximum: float) -> void:
 	_core_label.text = "문장핵 %d / %d" % [int(ceilf(current)), int(ceilf(maximum))]
 	_core_bar.max_value = maxf(1.0, maximum)
 	_core_bar.value = current
+	# Tint is a reinforcement of the number, never the only cue.
+	var low := maximum > 0.0 and current / maximum <= CORE_LOW_FRACTION
+	_core_label.modulate = Color(0.72, 0.27, 0.18) if low else Color.WHITE
 
 
 func _on_energy_changed(current: int, maximum: int) -> void:
@@ -97,8 +116,16 @@ func _on_energy_changed(current: int, maximum: int) -> void:
 	_energy_bar.value = current
 	# Colour is a reinforcement, never the only cue: the number is always there.
 	var low := current <= MetaState.balance.low_energy_warning and current > 0
-	_energy_label.modulate = Color(0.72, 0.27, 0.18) if low else Color.WHITE
+	_energy_label.modulate = Color(0.72, 0.27, 0.18) if low or current <= 0 else Color.WHITE
 	_set_low_energy_warning(low)
+	# At 0 the text says what the rule is, so nobody reads the wave going on
+	# as a bug. Doc v0.4 section 7.1.
+	if current <= 0:
+		_energy_warn_label.text = ENERGY_EMPTY_TEXT
+		_energy_warn_label.modulate = Color.WHITE
+		_energy_warn_label.visible = true
+	else:
+		_energy_warn_label.text = ENERGY_LOW_TEXT
 	# Stopped first so a fast click streak restarts the punch every time
 	# instead of resuming the one already in flight.
 	_energy_pulse_anim.stop()

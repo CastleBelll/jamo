@@ -20,10 +20,11 @@ enum Availability {
 }
 
 
-## Every real track is listed. The locks that remain are spelled out in the row
-## rather than hiding it, so the shop never looks shorter than it is.
+## Every live track is listed. The locks that remain are spelled out in the row
+## rather than hiding it, so the shop never looks shorter than it is. A retired
+## track is the one exception: nothing reads it, so selling it would be a scam.
 static func is_visible(upgrade: UpgradeData) -> bool:
-	return upgrade != null
+	return upgrade != null and not upgrade.is_retired
 
 
 static func get_availability(upgrade: UpgradeData) -> Availability:
@@ -44,7 +45,7 @@ static func get_availability(upgrade: UpgradeData) -> Availability:
 
 ## Buys one level. Returns true when the purchase went through.
 static func purchase(upgrade: UpgradeData) -> bool:
-	if get_availability(upgrade) != Availability.AVAILABLE:
+	if not is_visible(upgrade) or get_availability(upgrade) != Availability.AVAILABLE:
 		return false
 	var level := MetaState.get_upgrade_level(upgrade.id)
 	var cost := upgrade.cost_for_next(level)

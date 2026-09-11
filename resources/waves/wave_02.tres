@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WaveData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wave_data.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_giyeok.tscn" id="2_giyeok"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_digeut.tscn" id="3_digeut"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_mieum.tscn" id="4_mieum"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_siot.tscn" id="5_siot"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_ieung.tscn" id="6_ieung"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/monster_i.tscn" id="7_i"]
+
+[resource]
+script = ExtResource("1_script")
+wave_number = 2
+enemy_pool = Array[PackedScene]([ExtResource("2_giyeok"), ExtResource("3_digeut"), ExtResource("4_mieum"), ExtResource("5_siot"), ExtResource("6_ieung"), ExtResource("7_i")])
+enemy_count = 7
+spawn_interval = 1.0
+max_alive = 4
+hp_multiplier = 1.0
+speed_multiplier = 1.05
+gold_multiplier = 1.1
+special_spawn_rate = 0.0
+wave_type = 0
+boss_id = &""
+reward_tier = 1

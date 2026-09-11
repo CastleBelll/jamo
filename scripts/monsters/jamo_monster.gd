@@ -1,8 +1,10 @@
 class_name JamoMonster
 extends CharacterBody3D
 
-## A living hangul letter. It never attacks the player; it only wanders so that
-## picking a click target has texture. Doc v0.3 sections 4 and 8.2.
+## A living hangul letter. It walks toward the 문장핵 with its own gait and
+## hurts the core when it gets there; the player clicks it before that.
+## Doc v0.4 sections 6.1 and 15. The v0.3 walk personalities are untouched -
+## only the destination changed from a random point to the core.
 ##
 ## The script owns state and speed. The bounce, squash and tilt of each walk
 ## live in the AnimationPlayer, so the feel is tuned in the editor timeline.
@@ -35,6 +37,10 @@ const MIN_WALKABLE_HALF_EXTENT := 0.5
 ## it by its own body footprint in get_walkable_half_extents().
 ## SpawnManager overwrites this at spawn time.
 @export var arena_half_extents: Vector2 = Vector2(3.95, 3.95)
+## The 문장핵 this monster walks to. Left empty the monster wanders the arena
+## as it did in v0.3, which the arena harnesses rely on. SpawnManager sets it
+## at spawn time. Doc v0.4 section 6.1.
+@export var objective: SentenceCore
 
 @onready var _visual_root: Node3D = $VisualRoot
 @onready var _click_shape: CollisionShape3D = $ClickArea/CollisionShape3D
@@ -67,6 +73,11 @@ var _state: State = State.SPAWN
 var _profile: MotionProfile
 var _speed: float = 1.0
 var _target: Vector3 = Vector3.ZERO
+## Seconds left in the current SPAWN / IDLE / TURN. This timer, ticked from
+## _physics_process, is the only thing that moves the monster out of those
+## states. animation_finished is not trusted for it: AnimationPlayer never
+## reports an animation that play() replaced, so a hit reaction landing during
+## "turn" used to eat the signal and park the monster in TURN for good.
 var _state_timer: float = 0.0
 var _avoidance_timer: float = 0.0
 var _separation: Vector3 = Vector3.ZERO
@@ -88,8 +99,12 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 
+	# Wave speed scaling multiplies the gait, it never replaces it: the six
+	# walk personalities stay exactly as tuned. Doc v0.4 sections 5.2 and 15.
+	var wave: WaveData = RunState.get_current_wave_data()
+	var wave_speed: float = wave.speed_multiplier if wave != null else 1.0
 	_speed = monster_data.base_speed * _profile.move_speed_multiplier \
-		* monster_data.speed_multiplier
+		* monster_data.speed_multiplier * wave_speed
 	_lifetime_left = monster_data.lifetime_seconds
 	_visual_root.scale = Vector3.ONE * monster_data.visual_scale
 	_collect_body_meshes()
@@ -100,13 +115,14 @@ func _ready() -> void:
 	_status.tick_damage.connect(_on_status_tick_damage)
 	_status.effects_changed.connect(_on_effects_changed)
 	_animation.animation_finished.connect(_on_animation_finished)
-	_animation.play(&"spawn")
+	_begin_spawn()
 
 
-## HP and gold both scale with the current wave. Doc v0.4 section 5.2.
+## HP and gold both scale with the current WaveData. Doc v0.4 sections 5.2, 25.
 func _roll_stats() -> void:
-	max_hp = MetaState.balance.monster_hp_for_wave(RunState.current_wave) \
-		* monster_data.hp_multiplier
+	max_hp = MetaState.balance.monster_hp_for_wave(
+		RunState.get_current_wave_data(), monster_data.hp_multiplier
+	)
 	hp = max_hp
 
 
@@ -136,13 +152,28 @@ func _physics_process(delta: float) -> void:
 			_expire()
 			return
 	match _state:
+		State.SPAWN:
+			_process_hold(delta, _begin_idle)
 		State.IDLE:
 			_process_idle(delta)
 		State.WALK:
 			_process_walk(delta)
+		State.TURN:
+			_process_hold(delta, _begin_walk)
 		_:
 			velocity = Vector3.ZERO
 			move_and_slide()
+
+
+## SPAWN and TURN stand still for the length of their animation and then move
+## on, whatever the AnimationPlayer is showing by then. Every state the monster
+## can be in therefore has a physics branch that leads somewhere.
+func _process_hold(delta: float, next_state: Callable) -> void:
+	velocity = Vector3.ZERO
+	move_and_slide()
+	_state_timer -= delta
+	if _state_timer <= 0.0:
+		next_state.call()
 
 
 func _process_idle(delta: float) -> void:
@@ -159,6 +190,10 @@ func _process_idle(delta: float) -> void:
 
 func _process_walk(delta: float) -> void:
 	_update_separation(delta)
+	# One distance check against a single cached node, never a search.
+	if objective != null and _is_at_objective():
+		_reach_objective()
+		return
 	var to_target := _target - global_position
 	to_target.y = 0.0
 	if to_target.length() <= ARRIVAL_DISTANCE:
@@ -192,6 +227,13 @@ func _update_separation(delta: float) -> void:
 			_separation += offset / distance * (1.0 - distance / radius)
 
 
+func _begin_spawn() -> void:
+	_state = State.SPAWN
+	_state_timer = _animation_length(&"spawn")
+	_animation.speed_scale = 1.0
+	_animation.play(&"spawn")
+
+
 func _begin_idle() -> void:
 	_state = State.IDLE
 	_state_timer = randf_range(_profile.idle_min, _profile.idle_max)
@@ -200,8 +242,19 @@ func _begin_idle() -> void:
 
 func _begin_turn() -> void:
 	_state = State.TURN
+	_state_timer = _animation_length(&"turn")
 	_target = _pick_target()
+	_animation.speed_scale = 1.0
 	_animation.play(&"turn")
+
+
+## How long a one-shot animation holds its state. A missing animation holds
+## for nothing, so the state falls through on the next physics frame instead
+## of waiting for a signal that will never come.
+func _animation_length(anim_name: StringName) -> float:
+	if not _animation.has_animation(anim_name):
+		return 0.0
+	return _animation.get_animation(anim_name).length
 
 
 func _begin_walk() -> void:
@@ -211,8 +264,31 @@ func _begin_walk() -> void:
 	_animation.speed_scale = _profile.step_frequency
 
 
+## Where the next walk goes: the 문장핵, pulled onto this monster's own
+## walkable diamond so the clamp and the destination never disagree. With no
+## objective the v0.3 wander is kept as is. Doc v0.4 section 15.
 func _pick_target() -> Vector3:
-	return random_point_in_arena(get_walkable_half_extents(), global_position.y)
+	var extents := get_walkable_half_extents()
+	if objective == null:
+		return random_point_in_arena(extents, global_position.y)
+	var goal := objective.global_position
+	goal.y = global_position.y
+	return clamp_point_to_arena(goal, extents)
+
+
+func _is_at_objective() -> bool:
+	var offset := objective.global_position - global_position
+	offset.y = 0.0
+	return offset.length() <= objective.reach_radius
+
+
+## The monster got through: it hurts the core and leaves without paying gold.
+## Doc v0.4 section 6.1.
+func _reach_objective() -> void:
+	if _state == State.DEAD:
+		return
+	objective.take_hit(monster_data.core_damage)
+	_expire()
 
 
 ## Widest horizontal half-extents of the glyph seen so far, in metres.
@@ -267,13 +343,17 @@ func _measure_body() -> void:
 ## faster than it picks a new target. Doc v0.3 section 27.
 func _clamp_to_arena() -> void:
 	_measure_body()
-	var extents := get_walkable_half_extents()
-	var spill := absf(global_position.x) / extents.x + absf(global_position.z) / extents.y
+	global_position = clamp_point_to_arena(global_position, get_walkable_half_extents())
+
+
+## Pulls a point back onto the diamond abs(x) / hx + abs(z) / hz <= 1 along the
+## line to the centre, leaving y alone. Shared by the walk clamp, the target
+## pick and the spawner so all three agree on the edge.
+static func clamp_point_to_arena(point: Vector3, half_extents: Vector2) -> Vector3:
+	var spill := absf(point.x) / half_extents.x + absf(point.z) / half_extents.y
 	if spill <= 1.0:
-		return
-	global_position = Vector3(
-		global_position.x / spill, global_position.y, global_position.z / spill
-	)
+		return point
+	return Vector3(point.x / spill, point.y, point.z / spill)
 
 
 ## Uniform random point inside the diamond footprint of the rotated arena slab.
@@ -291,28 +371,32 @@ func _play_if_not_current(anim_name: StringName) -> void:
 		_animation.play(anim_name)
 
 
+## Only the visuals hang off this signal. No state transition does: SPAWN and
+## TURN run on _state_timer, so a "hit" that replaces their animation changes
+## what is drawn, never where the state machine goes next.
 func _on_animation_finished(anim_name: StringName) -> void:
 	if _state == State.DEAD:
 		if anim_name == &"death":
 			queue_free()
 		return
-	match anim_name:
-		&"spawn":
-			_begin_idle()
-		&"turn":
-			_begin_walk()
-		&"hit":
-			# Resume whatever the monster was doing before it was clicked.
-			if _state == State.WALK:
-				_begin_walk()
-			else:
-				_play_if_not_current(&"idle")
+	if anim_name != &"hit":
+		return
+	# Put the current state's own look back after the click reaction.
+	if _state == State.WALK:
+		_begin_walk()
+	else:
+		_play_if_not_current(&"idle")
 
 
 # --- Damage ----------------------------------------------------------------
 
 func is_alive() -> bool:
 	return _state != State.DEAD
+
+
+## Where the state machine is, for the spawner's stall report and the tests.
+func get_state() -> State:
+	return _state
 
 
 ## World position where hit feedback should appear.
@@ -389,8 +473,9 @@ func _die() -> void:
 	died.emit(self)
 
 
-## The monster ran out of lifetime_seconds and leaves without being killed, so
-## it pays no gold and its burn does not spread. Doc v0.3 section 9.3.
+## The monster leaves without being killed - its lifetime_seconds ran out or it
+## reached the 문장핵 - so it pays no gold and its burn does not spread.
+## Doc v0.3 section 9.3, doc v0.4 section 6.1.
 func _expire() -> void:
 	if _state == State.DEAD:
 		return
@@ -417,6 +502,6 @@ func _leave_field() -> void:
 ## multiplier already folds the permanent track and the run words together.
 ## Doc v0.4 section 8.
 func _calculate_gold_reward() -> float:
-	return MetaState.balance.monster_gold_for_wave(RunState.current_wave) \
-		* monster_data.gold_multiplier \
-		* RunState.get_gold_multiplier()
+	return MetaState.balance.monster_gold_for_wave(
+		RunState.get_current_wave_data(), monster_data.gold_multiplier
+	) * RunState.get_gold_multiplier()

@@ -12,6 +12,10 @@ extends Node
 ## Path: Main Hub -> RUN 시작 -> Wave 1 -> defeat -> result -> Main Hub,
 ## then suspend/resume, then a v0.3 save migration.
 ##
+## Phase 1: the energy is still clicked down to 0 with real clicks, but that
+## no longer ends anything (doc v0.4 section 7.1) - the harness checks the run
+## keeps going, then fells the 문장핵 through its real node (section 35).
+##
 ## Run windowed (NOT --headless):
 ##   godot --path . res://tests/qa_p0_flow.tscn
 ## The player save is stashed and put back, so nothing on disk is destroyed.
@@ -115,7 +119,10 @@ func _walk_the_phase_0_path() -> void:
 		"the energy actually reached 0, got %d" % RunState.current_energy)
 	_check(MetaState.gold > gold_before,
 		"killing monsters banked gold into MetaState during the run")
+	await _shoot("energy_zero_wave_continues")
+	await _check_energy_zero_keeps_the_wave_going(main)
 	var earned: float = MetaState.gold - gold_before
+	await _fell_the_core(main)
 
 	print("-- 4. result screen")
 	var waited: int = 0
@@ -214,6 +221,8 @@ func _walk_the_suspend_and_resume_path() -> void:
 
 	print("-- 8. lose the resumed run: it must not be resumable again")
 	await _drain_energy_by_clicking()
+	await _check_energy_zero_keeps_the_wave_going(main2)
+	await _fell_the_core(main2)
 	var result: Control = main2.get_node("UI/RunResult")
 	var waited: int = 0
 	while not result.visible and waited < WAIT_FRAME_BUDGET:
@@ -449,6 +458,32 @@ func _report_growth(hub: Node) -> void:
 		hub.get_node("%StatGoldValue").text, hub.get_node("%StatWaveValue").text,
 		hub.get_node("%StatWordsValue").text, hub.get_node("%StatBossValue").text,
 	])
+
+
+# --- Phase 1: energy 0 is not a defeat, the 문장핵 falling is -----------------
+
+## Doc v0.4 section 7.1: with the energy gone the wave goes on. The spawner is
+## still spawning, the run is still live, and no result screen is up.
+func _check_energy_zero_keeps_the_wave_going(main: Node) -> void:
+	var spawner: SpawnManager = main.get_node("World/GameWorld/SpawnManager")
+	var result: Control = main.get_node("UI/RunResult")
+	await _settle()
+	_check(RunState.is_active, "energy 0 must not end the run (doc v0.4 section 7.1)")
+	_check(not result.visible, "no result screen appears on energy 0")
+	_check(spawner.is_spawning(), "the spawner keeps the wave going at energy 0")
+	_check(not RunState.can_click(), "manual clicks are refused at energy 0")
+	print("    energy 0: wave %d still running, core %d / %d" % [
+		RunState.current_wave, int(RunState.core_hp), int(RunState.core_max_hp),
+	])
+
+
+## Doc v0.4 section 35: the only failure. Through the real SentenceCore node,
+## so the hit feedback path is exercised as well.
+func _fell_the_core(main: Node) -> void:
+	var core: SentenceCore = main.get_node("World/GameWorld/SentenceCore")
+	_check(core != null, "the arena carries the SentenceCore")
+	core.take_hit(RunState.core_hp)
+	_check(not RunState.is_active, "the core reaching 0 HP ends the run")
 
 
 # --- Real input -------------------------------------------------------------

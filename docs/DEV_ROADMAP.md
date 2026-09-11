@@ -50,7 +50,7 @@ v0.4 는 장르 전환이다. 기존 코드를 전부 버리지 않고 다음과
 - [~] S8 타이틀 → Main Hub 로 전환, RUN 진입/복귀 경로
 - [~] 완료 기준: **Wave 1 을 시작하고 실패 후 Main Hub 로 돌아올 수 있다**
 
-### P0 에서 P1 으로 넘긴 임시 처리
+### P0 에서 P1 으로 넘긴 임시 처리 — P1 에서 전부 처리함
 
 - **Wave 곡선**: HP `3 × 1.035^(Wave-1)`, Gold `2 × 1.035^(Wave-1)` — Day 곡선을
   Wave 에 1:1 로 임시 매핑한 값이다. §5.2 가 요구하는 속도·동시 수·특수 비율·스폰 속도
@@ -81,20 +81,66 @@ v0.4 는 장르 전환이다. 기존 코드를 전부 버리지 않고 다음과
   ("에너지가 바닥나 RUN 이 끝났다"). 되돌릴 지점은 아래 P1 목록에 있다.
 - [x] 총지휘자 승인: Wave 곡선을 Day 곡선 1:1 임시 매핑한 것은 P0 한정으로 허용. P1/P12 에서 재산출
 
-## P1. Wave 전투  `[~]`
+## P1. Wave 전투  `[x]`
 
 근거: §5, §6, §7, §25, §48 Phase 1
 
-- [ ] S1 `scenes/objective/sentence_core.tscn` — 문장핵, HP, 피격 연출
-- [ ] S2 자모 적이 문장핵으로 접근하는 AI (기존 보행 프로필 유지, 목적지만 변경)
-- [ ] S3 `WaveData.tres` 스키마 + Wave 1~5 데이터 (§25)
-- [ ] S4 `wave_controller` — Spawn / Clear / Fail 판정
-- [ ] S5 Wave Energy 재설계 — Max 10, Wave Clear 시 회복, 0 이어도 DoT·자동공격 계속 (§7)
-- [ ] S6 문장핵 HP 0 → RUN 종료 → 결과 화면 → Main Hub (§35)
-- [ ] S7 RUN Gold 는 실패해도 영구 Gold 에 가산 (§14)
-- [ ] 완료 기준: **Wave 1~5 를 플레이할 수 있다**
+- [~] S1 `scenes/objective/sentence_core.tscn` — 문장핵, HP, 피격 연출 (임시 프리미티브, `VisualRoot` 교체 지점)
+- [~] S2 자모 적이 문장핵으로 접근하는 AI (기존 보행 프로필 유지, 목적지만 변경, 도달 시 `core_damage`)
+- [~] S3 `WaveData.tres` 스키마 + Wave 1~5 데이터 (`resources/waves/`, §25)
+- [~] S4 `scenes/run/wave_controller.tscn` — Spawn / Clear / Fail 판정, P2 훅 `_between_waves()`
+- [~] S5 Wave Energy 재설계 — Max 10, Wave Clear 시 회복, 0 이어도 DoT·자동공격 계속 (§7)
+- [~] S6 문장핵 HP 0 → RUN 종료 → 결과 화면 → Main Hub (§35). `end_run_when_energy_depleted` 제거
+- [~] S7 RUN Gold 는 실패해도 영구 Gold 에 가산 (§14) — `tests/test_wave_combat` 가 검증
+- [~] 완료 기준: **Wave 1~5 를 플레이할 수 있다**
 
-## P2. 자모 슬롯 보드 (Word Forge)  `[ ]`
+### P1 Wave 1~5 곡선 근거 (P12 재산출 전까지의 기준)
+
+에너지 10 / 클릭 피해 1 / 문장핵 HP 20 / 몬스터 HP `base 1 × WaveData.hp_multiplier` 를 전제로 한다.
+
+| Wave | 수 | 간격 | 동시 | HP× | 속도× | Gold× | 특수 | 클릭만으로 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 5 | 1.2s | 3 | 1 | 1.00 | 1.00 | 0 | 전멸 가능 (5 클릭) |
+| 2 | 7 | 1.0s | 4 | 1 | 1.05 | 1.10 | 0 | 전멸 가능 (7 클릭) |
+| 3 | 8 | 0.9s | 4 | 2 | 1.10 | 1.25 | 5% | 5 처치, 3 누수 |
+| 4 | 9 | 0.8s | 5 | 2 | 1.15 | 1.40 | 8% | 5 처치, 4 누수 |
+| 5 | 10 | 0.7s | 6 | 3 | 1.20 | 1.60 | 10% | 3 처치, 7 누수 |
+
+- §53 "초반은 빠르게": Wave 1~2 는 에너지만으로 전멸 가능해 손맛을 잡는 구간이다.
+- §7.1 "같은 에너지로 더 많은 압박을 처리하는 빌드": Wave 3 부터 총 HP 가 에너지 10 을
+  넘어 무엇을 클릭할지 고르게 된다. 단어(P2) 없이는 Wave 5 까지 누수 합계 14 < 문장핵 20 이라
+  살아남고, Wave 6~7 에서 실패한다. 실패 후 영구 성장으로 재도전하는 §53 루프가 성립한다.
+- §5.2: HP 만 올리지 않는다. 수 / 간격 / 동시 수 / 속도 / 특수 비율이 매 Wave 같이 오른다.
+- Day 곡선(`3 × 1.035^n`) 은 어디에도 남지 않았다. `hp_growth_per_wave` / `gold_growth_per_wave` 삭제.
+- Wave 6 이상은 `GameDatabase.find_wave()` 가 마지막 작성 Wave(5) 를 반복한다. P9 가 Wave 5
+  중간보스를, P12 가 곡선을 확장한다.
+
+### P1 에서 P2 이후로 넘긴 것
+
+- **Wave Clear 사이 단계 없음**: `WaveController._between_waves()` 가 빈 훅이다. P2 가 보상
+  선택과 Word Forge 를 여기에 끼운다 (§31).
+- **문장핵 애셋**: `sentence_core.tscn` 의 `VisualRoot` 아래 실린더+큐브 프리미티브. blender
+  워크트리의 애셋이 오면 그 자식만 교체한다.
+- **`monster_capacity` 업그레이드가 무효**: 동시 수는 `WaveData.max_alive` 가 결정한다.
+  `MetaState.get_monster_capacity()` 는 F5 하네스만 쓴다. P1-DEV-2 에서
+  `UpgradeData.is_retired = true` 로 상점에서 숨기고 구매를 막았다 (트랙·저장 레벨은 유지).
+  P5 업그레이드 정리 때 트랙 자체를 삭제한다.
+- **`max_energy.tres` 값을 11~20 으로 옮겼다** (기본 10 기준). 가격 재산출은 P5.
+- **Core HP 업그레이드 트랙 `.tres` 없음**: `MetaState.get_core_max_hp()` 가 `core_hp` id 를
+  읽는 구조만 있다. P5 가 트랙을 만든다 (§13.1).
+- **RUN 이어하기는 남은 몬스터만 다시 스폰한다** (P1-DEV-2). `RunState.wave_resolved_count`
+  가 그 Wave 에서 처치·도달로 정리된 수를 세고 저장되며, `SpawnManager.configure_wave()` 가
+  그 수만큼 건너뛴다. 에너지는 저장값 유지. 중단 시점에 살아 있던 개체는 스폰 지점에서
+  풀 HP 로 다시 나온다 (부분 피해만 유실, 처치·골드는 보존). 에너지 회복 방식은 처치 골드가
+  즉시 적립되는 §14 와 맞물려 중단/재개 반복으로 골드를 무한히 캘 수 있어 채택하지 않았다.
+
+### P1 이월 (LOW)
+- [ ] `spawn_manager.gd:358` 삼항 타입 불일치 에디터 경고
+- [ ] Core HP 영구 업그레이드 `.tres` 미작성 (읽기 구조만, P5)
+- [ ] `max_energy.tres` 값 11~20 정정 필요 (가격은 P5)
+- [ ] Wave 6+ 는 마지막 Wave 반복 (P9/P12 에서 확장)
+
+## P2. 자모 슬롯 보드 (Word Forge)  `[~]`
 
 근거: §2.1, §2.4, §9, §32, §48 Phase 2
 

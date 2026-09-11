@@ -9,12 +9,17 @@ signal gold_changed(total: float)
 signal energy_changed(current: int, maximum: int)
 ## Emitted when a wave begins. Fired after the refill. Doc v0.4 section 5.
 signal wave_started(wave: int)
+## Every enemy of the wave was killed or reached the core. The next wave
+## follows after the clear beat. Doc v0.4 section 31.
+signal wave_cleared(wave: int)
 ## Energy hit zero. Damage-over-time and automatic effects keep running.
 signal energy_depleted()
 ## The 문장핵 took damage. Doc v0.4 section 6.1.
 signal core_hp_changed(current: float, maximum: float)
-## The run ended. RunState is already inactive; the result screen reads these.
-signal run_failed(wave: int, kills: int, gold_earned: float)
+## The run ended because the 문장핵 fell - the only way a run ends. RunState is
+## already inactive; the result screen reads these. `is_record` is true when
+## the reached wave beat MetaState.highest_wave. Doc v0.4 section 35.
+signal run_failed(wave: int, kills: int, gold_earned: float, is_record: bool)
 
 ## A monster died. `gold` is the amount already granted to the player.
 signal monster_killed(jamo: String, gold: float, world_position: Vector3)

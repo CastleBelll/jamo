@@ -111,9 +111,11 @@ v0.3 기반으로 완료했던 F1~F9 이력은 `docs/DEV_ROADMAP_v03_archive.md`
 
 - **회귀 항목 4번이 바뀌었다**: "Day 1 → Day 2 기본 루프" 는 더 이상 존재하지 않는다.
   대신 **Main Hub → RUN 시작 → Wave 1 → 실패 → 결과 화면 → Main Hub** 를 확인한다.
-- **헤드리스로 돌 수 있는 테스트는 2개다**: `tests/test_state_split.tscn`,
-  `tests/test_run_flow.tscn`. 둘 다 `godot --headless --path . res://tests/<x>.tscn` 로
-  돌리고 exit 0 이어야 한다.
+- **헤드리스로 돌 수 있는 테스트는 4개다**: `tests/test_state_split.tscn`,
+  `tests/test_run_flow.tscn`, `tests/test_wave_combat.tscn` (P1 신설),
+  `tests/test_monster_state.tscn` (P1-DEV-2 신설, 몬스터 상태기계 잠김 방지 + negative control).
+  전부 `godot --headless --path . res://tests/<x>.tscn` 로 돌리고 exit 0 이어야 한다.
+  QA 재현 하네스 `tests/qa_p1_stall.tscn` / `qa_p1_negctl.tscn` 도 헤드리스로 돌고 exit 0 이어야 한다.
 - **스크린샷 하네스는 헤드리스에서 돌지 않는다**: `qa_f7_*` / `qa_f8_*` / `qa_p0_*` 는
   `await RenderingServer.frame_post_draw` 를 쓰기 때문에 `--headless` 에서 영원히 멈춘다.
   창 모드(`godot --path . res://tests/<x>.tscn`)로 돌려야 한다. 이는 P0 이전부터 그랬다.
@@ -133,6 +135,28 @@ v0.3 기반으로 완료했던 F1~F9 이력은 `docs/DEV_ROADMAP_v03_archive.md`
   같은 폴더 `README.md` 에 Phase 별로 적혀 있다. 삭제하지 말 것.
 - **폰트 누락 에러는 기존 이슈다**: `res://art/fonts/NotoSansKR-Regular.ttf` 없음.
   P0 범위가 아니다.
+
+### 7.2 P1 이후 QA 가 알아야 할 것 (P1 사이클에서 확정)
+
+- **실패 조건은 문장핵 HP 0 하나다** (§35). 에너지 0 은 수동 클릭만 막고 Wave 는 계속된다
+  (§7.1). `qa_p0_flow` 3단계와 `test_wave_combat` 가 이것을 직접 잰다. 에너지 0 에서 결과
+  화면이 뜨면 FAIL.
+- **Wave 수치는 전부 `resources/waves/wave_0N.tres`** 다. 스크립트에서 Wave 수치를 찾으면 FAIL.
+- **`qa_f5_*` 하네스는 문장핵 없이(objective = null) 돈다.** F5 가 재는 것은 배회 클램프라서
+  `_free_roam()` 으로 스폰만 무한 Wave 로 대체했다. 실제 플레이는 문장핵으로 걸어간다.
+
+### 7.3 P1-DEV-2 (QA FAIL 수정) 이후 QA 가 알아야 할 것
+
+- **몬스터 상태 전이는 `animation_finished` 에 의존하지 않는다.** `JamoMonster` 의
+  SPAWN / IDLE / TURN 은 `_state_timer` 가 `_physics_process` 에서 끝내고, `hit` 이 어떤
+  애니메이션을 덮어써도 상태는 진행한다. 어떤 상태든 몬스터가 제자리에 영구 정지하면 FAIL.
+- **Wave 정지 경고**: 스폰이 끝난 Wave 가 `SpawnManager.stall_warning_seconds`(기본 30초,
+  Inspector) 동안 생존자가 정리되지 않으면 `push_warning` 으로 생존자 상태를 남긴다.
+  복구는 하지 않는다. 정상 플레이·테스트 로그에 이 경고가 보이면 FAIL 사유다.
+- **RUN 이어하기는 남은 몬스터만 재스폰한다.** `RunState.wave_resolved_count` 저장.
+  에너지는 저장값 그대로. 이어한 Wave 에서 이미 처치한 몬스터가 다시 나오면 FAIL.
+- **`monster_capacity` 는 상점에 보이지 않는다** (`UpgradeData.is_retired`). 트랙 파일과
+  기존 세이브의 레벨은 남아 있다. 상점 행 수는 5 (에너지 / 클릭 피해 / 치명타 / 골드 / 리롤).
 
 ## 8. 애셋 작업 — 별도 워크트리
 

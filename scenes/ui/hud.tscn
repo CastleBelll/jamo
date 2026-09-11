@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" path="res://art/ui/btn_dictionary.png" id="2_dict"]
@@ -11,19 +11,19 @@ length = 0.22
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("TopBar/EnergyPanel:pivot_offset")
+tracks/0/path = NodePath("EnergyPanel:pivot_offset")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(100, 25)]
+"values": [Vector2(120, 34)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("TopBar/EnergyPanel:scale")
+tracks/1/path = NodePath("EnergyPanel:scale")
 tracks/1/interp = 2
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -40,7 +40,7 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("TopBar/EnergyPanel/EnergyBox/EnergyWarnLabel:modulate")
+tracks/0/path = NodePath("EnergyPanel/EnergyBox/EnergyWarnLabel:modulate")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -52,7 +52,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("TopBar/EnergyPanel/EnergyBox/EnergyBar:self_modulate")
+tracks/1/path = NodePath("EnergyPanel/EnergyBox/EnergyBar:self_modulate")
 tracks/1/interp = 2
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -62,10 +62,51 @@ tracks/1/keys = {
 "values": [Color(1, 0.55, 0.45, 1), Color(1, 0.85, 0.8, 1), Color(1, 0.55, 0.45, 1)]
 }
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_energy"]
+[sub_resource type="Animation" id="Animation_wave_clear"]
+resource_name = "wave_clear"
+length = 1.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WaveClearLabel:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("WaveClearLabel:modulate")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 1.0, 1.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("WaveClearLabel:scale")
+tracks/2/interp = 2
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.2, 1.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0.85, 0.85), Vector2(1, 1), Vector2(1.04, 1.04)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hud"]
 _data = {
 &"pulse": SubResource("Animation_energy_pulse"),
-&"warn": SubResource("Animation_energy_warn")
+&"warn": SubResource("Animation_energy_warn"),
+&"wave_clear": SubResource("Animation_wave_clear")
 }
 
 [node name="HUD" type="Control"]
@@ -82,6 +123,8 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_hud")
 
+; Doc v0.4 section 30: WAVE top-left, GOLD and the buttons top-right. The
+; 문장핵 readout and the energy readout are their own anchored panels below.
 [node name="TopBar" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 10
@@ -105,59 +148,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "WAVE 1"
 
-[node name="CorePanel" type="PanelContainer" parent="TopBar"]
+[node name="Spacer" type="Control" parent="TopBar"]
 layout_mode = 2
-size_flags_vertical = 0
-theme_type_variation = &"HudPanel"
-
-[node name="CoreBox" type="VBoxContainer" parent="TopBar/CorePanel"]
-layout_mode = 2
-theme_override_constants/separation = 3
-
-[node name="CoreLabel" type="Label" parent="TopBar/CorePanel/CoreBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "문장핵 20 / 20"
-
-[node name="CoreBar" type="ProgressBar" parent="TopBar/CorePanel/CoreBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 10)
-layout_mode = 2
-max_value = 20.0
-value = 20.0
-show_percentage = false
-
-[node name="EnergyPanel" type="PanelContainer" parent="TopBar"]
-layout_mode = 2
-size_flags_vertical = 0
-theme_type_variation = &"HudPanel"
-
-[node name="EnergyBox" type="VBoxContainer" parent="TopBar/EnergyPanel"]
-layout_mode = 2
-theme_override_constants/separation = 3
-
-[node name="EnergyLabel" type="Label" parent="TopBar/EnergyPanel/EnergyBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "ENERGY 20 / 20"
-
-[node name="EnergyBar" type="ProgressBar" parent="TopBar/EnergyPanel/EnergyBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 10)
-layout_mode = 2
-max_value = 20.0
-value = 20.0
-show_percentage = false
-
-[node name="EnergyWarnLabel" type="Label" parent="TopBar/EnergyPanel/EnergyBox"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.86, 0.31, 0.2, 1)
-text = "⚠ 에너지 부족"
+size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="GoldPanel" type="PanelContainer" parent="TopBar"]
 layout_mode = 2
@@ -180,11 +174,6 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "처치 0"
-
-[node name="Spacer" type="Control" parent="TopBar"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
 
 [node name="Buttons" type="HBoxContainer" parent="TopBar"]
 layout_mode = 2
@@ -220,6 +209,109 @@ tooltip_text = "일시정지"
 theme_type_variation = &"HudIconButton"
 icon = ExtResource("4_pause")
 expand_icon = true
+
+; 문장핵 HP, top centre. Doc v0.4 sections 6.1 and 30.
+[node name="CorePanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 14.0
+offset_right = 130.0
+offset_bottom = 66.0
+grow_horizontal = 2
+theme_type_variation = &"HudPanel"
+
+[node name="CoreBox" type="VBoxContainer" parent="CorePanel"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="CoreLabel" type="Label" parent="CorePanel/CoreBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "문장핵 20 / 20"
+horizontal_alignment = 1
+
+[node name="CoreBar" type="ProgressBar" parent="CorePanel/CoreBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 12)
+layout_mode = 2
+max_value = 20.0
+value = 20.0
+show_percentage = false
+
+; Wave Energy, bottom centre. Doc v0.4 sections 7.1 and 30.
+[node name="EnergyPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -84.0
+offset_right = 120.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(120, 34)
+theme_type_variation = &"HudPanel"
+
+[node name="EnergyBox" type="VBoxContainer" parent="EnergyPanel"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="EnergyLabel" type="Label" parent="EnergyPanel/EnergyBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "ENERGY 10 / 10"
+horizontal_alignment = 1
+
+[node name="EnergyBar" type="ProgressBar" parent="EnergyPanel/EnergyBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 10)
+layout_mode = 2
+max_value = 10.0
+value = 10.0
+show_percentage = false
+
+[node name="EnergyWarnLabel" type="Label" parent="EnergyPanel/EnergyBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.86, 0.31, 0.2, 1)
+text = "⚠ 에너지 부족"
+horizontal_alignment = 1
+
+; The Wave Clear beat. Doc v0.4 section 31: a short read, never a menu.
+[node name="WaveClearLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -110.0
+offset_right = 200.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(200, 30)
+mouse_filter = 2
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_outline_color = Color(0.949, 0.902, 0.808, 1)
+theme_override_constants/outline_size = 6
+text = "WAVE 1 CLEAR"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="WordProgressPanel" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -322,11 +414,17 @@ text = "장착한 단어 없음 — 자모 슬롯은 P2"
 [node name="EnergyPulseAnim" type="AnimationPlayer" parent="."]
 unique_name_in_owner = true
 libraries = {
-&"": SubResource("AnimationLibrary_energy")
+&"": SubResource("AnimationLibrary_hud")
 }
 
 [node name="EnergyWarnAnim" type="AnimationPlayer" parent="."]
 unique_name_in_owner = true
 libraries = {
-&"": SubResource("AnimationLibrary_energy")
+&"": SubResource("AnimationLibrary_hud")
+}
+
+[node name="WaveClearAnim" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_hud")
 }

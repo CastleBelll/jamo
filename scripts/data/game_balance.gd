@@ -8,7 +8,7 @@ extends Resource
 
 @export_group("Wave / Energy")
 ## Energy a wave starts with at upgrade level 0. Doc v0.4 section 7.1.
-@export var start_max_energy: int = 20
+@export var start_max_energy: int = 10
 ## Energy consumed by one manual click. Doc v0.4 section 7.1.
 @export var click_energy_cost: int = 1
 
@@ -24,25 +24,18 @@ extends Resource
 @export_range(1.0, 10.0, 0.1) var base_crit_multiplier: float = 2.0
 
 @export_group("Monster Scaling")
-## TEMPORARY, Phase 0 only: the v0.3 Day curve mapped one-to-one onto Wave so
-## the game still runs. v0.4 section 5.2 wants a wave curve that raises speed,
-## count, special ratio and spawn rate rather than HP alone, and section 52
-## warns against reusing the Day numbers. The real curve is Phase 1 / Phase 12.
-## HP = base_monster_hp * pow(hp_growth_per_wave, wave - 1).
-@export var base_monster_hp: float = 3.0
-@export var hp_growth_per_wave: float = 1.035
-## Gold = base_monster_gold * pow(gold_growth_per_wave, wave - 1).
+## Per-wave scaling lives in WaveData (res://resources/waves/), never in a
+## formula here. Doc v0.4 sections 5.2 and 25.
+## HP = base_monster_hp * WaveData.hp_multiplier * JamoMonsterData.hp_multiplier.
+@export var base_monster_hp: float = 1.0
+## Gold = base_monster_gold * WaveData.gold_multiplier * JamoMonsterData.gold_multiplier.
 @export var base_monster_gold: float = 2.0
-@export var gold_growth_per_wave: float = 1.025
 
 @export_group("Field")
 ## Simultaneous monsters at upgrade level 0. Doc v0.4 section 13.
 @export var base_monster_capacity: int = 8
 
 @export_group("Special Monsters")
-## Chance one spawn is drawn from the Special Pool instead of the normal one,
-## before the 운 luck multiplier. growth_balance v0.2 section 2.
-@export_range(0.0, 1.0, 0.005) var special_spawn_chance: float = 0.02
 ## Same, for the Golden Pool. Only rolled once the word 금 is completed.
 ## Doc v0.3 section 9.3.
 @export_range(0.0, 1.0, 0.005) var golden_spawn_chance: float = 0.02
@@ -59,12 +52,15 @@ extends Resource
 @export_range(0.0, 3.0, 0.05) var run_end_settle_seconds: float = 0.8
 
 
-## HP of a normal monster on the given wave, rounded to a whole number.
-func monster_hp_for_wave(wave: int) -> float:
-	return roundf(base_monster_hp * pow(hp_growth_per_wave, wave - 1))
+## HP of a monster on the given wave, rounded to a whole number and never
+## below 1. `monster_multiplier` is the JamoMonsterData.hp_multiplier.
+func monster_hp_for_wave(wave: WaveData, monster_multiplier: float) -> float:
+	var wave_multiplier: float = wave.hp_multiplier if wave != null else 1.0
+	return maxf(1.0, roundf(base_monster_hp * wave_multiplier * monster_multiplier))
 
 
-## Gold dropped by a normal monster on the given wave. Kept fractional on
-## purpose; only the HUD rounds it.
-func monster_gold_for_wave(wave: int) -> float:
-	return base_monster_gold * pow(gold_growth_per_wave, wave - 1)
+## Gold dropped by a monster on the given wave. Kept fractional on purpose;
+## only the HUD rounds it. `monster_multiplier` is JamoMonsterData.gold_multiplier.
+func monster_gold_for_wave(wave: WaveData, monster_multiplier: float) -> float:
+	var wave_multiplier: float = wave.gold_multiplier if wave != null else 1.0
+	return base_monster_gold * wave_multiplier * monster_multiplier

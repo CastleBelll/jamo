@@ -20,11 +20,14 @@ const UPGRADE_CRITICAL_CLICK := &"critical_click"
 const UPGRADE_GOLD_BONUS := &"gold_bonus"
 const UPGRADE_MONSTER_CAPACITY := &"monster_capacity"
 const UPGRADE_REROLL := &"reroll"
+## The Core HP track of doc v0.4 section 13.1. Its .tres arrives in Phase 5;
+## until then the lookup falls back to GameBalance.base_core_hp.
+const UPGRADE_CORE_HP := &"core_hp"
 
 ## Names RunState owns. A permanent field may never be called one of these, and
 ## the split test asserts it. Doc v0.4 section 3.2.
 const RUN_OWNED_NAMES: Array[String] = [
-	"current_wave", "core_hp", "core_max_hp", "current_energy",
+	"current_wave", "core_hp", "core_max_hp", "current_energy", "wave_resolved_count",
 	"jamo_draw_bag", "jamo_discard_bag", "current_slot_jamo", "rerolls",
 	"locks", "equipped_words", "run_word_ranks", "active_synergies",
 	"active_compounds", "risk_words", "run_modifiers", "run_statistics",
@@ -124,8 +127,10 @@ func get_base_rerolls() -> int:
 	return int(get_upgrade_value(UPGRADE_REROLL, 0.0))
 
 
+## 문장핵 HP a run starts with: the base value raised by the permanent Core HP
+## track. Doc v0.4 sections 6.1 and 13.1.
 func get_core_max_hp() -> float:
-	return balance.base_core_hp
+	return get_upgrade_value(UPGRADE_CORE_HP, balance.base_core_hp)
 
 
 # --- Gold -------------------------------------------------------------------

@@ -12,4 +12,5 @@ costs = PackedInt64Array(25, 60, 150, 375, 940, 2250)
 values = PackedFloat32Array(10, 12, 14, 16, 18, 20)
 value_display_scale = 1.0
 value_suffix = ""
+is_retired = true
 required_word = &""

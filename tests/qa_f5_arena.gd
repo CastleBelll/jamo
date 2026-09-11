@@ -79,6 +79,7 @@ func _observe(label: String, scene_paths: Array) -> Dictionary:
 	_spawn.golden_scenes = []
 	MetaState.permanent_upgrade_levels[MetaState.UPGRADE_MONSTER_CAPACITY] = 20
 	RunState.start_run()
+	_free_roam(_spawn.monster_scenes)
 
 	for _frame in FILL_FRAMES:
 		await get_tree().process_frame
@@ -128,6 +129,7 @@ func _worst_case_corner() -> Dictionary:
 	_spawn.golden_scenes = []
 	MetaState.permanent_upgrade_levels[MetaState.UPGRADE_MONSTER_CAPACITY] = 1
 	RunState.start_run()
+	_free_roam(_spawn.monster_scenes)
 	for _frame in FILL_FRAMES:
 		await get_tree().process_frame
 		if _live_count() >= 1:
@@ -219,3 +221,20 @@ func _write_report() -> void:
 	file.store_string(JSON.stringify(_report, "\t"))
 	print(JSON.stringify(_report, "\t"))
 	print("OK - F5 arena artifacts written to %s" % ARTIFACT_DIR)
+
+
+## Phase 1 moved spawning onto WaveData and pointed every monster at the
+## 문장핵. This harness measures the roaming clamp, so the monsters are left
+## without an objective and the spawner is handed an endless wave from the
+## harness pool after each start_run() (the WaveController reconfigures it on
+## every wave_started). The fill target stays MetaState.get_monster_capacity().
+func _free_roam(pool: Array) -> void:
+	_spawn.objective = null
+	var wave := WaveData.new()
+	wave.wave_number = 1
+	for scene: PackedScene in pool:
+		wave.enemy_pool.append(scene)
+	wave.enemy_count = 500
+	wave.max_alive = MetaState.get_monster_capacity()
+	wave.spawn_interval = 0.25
+	_spawn.configure_wave(wave)

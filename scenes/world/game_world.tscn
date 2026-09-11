@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/game_world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/world/arena.tscn" id="2_arena"]
@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" path="res://scenes/monsters/special/monster_big_mieum.tscn" id="15_big_mieum"]
 [ext_resource type="PackedScene" path="res://scenes/monsters/special/monster_fast_ieung.tscn" id="16_fast_ieung"]
 [ext_resource type="PackedScene" path="res://scenes/monsters/special/monster_golden_hieut.tscn" id="17_golden_hieut"]
+[ext_resource type="PackedScene" path="res://scenes/objective/sentence_core.tscn" id="18_core"]
 
 [node name="GameWorld" type="Node3D" node_paths=PackedStringArray("fx_root", "hit_fx_pool", "death_fx_pool")]
 script = ExtResource("1_world")
@@ -26,6 +27,26 @@ hit_fx_pool = NodePath("FXRoot/HitFXPool")
 death_fx_pool = NodePath("FXRoot/DeathFXPool")
 
 [node name="Arena" parent="." instance=ExtResource("2_arena")]
+
+; The 문장핵 sits at the rear of the slab (-Z is away from the camera), so the
+; approach reads bottom-to-top on screen. Doc v0.4 sections 6.1 and 39.
+[node name="SentenceCore" parent="." node_paths=PackedStringArray("camera_rig") instance=ExtResource("18_core")]
+position = Vector3(0, 0, -2.4)
+camera_rig = NodePath("../CameraRig")
+
+; Outer spawn points, one per remaining corner of the diamond slab. The
+; SpawnManager jitters around whichever it picks and clamps the result onto the
+; monster's own walkable diamond. Move or add markers here. Doc v0.4 section 39.
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="Front" type="Marker3D" parent="SpawnPoints"]
+position = Vector3(0, 0, 3.1)
+
+[node name="Left" type="Marker3D" parent="SpawnPoints"]
+position = Vector3(-3.1, 0, 0.2)
+
+[node name="Right" type="Marker3D" parent="SpawnPoints"]
+position = Vector3(3.1, 0, 0.2)
 
 [node name="MonsterRoot" type="Node3D" parent="."]
 
@@ -84,14 +105,16 @@ position = Vector3(0, 4, 0)
 rotation = Vector3(-0.6109, 2.4435, 0)
 light_energy = 0.35
 
-[node name="SpawnManager" type="Node" parent="." node_paths=PackedStringArray("spawn_root")]
+[node name="SpawnManager" type="Node" parent="." node_paths=PackedStringArray("spawn_root", "spawn_point_root", "objective")]
 script = ExtResource("4_spawn")
 monster_scenes = Array[PackedScene]([ExtResource("9_giyeok"), ExtResource("10_digeut"), ExtResource("11_mieum"), ExtResource("12_siot"), ExtResource("13_ieung"), ExtResource("14_i")])
 special_scenes = Array[PackedScene]([ExtResource("15_big_mieum"), ExtResource("16_fast_ieung")])
 golden_scenes = Array[PackedScene]([ExtResource("17_golden_hieut")])
 spawn_root = NodePath("../MonsterRoot")
+spawn_point_root = NodePath("../SpawnPoints")
+objective = NodePath("../SentenceCore")
 arena_half_extents = Vector2(3.95, 3.95)
-spawn_interval = 0.25
+spawn_jitter = 0.7
 spawn_height = 0.0
 min_spawn_distance = 1.3
 

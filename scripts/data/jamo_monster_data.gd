@@ -14,10 +14,13 @@ enum SpecialType { NORMAL, SPECIAL, GOLDEN }
 @export var jamo: String = "ㄱ"
 
 @export_group("Combat")
-## Multiplies the day-scaled base HP. 1.0 = normal monster.
+## Multiplies the wave-scaled base HP. 1.0 = normal monster.
 @export_range(0.1, 10.0, 0.05) var hp_multiplier: float = 1.0
-## Multiplies the day-scaled base gold. 1.0 = normal monster.
+## Multiplies the wave-scaled base gold. 1.0 = normal monster.
 @export_range(0.1, 20.0, 0.05) var gold_multiplier: float = 1.0
+## 문장핵 HP taken off when this monster reaches it. 0 for a monster that only
+## ever leaves on its own, like the golden individual. Doc v0.4 section 6.1.
+@export_range(0.0, 20.0, 0.5) var core_damage: float = 1.0
 
 @export_group("Movement")
 ## Metres per second before the motion profile multiplier is applied.

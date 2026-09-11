@@ -8,6 +8,7 @@ script = ExtResource("1_script")
 id = &"big_mieum"
 jamo = "ㅁ"
 hp_multiplier = 3.0
+core_damage = 2.0
 gold_multiplier = 3.0
 base_speed = 1.2
 speed_multiplier = 0.6

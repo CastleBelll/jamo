@@ -26,6 +26,11 @@ extends Resource
 ## Appended after the scaled value, e.g. "%" or " 마리".
 @export var value_suffix: String = ""
 
+## True for a track no rule reads any more. The shop neither lists nor sells it;
+## levels already bought stay in the save. monster_capacity is retired since
+## v0.4 P1 (WaveData.max_alive owns the field size) and is removed in P5.
+@export var is_retired: bool = false
+
 @export_group("Unlock Conditions")
 ## Locked until this word is registered in the codex. Empty means no
 ## requirement. The codex is permanent, so this is a permanent gate; a word

@@ -34,6 +34,10 @@ var current_wave: int = 1
 var core_hp: float = 0.0
 var core_max_hp: float = 0.0
 var current_energy: int = 0
+## Enemies of current_wave already killed or through to the 문장핵. Counted by
+## SpawnManager and saved with the run, so RUN 이어하기 spawns only what is
+## left of the wave instead of the whole wave again. Doc v0.4 section 44.
+var wave_resolved_count: int = 0
 ## Jamo still to be drawn this run, and the ones already spent. Filled in
 ## Phase 2 (doc v0.4 section 2.4); the storage exists now so the boundary is
 ## already in the right place.
@@ -78,6 +82,7 @@ func reset() -> void:
 	core_max_hp = 0.0
 	core_hp = 0.0
 	current_energy = 0
+	wave_resolved_count = 0
 	jamo_draw_bag = PackedStringArray()
 	jamo_discard_bag = PackedStringArray()
 	current_slot_jamo = PackedStringArray()
@@ -108,6 +113,7 @@ func start_run() -> void:
 func begin_wave(wave: int) -> void:
 	current_wave = maxi(1, wave)
 	current_energy = get_max_energy()
+	wave_resolved_count = 0
 	rerolls = MetaState.get_base_rerolls()
 	SignalBus.energy_changed.emit(current_energy, get_max_energy())
 	SignalBus.wave_started.emit(current_wave)
@@ -124,17 +130,18 @@ func end_run() -> void:
 	if not is_active:
 		return
 	is_active = false
-	MetaState.record_reached_wave(current_wave)
+	var is_record: bool = MetaState.record_reached_wave(current_wave)
 	MetaState.add_statistic("runs_finished", 1.0)
 	MetaState.add_statistic("total_kills", get_run_statistic("kills"))
 	SignalBus.run_failed.emit(
-		current_wave, int(get_run_statistic("kills")), get_run_statistic("gold_earned")
+		current_wave, int(get_run_statistic("kills")), get_run_statistic("gold_earned"),
+		is_record
 	)
 
 
-## Damage dealt to the 문장핵. Returns true when the run just ended.
-## The damage source itself is Phase 1 work; the rule lives here already so the
-## fail path is not scattered across scenes. Doc v0.4 section 6.1.
+## Damage dealt to the 문장핵 by a monster that reached it. Returns true when
+## the run just ended. This is the only fail rule in the game: energy running
+## out never comes here. Doc v0.4 sections 6.1, 7.1 and 35.
 func damage_core(amount: float) -> bool:
 	if not is_active or amount <= 0.0:
 		return false
@@ -147,6 +154,13 @@ func damage_core(amount: float) -> bool:
 
 
 # --- Derived combat stats ---------------------------------------------------
+
+## The authored data of the wave being played. Doc v0.4 section 25.
+func get_current_wave_data() -> WaveData:
+	if MetaState.database == null:
+		return null
+	return MetaState.database.find_wave(current_wave)
+
 
 ## Permanent max energy plus whatever the equipped words add this run.
 func get_max_energy() -> int:
@@ -361,6 +375,7 @@ func to_dict() -> Dictionary:
 		"core_hp": core_hp,
 		"core_max_hp": core_max_hp,
 		"current_energy": current_energy,
+		"wave_resolved_count": wave_resolved_count,
 		"jamo_draw_bag": Array(jamo_draw_bag),
 		"jamo_discard_bag": Array(jamo_discard_bag),
 		"current_slot_jamo": Array(current_slot_jamo),
@@ -384,6 +399,8 @@ func from_dict(data: Dictionary) -> void:
 	core_max_hp = maxf(0.0, float(data.get("core_max_hp", MetaState.get_core_max_hp())))
 	core_hp = clampf(float(data.get("core_hp", core_max_hp)), 0.0, core_max_hp)
 	current_energy = maxi(0, int(data.get("current_energy", 0)))
+	# Saves from before the count existed resume the wave from the start.
+	wave_resolved_count = maxi(0, int(data.get("wave_resolved_count", 0)))
 	jamo_draw_bag = _string_array(data.get("jamo_draw_bag", []))
 	jamo_discard_bag = _string_array(data.get("jamo_discard_bag", []))
 	current_slot_jamo = _string_array(data.get("current_slot_jamo", []))

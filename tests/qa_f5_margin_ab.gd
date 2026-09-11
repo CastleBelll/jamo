@@ -48,6 +48,7 @@ func _measure(margin: float) -> void:
 	_spawn.clear_field()
 	MetaState.permanent_upgrade_levels[MetaState.UPGRADE_MONSTER_CAPACITY] = 20
 	RunState.start_run()
+	_free_roam(_spawn.monster_scenes)
 	for _frame in FILL_FRAMES:
 		await get_tree().process_frame
 		_force_margin(margin)
@@ -125,3 +126,20 @@ func _live() -> Array[JamoMonster]:
 		if monster != null and monster.is_alive():
 			alive.append(monster)
 	return alive
+
+
+## Phase 1 moved spawning onto WaveData and pointed every monster at the
+## 문장핵. This harness measures the roaming clamp, so the monsters are left
+## without an objective and the spawner is handed an endless wave from the
+## harness pool after each start_run() (the WaveController reconfigures it on
+## every wave_started). The fill target stays MetaState.get_monster_capacity().
+func _free_roam(pool: Array) -> void:
+	_spawn.objective = null
+	var wave := WaveData.new()
+	wave.wave_number = 1
+	for scene: PackedScene in pool:
+		wave.enemy_pool.append(scene)
+	wave.enemy_count = 500
+	wave.max_alive = MetaState.get_monster_capacity()
+	wave.spawn_interval = 0.25
+	_spawn.configure_wave(wave)

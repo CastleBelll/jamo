@@ -1,0 +1,76 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/objective/sentence_core.gd" id="1_core"]
+[ext_resource type="Material" path="res://materials/jamo_ink.tres" id="2_ink"]
+[ext_resource type="Material" path="res://materials/jamo_gold.tres" id="3_gold"]
+
+; Stand-in primitives. The asset branch delivers the real 문장핵 model; drop it
+; under VisualRoot and delete these two meshes. Nothing else references them.
+[sub_resource type="CylinderMesh" id="Mesh_pillar"]
+top_radius = 0.28
+bottom_radius = 0.4
+height = 0.9
+
+[sub_resource type="BoxMesh" id="Mesh_cap"]
+size = Vector3(0.36, 0.36, 0.36)
+
+[sub_resource type="Animation" id="Animation_hit"]
+resource_name = "hit"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("VisualRoot:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.08, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(1, 1, 1), Vector3(1.18, 0.82, 1.18), Vector3(1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("VisualRoot:position")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.06, 0.14, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.06, 0, -0.04), Vector3(-0.05, 0, 0.03), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_core"]
+_data = {
+&"hit": SubResource("Animation_hit")
+}
+
+[node name="SentenceCore" type="Node3D" node_paths=PackedStringArray("visual_root")]
+script = ExtResource("1_core")
+visual_root = NodePath("VisualRoot")
+reach_radius = 0.9
+hit_shake_strength = 0.06
+hit_shake_duration = 0.2
+
+[node name="VisualRoot" type="Node3D" parent="."]
+
+[node name="Pillar" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(0, 0.45, 0)
+mesh = SubResource("Mesh_pillar")
+surface_material_override/0 = ExtResource("2_ink")
+
+[node name="Cap" type="MeshInstance3D" parent="VisualRoot"]
+position = Vector3(0, 1.08, 0)
+rotation = Vector3(0.7854, 0.7854, 0)
+mesh = SubResource("Mesh_cap")
+surface_material_override/0 = ExtResource("3_gold")
+
+[node name="HitAnchor" type="Marker3D" parent="."]
+position = Vector3(0, 1.1, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_core")
+}
