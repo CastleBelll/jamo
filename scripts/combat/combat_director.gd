@@ -40,6 +40,8 @@ var miss_clicks: int = 0
 var hold_pressed: bool = false
 var focus_index: int = -1
 var stats := {"hits": 0, "purified": 0, "reached": 0}
+## Jamo the pinned goal lacks in the deck: B5 spawn weight x1.15, renormalised.
+var pin_lacking: Array[String] = []
 
 
 func setup(controller: RunController, content: ContentDB, page: Node2D) -> void:
@@ -294,18 +296,20 @@ func _spawn(slot: int) -> void:
 	enemies_changed.emit(remaining())
 
 
-## B5 weighted draw on the spawn RNG stream (no pin bonus yet: P1).
+## B5 weighted draw on the spawn RNG stream; pinned-and-lacking jamo get x1.15 once.
 func _draw_jamo() -> String:
 	var weights := db.spawn_weights(false)
 	var keys := weights.keys()
 	keys.sort()
-	var total_w := 0
+	var total_w := 0.0
+	var scaled := {}
 	for k in keys:
-		total_w += weights[k]
-	var roll := rng_spawn.randi_range(1, total_w)
+		scaled[k] = float(weights[k]) * (db.balance.pin_weight_mult if k in pin_lacking else 1.0)
+		total_w += scaled[k]
+	var roll := rng_spawn.randf() * total_w
 	for k in keys:
-		roll -= weights[k]
-		if roll <= 0:
+		roll -= scaled[k]
+		if roll < 0.0:
 			return k
 	return keys[-1]
 

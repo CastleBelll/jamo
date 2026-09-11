@@ -14,4 +14,6 @@ godot --headless --path . tests/test_run_controller.tscn
 godot --headless --path . tests/test_combat.tscn
 # deck tokens, drop pity/cap/rate, reward picks/replace/remove, 자모 정리 panel flow
 godot --headless --path . tests/test_deck.tscn
+# Forge: full shuffle, non-replacement draws, lock/reroll, candidates, restore transaction, failure pity, pin, screen flow
+godot --headless --path . tests/test_forge.tscn
 ```

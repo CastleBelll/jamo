@@ -38,7 +38,7 @@ func _ready() -> void:
 	hud.bind(run)
 	run.phase_changed.connect(_on_phase_changed)
 	%StartWaveButton.pressed.connect(func(): run.begin_combat())
-	%ConfirmBuildButton.pressed.connect(func(): run.confirm_build())
+	forge_panel.finished.connect(func(): run.finish_forge())
 	%ResultLibraryButton.pressed.connect(_on_return_to_library)
 	%ResumeButton.pressed.connect(_close_pause)
 	%AbandonButton.pressed.connect(_on_abandon)
@@ -92,11 +92,12 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 		RunController.Phase.COMBAT:
 			director.set_hold(false)
 			hud.set_temp_drops(0)
+			director.pin_lacking = run.pin_lacking()
 			director.start_wave(run.wave_data(), hash("spawn:%d:%d" % [run_seed, run.wave]))
 		RunController.Phase.CLEAR:
 			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text())
 		RunController.Phase.FORGE:
-			%ConfirmBuildButton.grab_focus()
+			forge_panel.open(run, db_ref)
 		RunController.Phase.RESULT:
 			director.set_hold(false)
 			result_label.text = _result_text(run.end_reason)

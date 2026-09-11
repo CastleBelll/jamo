@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/run_game.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/run/run_controller.gd" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="Theme" path="res://resources/ui/theme.tres" id="5"]
 [ext_resource type="Script" path="res://scripts/combat/combat_director.gd" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/ui/reward_panel.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/ui/forge_panel.tscn" id="8"]
 
 [node name="RunGame" type="Node"]
 process_mode = 3
@@ -70,25 +71,10 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="ForgePanel" type="PanelContainer" parent="Panels/Center"]
+[node name="ForgePanel" parent="Panels/Center" instance=ExtResource("8")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-
-[node name="Box" type="VBoxContainer" parent="Panels/Center/ForgePanel"]
-layout_mode = 2
-theme_override_constants/separation = 24
-
-[node name="ForgeLabel" type="Label" parent="Panels/Center/ForgePanel/Box"]
-layout_mode = 2
-horizontal_alignment = 1
-text = "단어 복원 (P1에서 구현)"
-
-[node name="ConfirmBuildButton" type="Button" parent="Panels/Center/ForgePanel/Box"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
-layout_mode = 2
-text = "빌드 확정"
 
 [node name="ResultPanel" type="PanelContainer" parent="Panels/Center"]
 unique_name_in_owner = true
