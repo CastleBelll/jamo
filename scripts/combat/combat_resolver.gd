@@ -71,6 +71,15 @@ func is_sealed(word_id: StringName) -> bool:
 	return sealed.has(word_id) and sealed[word_id] > clock
 
 
+## word id -> remaining seal seconds, for the HUD readout.
+func seal_remaining() -> Dictionary:
+	var out := {}
+	for id in sealed:
+		if sealed[id] > clock:
+			out[id] = sealed[id] - clock
+	return out
+
+
 func sealed_ids() -> Array[StringName]:
 	var out: Array[StringName] = []
 	for id in sealed:

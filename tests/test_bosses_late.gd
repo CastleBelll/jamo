@@ -102,7 +102,9 @@ func _check_silence() -> void:
 		_expect(is_equal_approx(hp - director.boss.hp, 1.0), "sealed 검 gives no bonus (dealt %s)" % (hp - director.boss.hp))
 	else:
 		_expect(director.resolver.effects_with(&"periodic").is_empty(), "sealed 활 stops its periodic hits")
-	_expect(game.get_node("HUD").get_node("Root/BuildBar").get_child(0).get_child(0).text.contains("봉인") or game.get_node("HUD").get_node("Root/BuildBar").get_child(1).get_child(0).text.contains("봉인"), "HUD marks the sealed word")
+	var slots := game.get_node("HUD").get_node("Root/BuildBar")
+	var hud_text: String = slots.get_child(0).get_child(0).text + slots.get_child(1).get_child(0).text
+	_expect("봉인 " in hud_text and "초" in hud_text, "HUD marks the sealed word with its remaining time (%s)" % hud_text.replace("\n", " "))
 	_tick_to(12.7)
 	_expect(not director.resolver.is_sealed(p.seal_word) and director.resolver.sealed_ids().is_empty(), "seal released after 4s")
 	if p.seal_word == &"W06":
@@ -173,8 +175,9 @@ func _check_ieung() -> void:
 
 
 func _check_greed() -> void:
-	_boot(20)
+	_boot(20, [[&"W02", 1]])
 	var b := director.boss
+	_expect(b.get_node("ShieldLabel").visible and b.get_node("ShieldBar").visible, "탐욕 shows a shield readout")
 	_expect(director.boss_data.id == &"B_GREED" and b.hp == 380.0 and director.remaining() == 1 + 10, "W20 spawns 탐욕 HP 380 with 10 minions scheduled")
 	_tick_to(6.1)
 	var p := _live_pattern()
@@ -192,6 +195,11 @@ func _check_greed() -> void:
 	var hp := b.hp
 	_click(Vector2(960, 260))
 	_expect(is_equal_approx(b.shield, 2.0) and b.hp == hp, "shield absorbs the hit before HP")
+	_expect(b.burn_active(director.resolver.clock), "a shield-absorbed manual hit still procs 불 (no hidden resistance)")
+	_expect(b.get_node("ShieldLabel").text.begins_with("보호막 2 / 24"), "shield readout updates (%s)" % b.get_node("ShieldLabel").text)
+	_expect(is_equal_approx(b.take_damage(5.0), 5.0) and is_equal_approx(b.shield, 0.0) and is_equal_approx(hp - b.hp, 3.0), "absorbed + HP damage counts as dealt")
+	b.shield = 0.0
+	b.hp = hp
 	b.shield = 24.0
 	b.add_shield(3.0, director.clock)
 	_expect(b.shield == 24.0, "shield cap 24")
@@ -202,6 +210,8 @@ func _check_greed() -> void:
 	for i in 4:
 		_click(Vector2(1260, 260))
 	_expect(p.done and b.shield == 0.0, "ring broken: shield cleared")
+	b.update_readout(director.clock)
+	_expect("고리 끊김" in b.get_node("ShieldLabel").text, "lockout countdown shown (%s)" % b.get_node("ShieldLabel").text)
 	b.add_shield(3.0, director.clock)
 	_expect(b.shield == 0.0, "no shield gain during the 4s lockout")
 	b.add_shield(3.0, director.clock + 4.1)

@@ -393,6 +393,7 @@ func _spawn_boss() -> void:
 func _tick_boss(delta: float) -> void:
 	if boss == null or not boss.alive:
 		return
+	boss.update_readout(clock)
 	var spec := boss.poll_pattern(clock)
 	if not spec.is_empty():
 		if spec["seal"]:

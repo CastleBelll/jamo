@@ -34,7 +34,7 @@ func _ready() -> void:
 	director.setup(run, db, page)
 	director.enemies_changed.connect(hud.set_enemies_left)
 	director.enemy_purified.connect(_on_enemy_purified)
-	director.seal_changed.connect(func(): hud.set_build(run.build, db_ref, director.resolver.sealed_ids()))
+	director.seal_changed.connect(func(): hud.set_build(run.build, db_ref, director.resolver.seal_remaining()))
 	clear_panel.finished.connect(func(): run.finish_clear())
 	hud.bind(run)
 	run.phase_changed.connect(_on_phase_changed)
@@ -56,6 +56,8 @@ func _physics_process(delta: float) -> void:
 	var cursor := page.get_global_mouse_position()
 	director.tick(delta, cursor)
 	hud.set_hover(director.pick_target(cursor) if run.phase == RunController.Phase.COMBAT else null)
+	if not director.resolver.sealed.is_empty():
+		hud.set_build(run.build, db_ref, director.resolver.seal_remaining())  # countdown while sealed
 
 
 func _unhandled_input(event: InputEvent) -> void:

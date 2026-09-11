@@ -20,6 +20,8 @@ var shield_lockout_until: float = -1.0
 
 @onready var hp_bar: ProgressBar = $HpBar
 @onready var name_label: Label = $NameLabel
+@onready var shield_bar: ProgressBar = $ShieldBar
+@onready var shield_label: Label = $ShieldLabel
 
 
 func setup_boss(id: int, boss_data: BossData) -> void:
@@ -40,7 +42,7 @@ func setup_boss(id: int, boss_data: BossData) -> void:
 func _ready() -> void:
 	$FocusRing.visible = focused
 	_refresh_visual()
-	hp_changed.connect(func(current, maximum): hp_bar.max_value = maximum; hp_bar.value = current)
+	hp_changed.connect(func(current, maximum): hp_bar.max_value = maximum; hp_bar.value = current; _refresh_shield())
 
 
 func _refresh_visual() -> void:
@@ -50,6 +52,28 @@ func _refresh_visual() -> void:
 	name_label.text = data.name
 	hp_bar.max_value = hp_max
 	hp_bar.value = hp
+	_refresh_shield()
+
+
+## 보호막 readout (G8): amount and, during the ring lockout, the remaining lock time.
+func _refresh_shield(clock: float = -1.0) -> void:
+	var has_shield := data != null and data.shield_per_minion > 0.0
+	shield_bar.visible = has_shield
+	shield_label.visible = has_shield
+	if not has_shield:
+		return
+	shield_bar.max_value = data.shield_cap
+	shield_bar.value = shield
+	var text := "보호막 %.0f / %.0f" % [shield, data.shield_cap]
+	if clock >= 0.0 and clock < shield_lockout_until:
+		text += "  (고리 끊김 %.1f초)" % (shield_lockout_until - clock)
+	shield_label.text = text
+
+
+## Called by the director each tick so the lockout countdown stays current.
+func update_readout(clock: float) -> void:
+	if data != null and data.shield_per_minion > 0.0:
+		_refresh_shield(clock)
 
 
 ## Bosses never walk (G3/G8).
@@ -73,16 +97,21 @@ func is_hit_by(world_pos: Vector2, _radius: float) -> bool:
 	return Vector2(x, 0).distance_to(local) <= CAPSULE_RADIUS
 
 
-## Shield absorbs before HP (B9); the boss stays attackable while shielded.
+## Shield absorbs before HP (B9); the boss stays attackable while shielded. Absorbed damage
+## is still damage dealt (no hidden resistance), so hits keep procing and show real numbers.
 func take_damage(amount: float) -> float:
-	if shield > 0.0 and amount > 0.0:
-		var absorbed := minf(shield, amount)
+	var absorbed := 0.0
+	if shield > 0.0 and amount > 0.0 and alive:
+		absorbed = minf(shield, amount)
 		shield -= absorbed
 		amount -= absorbed
 		hp_changed.emit(hp, hp_max)
 		if amount <= 0.0:
-			return 0.0
-	var dealt := super.take_damage(amount)
+			if anim.has_animation("hit"):
+				anim.stop()
+				anim.play("hit")
+			return absorbed
+	var dealt := absorbed + super.take_damage(amount)
 	# Phase 2 applies from the next scheduled pattern only (B9).
 	if not phase2 and hp <= hp_max * data.phase2_hp_ratio:
 		phase2 = true

@@ -24,7 +24,8 @@ func bind(run: RunController) -> void:
 
 
 ## 빌드 아이콘 (G10): one slot per held word with its Rank; empty slots stay blank.
-func set_build(build: BuildState, db: ContentDB, sealed: Array[StringName] = []) -> void:
+## `sealed` maps word id -> remaining seal seconds (G8: 봉인은 이름과 남은 시간을 표시).
+func set_build(build: BuildState, db: ContentDB, sealed: Dictionary = {}) -> void:
 	for i in build_bar.get_child_count():
 		var slot := build_bar.get_child(i)
 		for ch in slot.get_children():
@@ -33,7 +34,7 @@ func set_build(build: BuildState, db: ContentDB, sealed: Array[StringName] = [])
 		if i < build.words.size():
 			var word: WordData = db.words[build.words[i]["id"]]
 			var l := Label.new()
-			l.text = "%s\nR%d%s" % [word.name, build.words[i]["rank"], "\n봉인" if word.id in sealed else ""]
+			l.text = "%s\nR%d%s" % [word.name, build.words[i]["rank"], ("\n봉인 %.1f초" % sealed[word.id]) if sealed.has(word.id) else ""]
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			l.set_anchors_preset(Control.PRESET_FULL_RECT)
 			slot.add_child(l)
