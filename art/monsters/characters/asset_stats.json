@@ -1,0 +1,177 @@
+{
+  "assets": [
+    {
+      "id": "giyeok",
+      "glyph": "ㄱ",
+      "triangles": 340,
+      "previous_triangles": 68,
+      "added_triangles": 272,
+      "height": 0.6000000238418579,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "nieun",
+      "glyph": "ㄴ",
+      "triangles": 340,
+      "previous_triangles": 68,
+      "added_triangles": 272,
+      "height": 0.6000000238418579,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "digeut",
+      "glyph": "ㄷ",
+      "triangles": 364,
+      "previous_triangles": 92,
+      "added_triangles": 272,
+      "height": 0.6000000238418579,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "rieul",
+      "glyph": "ㄹ",
+      "triangles": 412,
+      "previous_triangles": 140,
+      "added_triangles": 272,
+      "height": 0.6000000238418579,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "mieum",
+      "glyph": "ㅁ",
+      "triangles": 360,
+      "previous_triangles": 88,
+      "added_triangles": 272,
+      "height": 0.6000000238418579,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "bieup",
+      "glyph": "ㅂ",
+      "triangles": 452,
+      "previous_triangles": 180,
+      "added_triangles": 272,
+      "height": 0.6000000238418579,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "siot",
+      "glyph": "ㅅ",
+      "triangles": 352,
+      "previous_triangles": 80,
+      "added_triangles": 272,
+      "height": 0.6000000238418579,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "ieung",
+      "glyph": "ㅇ",
+      "triangles": 784,
+      "previous_triangles": 512,
+      "added_triangles": 272,
+      "height": 0.6000000238418579,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "hieut",
+      "glyph": "ㅎ",
+      "triangles": 744,
+      "previous_triangles": 472,
+      "added_triangles": 272,
+      "height": 0.6225000023841858,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "eo",
+      "glyph": "ㅓ",
+      "triangles": 360,
+      "previous_triangles": 88,
+      "added_triangles": 272,
+      "height": 0.5080000162124634,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "yeo",
+      "glyph": "ㅕ",
+      "triangles": 404,
+      "previous_triangles": 132,
+      "added_triangles": 272,
+      "height": 0.5080000162124634,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "o",
+      "glyph": "ㅗ",
+      "triangles": 360,
+      "previous_triangles": 88,
+      "added_triangles": 272,
+      "height": 0.550000011920929,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "u",
+      "glyph": "ㅜ",
+      "triangles": 360,
+      "previous_triangles": 88,
+      "added_triangles": 272,
+      "height": 0.5540000200271606,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "eu",
+      "glyph": "ㅡ",
+      "triangles": 316,
+      "previous_triangles": 44,
+      "added_triangles": 272,
+      "height": 0.09200000017881393,
+      "leg_pivot_height": 0.03128000006079674,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    },
+    {
+      "id": "i",
+      "glyph": "ㅣ",
+      "triangles": 316,
+      "previous_triangles": 44,
+      "added_triangles": 272,
+      "height": 0.5080000162124634,
+      "leg_pivot_height": 0.105,
+      "mesh_nodes": 5,
+      "surfaces": 6
+    }
+  ],
+  "slots": [
+    "Jamo_Ink",
+    "Jamo_Pressed_Hanji_Edge"
+  ],
+  "worst_case_20_plus_core": 18460,
+  "previous_worst_case": 13020,
+  "catalog_triangles": 6264,
+  "provenance": "Original procedural adaptation of ASSET-02; title_bg.png visual reference; no external assets"
+}
