@@ -75,7 +75,7 @@ func _check_codex() -> void:
 	Meta.mieum_purified = true
 	_expect(LibraryService.codex_row(db, db.words["W20"])["unlocked"], "욕심 unlocked after ㅁ")
 	var c01 := LibraryService.codex_row(db, db.words["C01"])
-	_expect(c01["unlocked"] and c01["effects"].size() == 1 and "불 Rank 2" in c01["condition"], "불길: recipe shown, single Rank")
+	_expect(c01["unlocked"] and c01["effects"].size() == 1 and "불 R2" in c01["condition"], "불길: recipe shown, single Rank")
 	Meta.codex["W01"] = {"mastery": 3, "best_rank": 2, "first_at": "d"}
 	sword = LibraryService.codex_row(db, db.words["W01"])
 	_expect(sword["discovered"] and sword["tier"] == "II" and sword["best_rank"] == 2, "복원도 II at 3")

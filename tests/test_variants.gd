@@ -260,6 +260,6 @@ func _check_hover() -> void:
 	var e: JamoMonster = director.enemies[0]
 	e.apply_variant(JamoMonster.Variant.HEAVY, db.balance)
 	hud.set_hover(e)
-	_expect(hud.get_node("%HoverLabel").text == "%s  HP 16.0 / 16.0  HEAVY" % e.jamo, "hover shows jamo, HP and variant (%s)" % hud.get_node("%HoverLabel").text)
+	_expect(hud.get_node("%HoverLabel").text == "%s  16.0/16.0  HEAVY" % e.jamo, "hover shows jamo, HP and variant (%s)" % hud.get_node("%HoverLabel").text)
 	hud.set_hover(null)
 	_expect(hud.get_node("%HoverLabel").text == "", "hover clears")
