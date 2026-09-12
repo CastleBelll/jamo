@@ -26,6 +26,7 @@ func _ready() -> void:
 		_check_motion_and_status()
 		_check_run_game()
 		_check_qa_fixes()
+		_check_input_shield()
 	for f in failures:
 		printerr("FAIL: " + f)
 	print("test_settings: %s (%d failures)" % ["PASS" if failures.is_empty() else "FAIL", failures.size()])
@@ -225,3 +226,27 @@ func _check_qa_fixes() -> void:
 	RunLog.end_run()
 	if log_path != "":
 		DirAccess.remove_absolute(log_path)
+
+
+## Clicks aimed at the last enemy must not land on the 자모 정리 / Forge / result buttons.
+func _check_input_shield() -> void:
+	Meta.new_profile()
+	Meta.first_run_done = true
+	var game := RUN_GAME.instantiate()
+	game.set_physics_process(false)
+	add_child(game)
+	var run: RunController = game.get_node("RunController")
+	var director: CombatDirector = game.get_node("CombatDirector")
+	var shield: Control = game.get_node("%InputShield")
+	_expect(not shield.visible, "no shield during prep")
+	run.begin_combat()
+	director.set_hold(true)
+	director.clear_enemies()
+	run.on_wave_cleared()
+	_expect(shield.visible and shield.mouse_filter == Control.MOUSE_FILTER_STOP and not director.hold_pressed, "wave clear raises the input shield and drops the held click")
+	_expect(shield.get_index() > game.get_node("Panels/Center").get_index(), "shield is drawn above the panels")
+	await game.shield_timer.timeout
+	_expect(not shield.visible, "shield drops after %.2fs" % game.INPUT_SHIELD_SECONDS)
+	game.get_node("%ClearPanel").get_node("%FinishButton").pressed.emit()
+	_expect(shield.visible, "Forge also opens shielded")
+	game.free()
