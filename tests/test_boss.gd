@@ -79,7 +79,7 @@ func _check_boss_wave_setup() -> void:
 	_expect(director.boss.global_position == Vector2(960, 260), "boss at the B11 anchor")
 	_expect(director.boss.hp == 90.0 and director.enemies.size() == 1, "boss HP 90, alone at start")
 	_expect(director.remaining() == 3, "remaining = boss + 2 scheduled minions")
-	_expect(game.get_node("HUD").get_node("%EnemiesLabel").text == "적 3", "HUD counts the boss wave")
+	_expect(game.get_node("HUD").get_node("%EnemiesLabel").text == "3", "HUD counts the boss wave")
 	_expect(game.get_node("%PrepHint").text.begins_with("착지 예고"), "boss intro line before combat")
 	var b := director.boss
 	_expect(director.pick_target(Vector2(1130, 260)) == b, "capsule end (170px) hits")

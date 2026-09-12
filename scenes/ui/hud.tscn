@@ -25,10 +25,18 @@ offset_bottom = 96.0
 theme_override_constants/separation = 48
 mouse_filter = 2
 
+[node name="WaveIcon" type="TextureRect" parent="Root/TopBar"]
+layout_mode = 2
+stretch_mode = 5
+
 [node name="WaveLabel" type="Label" parent="Root/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Wave 1"
+
+[node name="StabilityIcon" type="TextureRect" parent="Root/TopBar"]
+layout_mode = 2
+stretch_mode = 5
 
 [node name="StabilityBox" type="VBoxContainer" parent="Root/TopBar"]
 layout_mode = 2
@@ -47,15 +55,27 @@ max_value = 100.0
 value = 100.0
 show_percentage = false
 
+[node name="EnemyIcon" type="TextureRect" parent="Root/TopBar"]
+layout_mode = 2
+stretch_mode = 5
+
 [node name="EnemiesLabel" type="Label" parent="Root/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "남은 적 0"
 
+[node name="GoldIcon" type="TextureRect" parent="Root/TopBar"]
+layout_mode = 2
+stretch_mode = 5
+
 [node name="GoldLabel" type="Label" parent="Root/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 G"
+
+[node name="DropIcon" type="TextureRect" parent="Root/TopBar"]
+layout_mode = 2
+stretch_mode = 5
 
 [node name="DropsLabel" type="Label" parent="Root/TopBar"]
 unique_name_in_owner = true

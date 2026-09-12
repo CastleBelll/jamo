@@ -195,7 +195,7 @@ func _check_scene_flow() -> void:
 	director.request_click(director.enemies[0].global_position)
 	director.tick(0.3)
 	_expect(run.drops.drops == ([first_jamo] as Array[String]), "purified jamo recovered into the temp store")
-	_expect(hud.get_node("%DropsLabel").text == "회수 1", "HUD shows the temp drop count")
+	_expect(hud.get_node("%DropsLabel").text == "1", "HUD shows the temp drop count")
 	director.request_click(director.enemies[0].global_position)
 	director.tick(0.3)
 	_expect(run.phase == RunController.Phase.CLEAR and panel.visible, "clear opens the 자모 정리 panel")

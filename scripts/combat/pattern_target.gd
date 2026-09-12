@@ -51,6 +51,9 @@ func setup(spec: Dictionary) -> void:
 
 func _ready() -> void:
 	$FocusRing.visible = focused
+	var has_marker := AssetLib.apply($Marker, "marker_target")
+	for drawn in [$Ring, $Cross, $Cross2]:
+		drawn.visible = not has_marker
 	_refresh()
 	_draw_lane_preview()
 
