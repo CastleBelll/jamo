@@ -12,6 +12,8 @@ const PERF_WAVES := 3
 var db: ContentDB
 var runs: int = 2000
 var perf: bool = false
+var only_late: bool = false          # --only=late: just the Forge loop, for balance experiments
+var overrides: Dictionary = {}       # --set key=value applied to BalanceConfig before the sims
 var rows: Array[Dictionary] = []     # {check, n, measured, target, verdict}
 var details: Array[String] = []
 var late: Dictionary = {}            # late_loop at 75%, shared by 후반 추첨 / 선택 / 공급
@@ -24,11 +26,18 @@ func _ready() -> void:
 	Meta.first_run_done = true  # B3/B6: the tutorial hand is excluded from every statistic
 	RunLog.enabled = false
 	db = ContentDB.load_all()
+	_apply_overrides()
 	var errors := db.validate()
 	_row("데이터", 1, "오류 %d" % errors.size(), "0", errors.is_empty())
 	_check_first_draw()
 	_check_late_draw()
 	_check_choice()
+	if only_late:
+		for d in details:
+			print(d)
+		Meta.saver.delete_all()
+		get_tree().quit(0)
+		return
 	_check_supply()
 	_check_build_directions()
 	_check_meta()
@@ -47,6 +56,24 @@ func _parse_args() -> void:
 			runs = maxi(int(arg.trim_prefix("--runs=")), 10)
 		elif arg == "--perf":
 			perf = true
+		elif arg == "--only=late":
+			only_late = true
+		elif arg.begins_with("--set="):
+			var kv := arg.trim_prefix("--set=").split("=")
+			if kv.size() == 2:
+				overrides[kv[0]] = kv[1]
+
+
+## Balance experiments (B12 조정 기준): override numeric BalanceConfig fields for this run only.
+func _apply_overrides() -> void:
+	for key in overrides:
+		var current = db.balance.get(key)
+		if current == null:
+			printerr("unknown balance field: " + key)
+			continue
+		var value: Variant = int(overrides[key]) if current is int else float(overrides[key])
+		db.balance.set(key, value)
+		print("override %s = %s" % [key, str(value)])
 
 
 ## `verdict`: "PASS" / "FAIL", or "기록" for rows B12 only asks to observe.
