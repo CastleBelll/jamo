@@ -12,20 +12,23 @@ const PERF_WAVES := 3
 var db: ContentDB
 var runs: int = 2000
 var perf: bool = false
-var rows: Array[Dictionary] = []     # {check, n, measured, target, pass}
+var rows: Array[Dictionary] = []     # {check, n, measured, target, verdict}
 var details: Array[String] = []
+var late: Dictionary = {}            # late_loop at 75%, shared by 후반 추첨 / 선택 / 공급
 
 
 func _ready() -> void:
 	_parse_args()
 	Meta.saver.path = "user://b12_verify.json"
 	Meta.new_profile()
+	Meta.first_run_done = true  # B3/B6: the tutorial hand is excluded from every statistic
 	RunLog.enabled = false
 	db = ContentDB.load_all()
 	var errors := db.validate()
 	_row("데이터", 1, "오류 %d" % errors.size(), "0", errors.is_empty())
 	_check_first_draw()
 	_check_late_draw()
+	_check_choice()
 	_check_supply()
 	_check_build_directions()
 	_check_meta()
@@ -46,9 +49,11 @@ func _parse_args() -> void:
 			perf = true
 
 
-func _row(check: String, n: int, measured: String, target: String, ok: bool) -> void:
-	rows.append({"check": check, "n": n, "measured": measured, "target": target, "pass": ok})
-	print("%s | N=%d | %s | 목표 %s | %s" % [check, n, measured, target, "PASS" if ok else "FAIL"])
+## `verdict`: "PASS" / "FAIL", or "기록" for rows B12 only asks to observe.
+func _row(check: String, n: int, measured: String, target: String, verdict: Variant) -> void:
+	var text: String = verdict if verdict is String else ("PASS" if verdict else "FAIL")
+	rows.append({"check": check, "n": n, "measured": measured, "target": target, "verdict": text})
+	print("%s | N=%d | %s | 목표 %s | %s" % [check, n, measured, target, text])
 
 
 # --- 추첨 (B12 row 2): first hand failure 15~40%, empty build after rerolls <= 10% -----------
@@ -63,32 +68,41 @@ func _check_first_draw() -> void:
 # --- 후반 추첨 (B12 row 3): valid-zero ratio per Wave <= 15% at 75% purification --------------
 
 func _check_late_draw() -> void:
-	var late_runs := maxi(runs / 4, 100)
-	var r := B12Sim.late_loop(db, late_runs, 0.75)
+	late = B12Sim.late_loop(db, runs, 0.75)
 	var worst := 0.0
 	var worst_wave := 0
 	var lines: Array[String] = []
 	for wave in range(1, B12Sim.NORMAL_WAVES + 1):
-		var zero: float = float(r["zero_by_wave"].get(wave, 0)) / late_runs
-		var avg: float = float(r["candidates_by_wave"].get(wave, 0)) / late_runs
-		lines.append("W%d 유효0 %.1f%% · 평균 후보 %.2f" % [wave, zero * 100, avg])
+		var zero: float = float(late["zero_by_wave"].get(wave, 0)) / runs
+		var avg: float = float(late["candidates_by_wave"].get(wave, 0)) / runs
+		lines.append("W%d 유효0 %.1f%% · 최종 후보 %.2f" % [wave, zero * 100, avg])
 		if zero > worst:
 			worst = zero
 			worst_wave = wave
-	details.append("후반 추첨 (정화율 75%%, RUN %d): " % late_runs + " / ".join(lines))
-	_row("후반 추첨", late_runs, "최악 W%d 유효0 %.1f%%" % [worst_wave, worst * 100], "≤15%", worst <= 0.15)
+	details.append("후반 추첨 (정화율 75%%, B6 Lock 정책, RUN %d): " % runs + " / ".join(lines))
+	_row("후반 추첨", runs, "최악 W%d 유효0 %.1f%%" % [worst_wave, worst * 100], "≤15%", worst <= 0.15)
+
+
+# --- 선택 (B12 row 6): final candidates 1.5~3 on average, some Rerolls left unused ------------
+
+func _check_choice() -> void:
+	var forges: int = late["forges"]
+	var mean: float = float(late["final_candidates"]) / maxi(forges, 1)
+	var stopped: float = float(late["stopped_with_rerolls"]) / maxi(forges, 1)
+	_row("선택", forges, "최종 후보 평균 %.2f · Reroll 남기고 종료 %.1f%%" % [mean, stopped * 100], "1.5~3 · 존재", mean >= 1.5 and mean <= 3.0 and stopped > 0.0)
 
 
 # --- 공급 (B12 row 4): pinned-lacking jamo delivered per Wave at 50/75/100% purification ------
 
 func _check_supply() -> void:
-	var waves := maxi(runs, 1000)
 	var parts: Array[String] = []
+	var total_waves := 0
 	for rate in [0.5, 0.75, 1.0]:
-		var r := B12Sim.supply(db, waves, rate)
-		parts.append("%.0f%% → %.1f%%" % [rate * 100, r["delivered"] * 100])
-	details.append("공급: 정화율 100%%가 75%%보다 낮게 나오면 Wave 드랍 상한 %d에 목표가 아닌 자모가 먼저 차는 것이다 (B4 피티·상한 그대로)." % db.balance.drop_cap_per_wave)
-	_row("공급", waves, "부족 자모 도착률 " + " · ".join(parts), "기록 (조정 기준은 관찰)", true)
+		var r: Dictionary = late if is_equal_approx(rate, 0.75) else B12Sim.late_loop(db, maxi(runs / 5, 100), rate)
+		total_waves += r["supply_waves"]
+		parts.append("%.0f%% → %.1f%% (Wave %d)" % [rate * 100, 100.0 * r["supply_delivered"] / maxi(r["supply_waves"], 1), r["supply_waves"]])
+	details.append("공급: RUN 진행 중 실제 덱에서 목표(부족 자모가 가장 적은 단어)를 핀하고, 그 Wave의 회수에 부족 자모가 하나라도 들어온 비율.")
+	_row("공급", total_waves, "부족 자모 도착률 " + " · ".join(parts), "기록 (조정 기준은 관찰)", "기록")
 
 
 # --- 빌드 (B12 row 8): all 4 directions reach W10, 3 of them reach W20 ------------------------
@@ -99,21 +113,21 @@ func _check_build_directions() -> void:
 	var lines: Array[String] = []
 	for label in DIRECTIONS:
 		var best := 0
-		var seconds: Array[String] = []
+		var per_seed: Array[String] = []
 		for seed in BUILD_SEEDS:
 			var bot := B12Bot.new()
 			bot.direction = DIRECTIONS[label]
 			bot.boot(RUN_GAME, db, seed, self)
 			var cleared := bot.play_run()
 			best = maxi(best, cleared)
-			seconds.append("%d" % int(_avg(bot.wave_seconds)))
+			per_seed.append("seed %d: W%d, 평균 전투 %ds" % [seed, cleared, int(_avg(bot.wave_seconds))])
 			bot.free_game()
-		lines.append("%s 최고 W%d 클리어 (평균 전투초 %s)" % [label, best, "/".join(seconds)])
+		lines.append("%s → %s" % [label, "; ".join(per_seed)])
 		if best >= 10:
 			reach10 += 1
 		if best >= 20:
 			reach20 += 1
-	details.append("빌드 방향: " + " / ".join(lines))
+	details.append("빌드 방향 (봇은 0.1초마다 최적 대상을 누르는 실력 상한이므로 도달 Wave는 상한값): " + " / ".join(lines))
 	_row("빌드", DIRECTIONS.size() * BUILD_SEEDS.size(), "W10 도달 %d/4 · W20 %d/4" % [reach10, reach20], "4/4 · ≥3/4", reach10 == 4 and reach20 >= 3)
 
 
@@ -123,7 +137,9 @@ func _check_meta() -> void:
 	var a := _play_w1(false)
 	var b := _play_w1(true)
 	Meta.research = []
-	_row("메타", 2, "W1 적중 %d/%d · 정화 %d/%d" % [a["hits"], b["hits"], a["purified"], b["purified"]], "동일", a["hits"] == b["hits"] and a["purified"] == b["purified"])
+	var applied: bool = b["stability_max"] > a["stability_max"]
+	_row("메타", 2, "안정도 상한 %.0f/%.0f · W1 적중 %d/%d · 정화 %d/%d" % [a["stability_max"], b["stability_max"], a["hits"], b["hits"], a["purified"], b["purified"]],
+		"연구 적용 · 적중/정화 동일", applied and a["hits"] == b["hits"] and a["purified"] == b["purified"])
 
 
 func _play_w1(max_research: bool) -> Dictionary:
@@ -131,7 +147,7 @@ func _play_w1(max_research: bool) -> Dictionary:
 	var bot := B12Bot.new()
 	bot.boot(RUN_GAME, db, 77, self)
 	bot.play_wave()
-	var out := {"hits": bot.w1_hits, "purified": bot.w1_purified}
+	var out := {"hits": bot.w1_hits, "purified": bot.w1_purified, "stability_max": bot.run.stability_max}
 	bot.free_game()
 	return out
 
@@ -143,9 +159,10 @@ func _check_perf() -> void:
 	var bot := B12Bot.new()
 	bot.boot(RUN_GAME, db, 5, self)
 	var samples: Array[float] = []
-	while bot.run.phase == RunController.Phase.WAVE_PREP and bot.run.wave <= PERF_WAVES:
+	var deadline := Time.get_ticks_msec() + int(B12Bot.MAX_WAVE_SECONDS * PERF_WAVES * 1000)
+	while bot.run.phase == RunController.Phase.WAVE_PREP and bot.run.wave <= PERF_WAVES and Time.get_ticks_msec() < deadline:
 		bot.run.begin_combat()
-		while bot.run.phase == RunController.Phase.COMBAT:
+		while bot.run.phase == RunController.Phase.COMBAT and Time.get_ticks_msec() < deadline:
 			bot.click_best()
 			var dt := get_process_delta_time()
 			bot.director.tick(dt)
@@ -178,7 +195,7 @@ func _write_report() -> void:
 		"사람 관찰 항목(첫 경험·클릭 피로·보스 설명·재도전)은 이 보고서에 없다. 여기 통과는 계산/봇 검사 통과일 뿐 플레이테스트 통과가 아니다.", "",
 		"| 검사 | N | 측정 | 목표 | 판정 |", "|---|---:|---|---|---|"]
 	for r in rows:
-		lines.append("| %s | %d | %s | %s | %s |" % [r["check"], r["n"], r["measured"], r["target"], "PASS" if r["pass"] else "FAIL"])
+		lines.append("| %s | %d | %s | %s | %s |" % [r["check"], r["n"], r["measured"], r["target"], r["verdict"]])
 	lines.append("")
 	lines.append("## 상세")
 	lines.append("")
@@ -188,8 +205,7 @@ func _write_report() -> void:
 	lines.append("## 재현")
 	lines.append("")
 	lines.append("```")
-	lines.append("godot --headless --path . tools/verify/verify.tscn -- --runs=%d" % runs)
-	lines.append("godot --path . tools/verify/verify.tscn -- --runs=200 --perf")
+	lines.append("godot %s--path . tools/verify/verify.tscn -- --runs=%d%s" % ["" if perf else "--headless ", runs, " --perf" if perf else ""])
 	lines.append("```")
 	var f := FileAccess.open(REPORT_PATH, FileAccess.WRITE)
 	if f == null:

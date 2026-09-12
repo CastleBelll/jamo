@@ -28,11 +28,41 @@ static func first_draw(db: ContentDB, deck_id: StringName, runs: int) -> Diction
 		forge.start(deck, db, build, pool, hash("b12:first:%s:%d" % [deck_id, i]), 0)
 		if forge.candidates().is_empty():
 			first_fail += 1
-			while forge.candidates().is_empty() and forge.can_reroll():
-				forge.reroll()
+			b6_reroll(forge)
 			if forge.candidates().is_empty():
 				after_fail += 1
 	return {"first_fail": float(first_fail) / runs, "after_reroll_fail": float(after_fail) / runs, "runs": runs}
+
+
+## B6 정본 policy: stop as soon as a candidate exists; otherwise Lock the hand tokens the word
+## with the fewest lacking jamo still needs (up to lock_max) and Reroll.
+static func b6_reroll(forge: ForgeService) -> void:
+	while forge.candidates().is_empty() and forge.can_reroll():
+		var target := _fewest_lacking(forge)
+		for id in forge.locked.duplicate():
+			forge.toggle_lock(id)
+		if target != null:
+			var need := ForgeService.required_counts(target)
+			for t in forge.hand:
+				if need.get(t["jamo"], 0) > 0 and forge.toggle_lock(t["id"]):
+					need[t["jamo"]] -= 1
+		forge.reroll()
+
+
+static func _fewest_lacking(forge: ForgeService) -> WordData:
+	var counts := forge.hand_counts()
+	var best: WordData = null
+	var best_lack := 99
+	for w in forge.pool:
+		if forge.build.has(w.id) and forge.build.rank_of(w.id) >= w.max_rank():
+			continue
+		var lack := 0
+		for j in ForgeService.required_counts(w):
+			lack += maxi(ForgeService.required_counts(w)[j] - counts.get(j, 0), 0)
+		if lack < best_lack:
+			best = w
+			best_lack = lack
+	return best
 
 
 ## A RunController driven without a scene: real deck, drops, rewards and Forge.
@@ -65,29 +95,73 @@ static func wave_jamo(db: ContentDB, run: RunController, wave: int, seed: int) -
 ## 후반 추첨: N RUNs through W1..W19 at a fixed purification rate with a greedy Forge policy.
 ## Returns per-wave valid-zero counts (candidates empty after every Reroll) and RUN count.
 static func late_loop(db: ContentDB, runs: int, purify_rate: float, direction: StringName = &"") -> Dictionary:
-	var zero_by_wave := {}
-	var candidates_by_wave := {}
+	var out := {"zero_by_wave": {}, "candidates_by_wave": {}, "runs": runs, "forges": 0, "final_candidates": 0,
+		"stopped_with_rerolls": 0, "supply_waves": 0, "supply_delivered": 0}
 	var rng := RandomNumberGenerator.new()
 	for i in runs:
-		var seed := hash("b12:late:%d" % i)
+		var seed := hash("b12:late:%d:%f" % [i, purify_rate])
 		rng.seed = seed
 		var run := new_run(db, seed)
 		for wave in range(1, NORMAL_WAVES + 1):
+			_repin(db, run)
+			var lacking := run.pin_lacking()
 			run.begin_combat()
-			for j in wave_jamo(db, run, wave, seed):
-				if rng.randf() < purify_rate:
-					run.on_purified(j)
+			var delivered := _play_wave_drops(db, run, wave, seed, purify_rate, rng, lacking)
+			if not lacking.is_empty():
+				out["supply_waves"] += 1
+				out["supply_delivered"] += 1 if delivered else 0
 			run.on_wave_cleared()
 			reward_policy(db, run, run.build_reward(), direction)
 			run.finish_clear()
 			var forge := run.start_forge()
 			var picked := forge_policy(db, forge, direction)
-			candidates_by_wave[wave] = candidates_by_wave.get(wave, 0) + forge.candidates().size()
+			var final := forge.candidates().size() + (1 if picked != &"" else 0)  # the restored word counts as a candidate
+			out["forges"] += 1
+			out["final_candidates"] += final
+			out["candidates_by_wave"][wave] = out["candidates_by_wave"].get(wave, 0) + final
+			if picked != &"" and forge.rerolls_left > 0:
+				out["stopped_with_rerolls"] += 1
 			if picked == &"" and forge.candidates().is_empty():
-				zero_by_wave[wave] = zero_by_wave.get(wave, 0) + 1
+				out["zero_by_wave"][wave] = out["zero_by_wave"].get(wave, 0) + 1
 			run.finish_forge()
 		run.free()
-	return {"zero_by_wave": zero_by_wave, "candidates_by_wave": candidates_by_wave, "runs": runs}
+	Meta.pinned_word = ""  # pin_word writes the profile field; never leak it into later checks
+	return out
+
+
+## One Wave of purification at `rate`: normal spawns, or the boss minions plus the B4 body
+## tokens (W5 ㅁ×2, W15 ㅇ×2). Returns true when a recovered jamo was one the pin lacked.
+static func _play_wave_drops(db: ContentDB, run: RunController, wave: int, seed: int, rate: float, rng: RandomNumberGenerator, lacking: Array[String]) -> bool:
+	var delivered := false
+	var data: WaveData = db.waves[wave]
+	var stream := wave_jamo(db, run, wave, seed)
+	if data.is_boss:
+		for entry in db.bosses[data.boss_id].minion_schedule:
+			for k in int(entry["count"]):
+				stream.append(String(entry.get("jamo", "")))
+	for j in stream:
+		if j != "" and rng.randf() < rate and run.on_purified(j) and j in lacking:
+			delivered = true
+	if data.is_boss:
+		for j in db.bosses[data.boss_id].body_drop:
+			run.drops.add_guaranteed(j)
+			if j in lacking:
+				delivered = true
+	return delivered
+
+
+## Keeps a goal pinned like a player would: the pool word with the fewest missing jamo (>0).
+static func _repin(db: ContentDB, run: RunController) -> void:
+	if not run.pin_lacking().is_empty():
+		return
+	var best: StringName = &""
+	var best_missing := 99
+	for w in run.word_pool():
+		var missing := run.deck.missing_for(w).size()
+		if missing > 0 and missing < best_missing:
+			best = w.id
+			best_missing = missing
+	run.pin_word(best)
 
 
 ## Reward policy: add every drop that a pool word still lacks (direction words first),
@@ -120,8 +194,7 @@ static func _best_drop(db: ContentDB, run: RunController, drops: Array[String], 
 ## direction-tagged words first, rank-ups over new words when the build is full.
 ## Returns the restored word id or &"".
 static func forge_policy(db: ContentDB, forge: ForgeService, direction: StringName) -> StringName:
-	while forge.candidates().is_empty() and forge.can_reroll():
-		forge.reroll()
+	b6_reroll(forge)
 	var list := forge.candidates()
 	if list.is_empty():
 		return &""
@@ -160,34 +233,3 @@ static func _lowest_rank(build: BuildState, db: ContentDB, risk_only: bool) -> S
 			best = held["id"]
 			best_rank = held["rank"]
 	return best
-
-
-## 공급: at each purification rate, how often a Wave delivers at least one jamo the pinned
-## word still lacks. Uses a fresh Starter A deck and every start word as the pin in turn.
-static func supply(db: ContentDB, waves: int, purify_rate: float) -> Dictionary:
-	var pool := start_pool(db)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = hash("b12:supply:%f" % purify_rate)
-	var delivered := 0
-	var lacking_waves := 0
-	for i in waves:
-		var run := new_run(db, hash("b12:supply:%f:%d" % [purify_rate, i]))
-		var word: WordData = pool[i % pool.size()]
-		run.pin_word(word.id)
-		var lacking := run.pin_lacking()
-		if lacking.is_empty():
-			run.free()
-			continue
-		lacking_waves += 1
-		var wave: int = 1 + (i % NORMAL_WAVES)
-		if db.waves[wave].is_boss:
-			wave = 1
-		run.begin_combat()
-		var hit := false
-		for j in wave_jamo(db, run, wave, run.run_seed):
-			if rng.randf() < purify_rate and run.on_purified(j) and j in lacking:
-				hit = true
-		if hit:
-			delivered += 1
-		run.free()
-	return {"rate": purify_rate, "waves": lacking_waves, "delivered": float(delivered) / maxi(lacking_waves, 1)}
