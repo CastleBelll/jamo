@@ -1,0 +1,97 @@
+{
+  "method": "project-original deterministic synthesis; no third-party samples",
+  "combat_source_sha256": "18a793abaf22b6dfe5b7301c11f8115635ebb5cccb6df517ae320b0e404c38b5",
+  "tonal_basis_hz": [
+    55,
+    110,
+    165,
+    220,
+    330
+  ],
+  "rhythm_bpm": 120,
+  "beats_in_loop": 32,
+  "combat_has_existing_beat": false,
+  "unity_gain_combat_plus_boss_sample_peak_dbfs": -12.85878287497648,
+  "assets": [
+    {
+      "path": "art/audio/bgm_boss_layer.ogg",
+      "frames": 705600,
+      "duration_seconds": 16.0,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "OGG",
+      "codec": "VORBIS",
+      "decoded_sample_peak_dbfs": -17.832841600028793,
+      "leading_below_minus60_seconds": 0.0,
+      "trailing_below_minus60_seconds": 0.0,
+      "sha256": "d5abb4e207242ea526306e3936b400b0346815054525fa76b897b947047dbddc",
+      "loop_boundary_sample_jump": 0.0023474618792533875,
+      "edge_20ms_rms_dbfs": -24.140774147231937
+    },
+    {
+      "path": "art/audio/sfx/ui_click.ogg",
+      "frames": 4410,
+      "duration_seconds": 0.1,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "OGG",
+      "codec": "VORBIS",
+      "decoded_sample_peak_dbfs": -8.068539540504185,
+      "leading_below_minus60_seconds": 2.2675736961451248e-05,
+      "trailing_below_minus60_seconds": 0.002131519274376417,
+      "sha256": "164a1298fd41c3141c26b266294f882759352855d9061487dd3ecd1a69b53cc0"
+    },
+    {
+      "path": "art/audio/sfx/ui_confirm.ogg",
+      "frames": 13230,
+      "duration_seconds": 0.3,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "OGG",
+      "codec": "VORBIS",
+      "decoded_sample_peak_dbfs": -8.161042718629446,
+      "leading_below_minus60_seconds": 0.0,
+      "trailing_below_minus60_seconds": 0.001201814058956916,
+      "sha256": "939923e445b224c0461dae31097124d712d0b88badc52594d191ed2cf342f3c6"
+    },
+    {
+      "path": "art/audio/sfx/ui_cancel.ogg",
+      "frames": 11025,
+      "duration_seconds": 0.25,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "OGG",
+      "codec": "VORBIS",
+      "decoded_sample_peak_dbfs": -9.913677483971025,
+      "leading_below_minus60_seconds": 0.0,
+      "trailing_below_minus60_seconds": 0.003015873015873016,
+      "sha256": "e8abcf2a3b652a0e9933e4ffcf4b48dbbb6f33ce7580d812a280d06e98b03655"
+    },
+    {
+      "path": "art/audio/sfx/ui_hover.ogg",
+      "frames": 2205,
+      "duration_seconds": 0.05,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "OGG",
+      "codec": "VORBIS",
+      "decoded_sample_peak_dbfs": -24.140576026247004,
+      "leading_below_minus60_seconds": 0.0,
+      "trailing_below_minus60_seconds": 0.0028117913832199546,
+      "sha256": "a81111b099cfaeafb03d81d8e7265030c77b8ac21f8edc5bdfd72304be59ade5"
+    },
+    {
+      "path": "art/audio/sfx/boss_purified.ogg",
+      "frames": 44100,
+      "duration_seconds": 1.0,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "OGG",
+      "codec": "VORBIS",
+      "decoded_sample_peak_dbfs": -8.248996762972368,
+      "leading_below_minus60_seconds": 0.0,
+      "trailing_below_minus60_seconds": 0.002471655328798186,
+      "sha256": "1ab1436dd12b0d012a7afd70a8458785cfab872f3184dd17694a724fef1e2ac0"
+    }
+  ]
+}
