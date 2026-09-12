@@ -71,6 +71,20 @@ func _check_settings() -> void:
 
 func _check_sfx() -> void:
 	Sfx.reset()
+	Sfx.set_boss_layer(true)
+	_expect(Sfx.boss_layer_on, "boss layer flag turns on")
+	Sfx.set_boss_layer(false)
+	_expect(not Sfx.boss_layer_on, "boss layer flag turns off")
+	_expect(Sfx.play_ui("ui_click") and not Sfx.play_ui("ui_click"), "UI click respects the same-sound gap")
+	_expect(Sfx.active_voices() == 0, "UI sounds never take an SFX voice")
+	var probe := Button.new()
+	probe.name = "SetupBackButton"
+	add_child(probe)
+	_expect(Sfx._ui_sound_for(probe) == "ui_cancel", "Back buttons cancel")
+	probe.theme_type_variation = &"PrimaryButton"
+	_expect(Sfx._ui_sound_for(probe) == "ui_confirm", "primary buttons confirm")
+	_expect(probe.pressed.get_connections().size() == 1, "every button gets the UI click hook on enter")
+	probe.free()
 	_expect(Sfx.play("hit_ink", 0, 1.0), "first sound plays")
 	_expect(not Sfx.play("hit_ink", 0, 1.0), "same sound within 0.05s is dropped")
 	Sfx.clock += 0.06

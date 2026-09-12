@@ -146,6 +146,7 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			director.risk_unlocked = run.risk_unlocked
 			director.start_wave(run.wave_data(), hash("spawn:%d:%d" % [run_seed, run.wave]))
 			last_stability = run.stability
+			Sfx.set_boss_layer(run.is_boss_wave())
 			if run.is_boss_wave():
 				_show_banner(db_ref.bosses[run.wave_data().boss_id].name, 1.2)
 				Sfx.play("boss_intro", CombatDirector.PRIORITY_WARNING, 1.2)
@@ -153,6 +154,7 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 				_show_banner("", 0.0)
 			RunLog.event("wave_start", {"wave": run.wave, "stability": run.stability})
 		RunController.Phase.CLEAR:
+			Sfx.set_boss_layer(false)
 			_show_banner("Wave Clear", 0.8)
 			Sfx.play("page_turn", 1, 0.5)
 			RunLog.event("wave_clear", {"wave": run.wave, "stability": run.stability, "hits": director.stats["hits"], "misses": director.miss_clicks,
@@ -166,6 +168,7 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			forge_panel.open(run, db_ref)
 			_save_run()
 		RunController.Phase.RESULT:
+			Sfx.set_boss_layer(false)
 			director.set_hold(false)
 			result_label.text = _result_text(run.end_reason)
 			var icon_id: String = {RunController.EndReason.COMPLETED: "result_complete", RunController.EndReason.ABANDONED: "result_abandon"}.get(run.end_reason, "result_fail")
@@ -184,6 +187,7 @@ func _clear_stats_text() -> String:
 ## Data first, then the 회수 feedback (G12): the drop is counted before the glyph floats.
 func _on_enemy_purified(monster: JamoMonster, _source: StringName) -> void:
 	if monster is Boss:
+		Sfx.play("boss_purified", CombatDirector.PRIORITY_WARNING, 1.0)
 		return  # boss bodies only give their guaranteed B9 drops, handled by the director
 	if run.on_purified(monster.jamo):
 		hud.set_temp_drops(run.drops.drops.size())

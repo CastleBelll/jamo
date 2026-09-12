@@ -45,7 +45,7 @@
 ## 6. 남은 일 (사람·검증)
 
 1. **시각 검수**: 실제 실행으로 서고·전투 화면 눈으로 확인(headless QA는 프레임 렌더로 버튼 포커스·타이틀만 검증). 타이틀 힌트 대비 약 3.1:1(외곽선 색을 어둡게 하면 개선), 보상/포지 타일의 아이콘+텍스트 배치 미확인.
-2. **음향**: 보스 레이어 BGM, UI 버스 효과음은 미제작.
+2. **음향**: 코드 측은 연결됨 — `Sfx.set_boss_layer`(보스 Wave에서 `bgm_boss_layer.ogg`를 전투 루프 위치에 맞춰 1초 페이드), UI 버스 `play_ui`(모든 BaseButton 진입 시 자동 연결: Primary=확정음, Back/Abandon/Close/Skip=취소음, 나머지 클릭음, hover 톡), 보스 정화음. 파일(`bgm_boss_layer.ogg`, `ui_*.ogg`, `boss_purified.ogg`)은 codex 후속 요청으로 제작 중이며 없으면 무음.
 3. **밸런스 신호**: B12 선택 행은 평균 1.61로 통과하지만 W14 이후 1.5 언저리, W19 1.47. `verify.tscn -- --only=late --set=key=value`로 실험한 결과(1,500 RUN): lock_max 4·deck_max 28은 변화 없음, reroll_base 3은 전 Wave ≥1.54·유효0 ≤1.1%, hand_size 8은 1.96이지만 튜토리얼 손패·UI 변경 필요. 플레이테스트 전에는 수치를 바꾸지 않고 기록만 둔다.
 4. **검증**: 계산·봇 항목은 `tools/verify/verify.tscn` → `docs/JAMO_B12_REPORT.md`로 실측 완료(기준 PC i9-14900/UHD 770). 남은 것은 사람 관찰: 사용자 5명 첫 5분, 클릭 피로 척도, 보스 대응 설명, 재도전 의사.
 5. **알려진 미세 이슈**: 합성 사전 항목 표기·설정 탭 문구 등 검수 비차단 지적은 각 검수 보고서 참조.
