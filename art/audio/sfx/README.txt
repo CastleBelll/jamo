@@ -1,18 +1,16 @@
-Audio assets are not in the repository yet.
+JAMO S8 audio set
+=================
 
-Every path below is already wired up and will start playing the moment the file
-is dropped in; until then AudioManager resolves the path to nothing and stays
-silent, without raising a load error. Doc v0.3 section 25.
+Included Vorbis files:
+  hit_ink.ogg       0.22 s  short ink tap
+  purify.ogg        0.65 s  rising purification cue
+  sentence_hit.ogg  0.52 s  low manuscript impact
+  boss_warning.ogg  0.85 s  pulsing warning
+  boss_intro.ogg    1.20 s  two-tone boss arrival
+  page_turn.ogg     0.48 s  paper-noise turn
 
-Step sounds, referenced from res://resources/motion_profiles/*.tres
-(MotionProfile.step_sfx_path):
-
-  step_heavy.ogg   HEAVY  - low 톡/툭     (heavy_step)
-  step_light.ogg   LIGHT  - 틱/탭         (light_step, upright)
-  step_bounce.ogg  BOUNCE - 뽁/통         (bounce, heavy_bounce)
-  step_roll.ogg    ROLL   - light rolling (roll, roll_fast)
-  step_glide.ogg   GLIDE  - 스윽          (glide, sway)
-
-Click and UI cues, referenced from res://resources/audio/sfx_library.tres
-(AudioLibrary): click / click_critical / click_golden / kill / word_complete,
-plus the looping bgm track. Those slots are empty; set them in the Inspector.
+The library and combat loops are one directory up (`bgm_library.ogg` and
+`bgm_combat.ogg`, both 16 seconds). All eight tracks are deterministic,
+project-original synthesis produced by `art/tools/generate_assets.py`; no
+third-party recordings or samples are present. See `art/README.md` and
+`art/ASSET_MAP.md` for provenance and the integration contract.
