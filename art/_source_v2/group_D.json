@@ -1,0 +1,31 @@
+[
+  {
+    "name": "title_logo",
+    "path": "title/title_logo.png",
+    "size": [
+      1200,
+      420
+    ],
+    "source": "exec-64cf9317-eb68-401d-961b-1b6da57e2c2b.png"
+  },
+  {
+    "name": "title_screen",
+    "path": "title/title_screen.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "opaque": true,
+    "source": "exec-809cdaee-057f-490e-9816-eba38c8f86e4.png"
+  },
+  {
+    "name": "lib_bg_dim",
+    "path": "library/lib_bg_dim.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "opaque": true,
+    "source": "exec-2ec3aca3-81a6-493c-9a1a-08be46d1e515.png"
+  }
+]

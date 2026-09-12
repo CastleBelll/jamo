@@ -1,5 +1,18 @@
 # JAMO Asset Map
 
+## v2 D — title and menu lighting
+
+| Path | Size | 9-slice margin | Method |
+|---|---|---|---|
+| `art/title/title_logo.png` | 1200×420 | none | built-in ImageGen + size normalization |
+| `art/title/title_screen.png` | 1920×1080 | none | built-in ImageGen + size normalization |
+| `art/library/lib_bg_dim.png` | 1920×1080 | none | built-in ImageGen + size normalization |
+
+Retained unchanged: `art/library/lib_bg.png` (1920×1080). Selected sources: `art/_source_v2/group_D/`, IDs: `group_D.json`. OpenAI Terms apply. Logo is RGBA cream dry-brush JAMO with glow; exact Korean subtitle visually checked: “작은 글자가, 새로운 세상을 만든다.” Decorative image text is not runtime game data. Title background has four walking porcelain figures in the lower quarter and calm center; no menus. Dim library is an ImageGen lighting edit: left 40% dark walnut vignette fading to unchanged warm right. Reference `art/_reference/title_ex.png` used for style/composition. Dim edit preserves overall composition but is generative, not pixel-identical to the original.
+
+Prompt set: isolated cream dry-brush uppercase JAMO with exact subtitle and transparent alpha; warm dusk dark-walnut library desk background with ㄱ/ㅁ/ㅇ/ㄴ walking lower center, no UI/text; edit original library lighting only, left40% dark vignette for menus, preserve objects and sunset.
+
+
 ## v2 B — porcelain bosses
 
 | Path | Size | 9-slice margin | Method |
@@ -56,10 +69,10 @@ as Vorbis (JAMO use, no third-party restriction).
 | ink_overlay | `art/backgrounds/ink_overlay.png` | 1920×1080 | PROC |
 | sentence_row | `art/backgrounds/sentence_row.png` | 1480×90 | PROC |
 | sentence_row_hit | `art/backgrounds/sentence_row_hit.png` | 1480×90 | PROC |
-| boss_mieum | `art/bosses/boss_mieum.png` | 360×100 | FONT + PROC / OFL-1.1 |
-| boss_silence | `art/bosses/boss_silence.png` | 360×100 | FONT + PROC / OFL-1.1 |
-| boss_ieung | `art/bosses/boss_ieung.png` | 360×100 | FONT + PROC / OFL-1.1 |
-| boss_greed | `art/bosses/boss_greed.png` | 360×100 | FONT + PROC / OFL-1.1 |
+| boss_mieum | `art/bosses/boss_mieum.png` | 512×512 | v2 IMG |
+| boss_silence | `art/bosses/boss_silence.png` | 512×512 | v2 IMG |
+| boss_ieung | `art/bosses/boss_ieung.png` | 512×512 | v2 IMG |
+| boss_greed | `art/bosses/boss_greed.png` | 512×512 | v2 IMG |
 | marker_target | `art/ui/marker_target.png` | 90×90 | PROC |
 | hud_wave | `art/hud/hud_wave.png` | 64×64 | v2 PROC |
 | hud_stability | `art/hud/hud_stability.png` | 64×64 | v2 PROC |
@@ -135,7 +148,7 @@ as Vorbis (JAMO use, no third-party restriction).
 | ID | Path | Size | Source / license |
 |---|---|---:|---|
 | title_screen | `art/title/title_screen.png` | 1920×1080 | IMG / OpenAI Terms |
-| title_logo | `art/title/title_logo.png` | 600×200 | FONT + PROC / OFL-1.1 |
+| title_logo | `art/title/title_logo.png` | 1200×420 | v2 IMG |
 | panel_9slice | `art/ui/panel_9slice.png` | 64×64 | PROC |
 | button_normal | `art/ui/button_normal.png` | 64×32 | PROC |
 | button_hover | `art/ui/button_hover.png` | 64×32 | PROC |
