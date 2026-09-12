@@ -73,3 +73,24 @@ func _shoot_run() -> void:
 	run.damage_stability(200.0)
 	await _snap("16_result")
 	game.queue_free()
+	await get_tree().process_frame
+	await _shoot_boss()
+
+
+## W5 boss fight: walk the RUN through four Waves the way tests do, then start W5.
+func _shoot_boss() -> void:
+	var game := RUN_GAME.instantiate()
+	game.run_seed = 5
+	add_child(game)
+	var run: RunController = game.get_node("RunController")
+	var director: CombatDirector = game.get_node("CombatDirector")
+	for i in 4:
+		run.begin_combat()
+		director.clear_enemies()
+		run.on_wave_cleared()
+		run.finish_clear()
+		run.finish_forge()
+	game.get_node("%StartWaveButton").pressed.emit()
+	await get_tree().create_timer(3.0).timeout
+	await _snap("17_boss")
+	game.queue_free()
