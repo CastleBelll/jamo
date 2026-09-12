@@ -1,5 +1,21 @@
 # JAMO Asset Map
 
+## Audio follow-up — synchronized boss layer and UI feedback
+
+| Path | Length | Rate / codec | Decoded peak dBFS | Source / license |
+|---|---:|---|---:|---|
+| `art/audio/bgm_boss_layer.ogg` | 16.00s (705600 frames) | 44.1kHz mono / OGG Vorbis | -17.83 | project-original local synthesis; no third-party samples |
+| `art/audio/sfx/ui_click.ogg` | 0.10s (4410 frames) | 44.1kHz mono / OGG Vorbis | -8.07 | project-original local synthesis; no third-party samples |
+| `art/audio/sfx/ui_confirm.ogg` | 0.30s (13230 frames) | 44.1kHz mono / OGG Vorbis | -8.16 | project-original local synthesis; no third-party samples |
+| `art/audio/sfx/ui_cancel.ogg` | 0.25s (11025 frames) | 44.1kHz mono / OGG Vorbis | -9.91 | project-original local synthesis; no third-party samples |
+| `art/audio/sfx/ui_hover.ogg` | 0.05s (2205 frames) | 44.1kHz mono / OGG Vorbis | -24.14 | project-original local synthesis; no third-party samples |
+| `art/audio/sfx/boss_purified.ogg` | 1.00s (44100 frames) | 44.1kHz mono / OGG Vorbis | -8.25 | project-original local synthesis; no third-party samples |
+
+Boss layer: thin low A/E drone (55/110/165Hz) plus membrane-drum rhythm; 16.00 seconds / 705600 frames exactly matches combat. Existing combat source has a tonal A/E stack but no beat/BPM; new compatible 120 BPM grid gives 32 beats per loop. No whole-loop fade or seam silence; decoded boundary sample jump 0.00235, 10ms head/tail RMS nonzero. Combat+boss unity mix peak −12.86dBFS. UI click/hover are resonant wood taps; confirm is bright 660/880Hz two-note brush touch; cancel low220Hz; purified440Hz harmonic bell + upward shimmer. SFX leading/trailing below−60dBFS ≤3.02ms after decoding.
+
+Provenance, source and read-only validation: `art/audio/FOLLOWUP_README.md`, `build_followup.py --check`, `FOLLOWUP_VALIDATION.json` (SHA-256 / codec / frames / peak / edge metrics). No downloads or paid provider jobs. Static waveform validation passed; engine registration, synchronized playback positions, listening and mix approval remain coordinator-owned. No code/scenes/project.godot changes.
+
+
 v2 handoff: 94 final PNGs + 3 Nanum fonts, no required omissions (optional separate character shadows omitted; runtime draws ellipses). `python art/tools/validate_assets_v2.py` validates all final paths/dimensions/RGBA, transparency, vignette center and font files. HUD bottom fade corrected to alpha=0 during final validation. Scene wiring and in-game UI review remain coordinator-owned; no code/scenes/project settings changed in these commits. C/F are textured project-original procedural work, A/B/D/E use built-in ImageGen. 9-slice margins are listed in the C section.
 
 ## v2 E — battle desk and ink overlays
