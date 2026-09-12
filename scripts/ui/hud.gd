@@ -63,6 +63,9 @@ func set_build(build: BuildState, db: ContentDB, sealed: Dictionary = {}) -> voi
 			var frame := slot.get_node_or_null("Frame")
 			if frame != null:
 				slot.move_child(frame, 0)
+				AssetLib.apply(frame, "slot_frame")
+		else:
+			AssetLib.apply(slot.get_node_or_null("Frame"), "slot_frame_empty")
 
 
 ## 적 Hover (G10): HP and variant of the enemy under the cursor, empty when none.

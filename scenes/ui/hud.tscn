@@ -23,7 +23,7 @@ offset_top = 16.0
 offset_right = -24.0
 offset_bottom = 104.0
 mouse_filter = 2
-theme_type_variation = &"InkPanel"
+theme_type_variation = &"HudBar"
 
 [node name="TopBar" type="HBoxContainer" parent="Root/TopPanel"]
 layout_mode = 2
@@ -163,23 +163,29 @@ mouse_filter = 2
 [node name="Slot1" type="Panel" parent="Root/BuildBar"]
 custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
+theme_type_variation = &"SlotPanel"
 
 [node name="Slot2" type="Panel" parent="Root/BuildBar"]
 custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
+theme_type_variation = &"SlotPanel"
 
 [node name="Slot3" type="Panel" parent="Root/BuildBar"]
 custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
+theme_type_variation = &"SlotPanel"
 
 [node name="Slot4" type="Panel" parent="Root/BuildBar"]
 custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
+theme_type_variation = &"SlotPanel"
 
 [node name="Slot5" type="Panel" parent="Root/BuildBar"]
 custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
+theme_type_variation = &"SlotPanel"
 
 [node name="Slot6" type="Panel" parent="Root/BuildBar"]
 custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
+theme_type_variation = &"SlotPanel"
