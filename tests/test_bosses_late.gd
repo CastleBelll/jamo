@@ -108,7 +108,7 @@ func _check_silence() -> void:
 	else:
 		_expect(director.resolver.effects_with(&"periodic").is_empty(), "sealed 활 stops its periodic hits")
 	var slots := game.get_node("HUD").get_node("Root/BuildBar")
-	var hud_text: String = slots.get_child(0).get_child(0).text + slots.get_child(1).get_child(0).text
+	var hud_text: String = slots.get_child(0).get_child(-1).text + slots.get_child(1).get_child(-1).text
 	_expect("봉인 " in hud_text and "초" in hud_text, "HUD marks the sealed word with its remaining time (%s)" % hud_text.replace("\n", " "))
 	_tick_to(12.7)
 	_expect(not director.resolver.is_sealed(p.seal_word) and director.resolver.sealed_ids().is_empty(), "seal released after 4s")

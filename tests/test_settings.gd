@@ -104,6 +104,7 @@ func _check_log() -> void:
 
 func _check_motion_and_status() -> void:
 	var m: JamoMonster = MONSTER.instantiate()
+	m.jamo = "ㄱ"
 	add_child(m)
 	var profile: MotionProfile = db.motion_profiles["BOUNCE"]
 	m.alive = true
@@ -120,7 +121,9 @@ func _check_motion_and_status() -> void:
 	m.apply_slow(0.2, 2.0, 0.0)
 	m.refresh_status_label(0.5)
 	var text: String = m.get_node("StatusAnchor/StatusLabel").text
-	_expect("불 2.5s" in text and "독 x2" in text and "둔 1.5s" in text, "status label shows icon text, stacks and time (%s)" % text)
+	_expect(text == "3 x2 2", "status label shows time, stacks and time next to the icons (%s)" % text)
+	_expect(m.get_node("StatusAnchor/Icon_burn").visible and m.get_node("StatusAnchor/Icon_poison").visible and m.get_node("StatusAnchor/Icon_slow").visible, "status icons visible for burn, poison and slow")
+	_expect(m.get_node("VisualPivot/Sprite2D").texture != null and not m.get_node("VisualPivot/Glyph").visible, "glyph sprite replaces the label when the art exists")
 	m.free()
 
 

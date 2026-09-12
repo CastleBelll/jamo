@@ -1,4 +1,68 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" load_steps=15 format=3]
+
+[ext_resource type="FontFile" path="res://art/fonts/NotoSansKR-Regular.ttf" id="font"]
+[ext_resource type="Texture2D" path="res://art/ui/panel_9slice.png" id="panel"]
+[ext_resource type="Texture2D" path="res://art/ui/button_normal.png" id="bn"]
+[ext_resource type="Texture2D" path="res://art/ui/button_hover.png" id="bh"]
+[ext_resource type="Texture2D" path="res://art/ui/button_pressed.png" id="bp"]
+[ext_resource type="Texture2D" path="res://art/ui/button_disabled.png" id="bd"]
+[ext_resource type="Texture2D" path="res://art/ui/slider_track.png" id="st"]
+[ext_resource type="Texture2D" path="res://art/ui/slider_grabber.png" id="sg"]
+[ext_resource type="Texture2D" path="res://art/ui/check_on.png" id="con"]
+[ext_resource type="Texture2D" path="res://art/ui/check_off.png" id="coff"]
+
+[sub_resource type="StyleBoxTexture" id="sb_panel"]
+texture = ExtResource("panel")
+texture_margin_left = 20.0
+texture_margin_top = 20.0
+texture_margin_right = 20.0
+texture_margin_bottom = 20.0
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="sb_bn"]
+texture = ExtResource("bn")
+texture_margin_left = 12.0
+texture_margin_top = 10.0
+texture_margin_right = 12.0
+texture_margin_bottom = 10.0
+content_margin_left = 20.0
+content_margin_right = 20.0
+
+[sub_resource type="StyleBoxTexture" id="sb_bh"]
+texture = ExtResource("bh")
+texture_margin_left = 12.0
+texture_margin_top = 10.0
+texture_margin_right = 12.0
+texture_margin_bottom = 10.0
+content_margin_left = 20.0
+content_margin_right = 20.0
+
+[sub_resource type="StyleBoxTexture" id="sb_bp"]
+texture = ExtResource("bp")
+texture_margin_left = 12.0
+texture_margin_top = 10.0
+texture_margin_right = 12.0
+texture_margin_bottom = 10.0
+content_margin_left = 20.0
+content_margin_right = 20.0
 
 [resource]
+default_font = ExtResource("font")
 default_font_size = 28
+Button/colors/font_color = Color(0.16, 0.13, 0.11, 1)
+Button/colors/font_hover_color = Color(0.1, 0.08, 0.07, 1)
+Button/colors/font_pressed_color = Color(0.1, 0.08, 0.07, 1)
+Button/colors/font_disabled_color = Color(0.45, 0.42, 0.38, 1)
+Button/styles/normal = SubResource("sb_bn")
+Button/styles/hover = SubResource("sb_bh")
+Button/styles/pressed = SubResource("sb_bp")
+Button/styles/focus = SubResource("sb_bh")
+CheckButton/icons/checked = ExtResource("con")
+CheckButton/icons/unchecked = ExtResource("coff")
+HSlider/icons/grabber = ExtResource("sg")
+HSlider/icons/grabber_highlight = ExtResource("sg")
+Label/colors/font_color = Color(0.16, 0.13, 0.11, 1)
+PanelContainer/styles/panel = SubResource("sb_panel")

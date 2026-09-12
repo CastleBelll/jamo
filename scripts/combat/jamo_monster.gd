@@ -27,6 +27,8 @@ var variant_speed_mult: float = 1.0
 ## Alive == still a valid target. Purified or reached enemies flip this once, so bookkeeping
 ## can never run twice for the same entity (G7).
 var alive: bool = true
+const STATUS_ICON_START_X := -30.0
+const STATUS_ICON_STEP := 26.0
 var focused: bool = false:
 	set(value):
 		focused = value
@@ -57,12 +59,26 @@ func setup(id: int, jamo_char: String, max_hp: float, on_path: Path2D, travel_ti
 	position = on_path.to_global(on_path.curve.sample_baked(0.0))
 	if is_node_ready():
 		glyph.text = jamo
+		_apply_glyph_texture()
 
 
 func _ready() -> void:
 	glyph.text = jamo
 	$FocusRing.visible = focused
+	_apply_glyph_texture()
 	_refresh_variant_mark()
+	for key in ["burn", "poison", "slow"]:
+		var icon := get_node_or_null("StatusAnchor/Icon_%s" % key) as Sprite2D
+		if icon != null:
+			icon.texture = AssetLib.tex("status_%s" % key)
+
+
+## Real glyph sprite when the art exists; the Label stays as fallback (G11).
+func _apply_glyph_texture() -> void:
+	var sprite := $VisualPivot/Sprite2D as Sprite2D
+	var t := AssetLib.glyph(jamo)
+	sprite.texture = t
+	glyph.visible = t == null
 
 
 func _process(delta: float) -> void:
@@ -87,15 +103,33 @@ func refresh_status_label(now: float) -> void:
 	var label := get_node_or_null("StatusAnchor/StatusLabel") as Label
 	if label == null:
 		return
+	var active := {"burn": burn_active(now), "poison": poison_count(now) > 0, "slow": strongest_slow(now) > 0.0}
+	var has_icons := _layout_status_icons(active)
 	var parts: Array[String] = []
-	if burn_active(now):
-		parts.append("불 %.1fs" % (burn["until"] - now))
+	if active["burn"]:
+		parts.append(("%.0f" if has_icons else "불 %.1fs") % (burn["until"] - now))
 	var stacks := poison_count(now)
 	if stacks > 0:
-		parts.append("독 x%d" % stacks)
-	if strongest_slow(now) > 0.0:
-		parts.append("둔 %.1fs" % (slow["until"] - now))
+		parts.append(("x%d" if has_icons else "독 x%d") % stacks)
+	if active["slow"]:
+		parts.append(("%.0f" if has_icons else "둔 %.1fs") % (slow["until"] - now))
 	label.text = " ".join(parts)
+
+
+## Packs the active status icons left to right; returns false when no icon art is loaded.
+func _layout_status_icons(active: Dictionary) -> bool:
+	var has_icons := false
+	var x := STATUS_ICON_START_X
+	for key in ["burn", "poison", "slow"]:
+		var icon := get_node_or_null("StatusAnchor/Icon_%s" % key) as Sprite2D
+		if icon == null or icon.texture == null:
+			continue
+		has_icons = true
+		icon.visible = active[key]
+		if active[key]:
+			icon.position.x = x
+			x += STATUS_ICON_STEP
+	return has_icons
 
 
 func speed() -> float:
@@ -133,6 +167,12 @@ func _refresh_variant_mark() -> void:
 		Variant.HEAVY: mark.text = "▣"
 		Variant.GUARD: mark.text = "⌐"
 		_: mark.text = ""
+	var icon := get_node_or_null("VisualPivot/VariantIcon") as Sprite2D
+	if icon == null:
+		return
+	var id: String = {Variant.LIGHT: "variant_light", Variant.HEAVY: "variant_heavy", Variant.GUARD: "variant_guard"}.get(variant, "")
+	icon.texture = AssetLib.tex(id) if id != "" else null
+	mark.visible = icon.texture == null
 
 
 func remaining_path() -> float:

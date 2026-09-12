@@ -32,6 +32,8 @@ func _ready() -> void:
 	skip_button.pressed.connect(func(): if reward != null: reward.skip())
 	finish_button.pressed.connect(_on_finish)
 	deck_grid.columns = DECK_COLUMNS
+	for pair in [[add_button, "act_add"], [replace_button, "act_replace"], [skip_button, "act_skip"], [remove_button, "act_remove"]]:
+		AssetLib.apply(pair[0], pair[1])
 
 
 func open(new_reward: RewardService, content: ContentDB, stats_text: String = "") -> void:
@@ -81,6 +83,9 @@ func _rebuild_candidates() -> void:
 		var b := Button.new()
 		b.text = reward.candidates[i]
 		b.custom_minimum_size = Vector2(64, 64)
+		AssetLib.apply(b, "tile_jamo")
+		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b.expand_icon = true
 		b.toggle_mode = true
 		b.button_pressed = i == selected_candidate
 		b.pressed.connect(func(): _select_candidate(i))

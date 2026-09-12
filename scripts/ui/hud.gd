@@ -12,6 +12,22 @@ extends CanvasLayer
 @onready var hover_label: Label = %HoverLabel
 
 
+func _ready() -> void:
+	# HUD icons (G10): the label then carries only the number.
+	for pair in [["WaveIcon", "hud_wave"], ["StabilityIcon", "hud_stability"], ["EnemyIcon", "hud_enemy"], ["GoldIcon", "hud_gold"], ["DropIcon", "hud_drop"]]:
+		AssetLib.apply($Root/TopBar.get_node(pair[0]), pair[1])
+	for slot in build_bar.get_children():
+		var frame := TextureRect.new()
+		frame.name = "Frame"
+		frame.stretch_mode = TextureRect.STRETCH_SCALE
+		frame.set_anchors_preset(Control.PRESET_FULL_RECT)
+		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if AssetLib.apply(frame, "slot_frame"):
+			slot.add_child(frame)
+		else:
+			frame.free()
+
+
 func bind(run: RunController) -> void:
 	run.wave_changed.connect(_on_wave_changed)
 	run.stability_changed.connect(_on_stability_changed)
@@ -29,6 +45,8 @@ func set_build(build: BuildState, db: ContentDB, sealed: Dictionary = {}) -> voi
 	for i in build_bar.get_child_count():
 		var slot := build_bar.get_child(i)
 		for ch in slot.get_children():
+			if ch.name == "Frame":
+				continue
 			slot.remove_child(ch)  # detach now so readers never see the stale label
 			ch.queue_free()
 		if i < build.words.size():
@@ -38,6 +56,9 @@ func set_build(build: BuildState, db: ContentDB, sealed: Dictionary = {}) -> voi
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			l.set_anchors_preset(Control.PRESET_FULL_RECT)
 			slot.add_child(l)
+			var frame := slot.get_node_or_null("Frame")
+			if frame != null:
+				slot.move_child(frame, 0)
 
 
 ## 적 Hover (G10): HP and variant of the enemy under the cursor, empty when none.
@@ -49,12 +70,16 @@ func set_hover(target: JamoMonster) -> void:
 	hover_label.text = "%s  %.1f/%.1f  %s" % [target.jamo if not (target is Boss) else target.data.name, target.hp, target.hp_max, kind]
 
 
+func has_icons() -> bool:
+	return $Root/TopBar/WaveIcon.texture != null
+
+
 func set_enemies_left(count: int) -> void:
-	enemies_label.text = "적 %d" % count
+	enemies_label.text = ("%d" if has_icons() else "적 %d") % count
 
 
 func set_temp_drops(count: int) -> void:
-	drops_label.text = "회수 %d" % count
+	drops_label.text = ("%d" if has_icons() else "회수 %d") % count
 
 
 func _on_wave_changed(wave: int) -> void:
@@ -62,7 +87,7 @@ func _on_wave_changed(wave: int) -> void:
 
 
 func _on_stability_changed(current: float, maximum: float) -> void:
-	stability_label.text = "안정도 %.0f/%.0f" % [current, maximum]
+	stability_label.text = ("%.0f/%.0f" if has_icons() else "안정도 %.0f/%.0f") % [current, maximum]
 	stability_bar.max_value = maximum
 	stability_bar.value = current
 

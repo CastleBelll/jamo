@@ -23,6 +23,26 @@ func _ready() -> void:
 	%SetupPinOption.item_selected.connect(func(i): Meta.pinned_word = String(%SetupPinOption.get_item_metadata(i)); _refresh_setup())
 	%OpeningStartButton.pressed.connect(_start_first_run)
 	SettingsService.apply_all()
+	Sfx.play_bgm("library")
+	AssetLib.apply($BackgroundArt, "lib_bg")
+	for pair in [["lamp", "LayerTitleLamp"], ["spines", "LayerSpines"], ["lines", "LayerLines"], ["handwriting", "LayerHandwriting"], ["openbook", "LayerOpenBook"]]:
+		var rect := TextureRect.new()
+		rect.name = "Art_" + pair[0]
+		rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		rect.stretch_mode = TextureRect.STRETCH_SCALE
+		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if AssetLib.apply(rect, "lib_layer_" + pair[0]):
+			$LayerArt.add_child(rect)
+		else:
+			rect.free()
+	var tab_icons := ["tab_hub", "tab_research", "tab_codex", "tab_records", "tab_settings"]
+	for i in mini(tab_icons.size(), %Tabs.get_tab_count()):
+		var t := AssetLib.tex(tab_icons[i])
+		if t != null:
+			%Tabs.set_tab_icon(i, t)
+	%Tabs.tab_changed.connect(func(_i): %Title.visible = false)
+	AssetLib.apply(%Title/TitleArt, "title_screen")
+	AssetLib.apply(%Title/TitleLogo, "title_logo")
 	SettingsService.apply_text_scale(self, int(Meta.setting("text_scale")))
 	%SettingsPanel.open(self, true)  # lives inside the 설정 tab: never hidden, 서고로 returns to the hub tab
 	%SettingsPanel.closed.connect(func(): %Tabs.current_tab = 0; %RunButton.grab_focus())
@@ -32,12 +52,18 @@ func _ready() -> void:
 	%NoticeLabel.visible = returned != ""
 	if not Meta.first_run_done and not Meta.has_run():
 		_show_opening()
+	elif AssetLib.tex("title_screen") != null and not Meta.title_seen:
+		%Title.visible = true
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# S5: the opening skips on the next input.
+	# S5: the opening skips on the next input; the title screen dismisses the same way.
 	if %Opening.visible and (event is InputEventKey or event is InputEventMouseButton) and event.is_pressed():
 		_start_first_run()
+		get_viewport().set_input_as_handled()
+	elif %Title.visible and (event is InputEventKey or event is InputEventMouseButton) and event.is_pressed():
+		%Title.visible = false
+		Meta.title_seen = true
 		get_viewport().set_input_as_handled()
 
 
@@ -58,6 +84,12 @@ func _refresh() -> void:
 	%LayerLines.visible = layers["lines"]
 	%LayerHandwriting.visible = layers["handwriting"]
 	%LayerOpenBook.visible = layers["open_book"]
+	for pair in [["lamp", "title_lamp"], ["spines", "spines"], ["lines", "lines"], ["handwriting", "handwriting"], ["openbook", "open_book"]]:
+		var art := $LayerArt.get_node_or_null("Art_" + pair[0])
+		if art != null:
+			art.visible = layers[pair[1]]
+	# Text layer labels only stand in while the art is missing.
+	$Layers.visible = $LayerArt.get_child_count() == 0
 	_refresh_research()
 	_refresh_codex()
 	_refresh_records()

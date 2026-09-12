@@ -35,6 +35,8 @@ func _ready() -> void:
 	restore_button.pressed.connect(_on_restore)
 	pin_option.item_selected.connect(_on_pin_selected)
 	finish_button.pressed.connect(func(): finished.emit())
+	for pair in [[reroll_button, "reroll"], [restore_button, "restore"], [compound_button, "compound"]]:
+		AssetLib.apply(pair[0], pair[1])
 	compound_button.pressed.connect(_on_compound)
 	skip_restore_button.pressed.connect(func(): forge.skip_restore(); _refresh(); state_changed.emit())
 
@@ -97,6 +99,9 @@ func _rebuild_hand() -> void:
 		b.toggle_mode = true
 		b.button_pressed = forge.is_locked(t["id"])
 		b.disabled = forge.restored_word != &""
+		AssetLib.apply(b, "lock_on" if forge.is_locked(t["id"]) else "tile_jamo")
+		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b.expand_icon = true
 		var token_id: int = t["id"]
 		b.pressed.connect(func(): _on_token(token_id))
 		hand_row.add_child(b)
@@ -117,6 +122,7 @@ func _rebuild_candidates() -> void:
 			tag += " · 교체"
 		var b := Button.new()
 		b.text = "%s  %s   %s" % [w.name, tag, EffectText.describe_rank(w, forge.build.rank_of(w.id) + 1)]
+		AssetLib.apply(b, "cand_rankup" if c["kind"] == ForgeService.KIND_RANK_UP else ("cand_replace" if c["needs_replace"] or c["replace_risk"] else "cand_new"))
 		b.custom_minimum_size = Vector2(0, 64)
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.toggle_mode = true

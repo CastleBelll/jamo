@@ -50,6 +50,9 @@ func _refresh_visual() -> void:
 		return
 	glyph.text = data.name
 	name_label.text = data.name
+	var sprite := $VisualPivot/Sprite2D as Sprite2D
+	sprite.texture = AssetLib.boss_glyph(data.id)
+	glyph.visible = sprite.texture == null
 	hp_bar.max_value = hp_max
 	hp_bar.value = hp
 	_refresh_shield()

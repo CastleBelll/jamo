@@ -29,6 +29,8 @@ var settings: Dictionary = default_settings()
 var run: Dictionary = {}            # suspended RUN snapshot, empty when none
 ## Session-only handoff from the library: resume the suspended RUN / which starter to use.
 var resume_pending: bool = false
+## Title screen shows once per session (G10: 서고 진입 전 한 장).
+var title_seen: bool = false
 var chosen_deck: StringName = &"starter_a"
 
 

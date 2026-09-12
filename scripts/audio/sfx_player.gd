@@ -16,12 +16,41 @@ var clock: float = 0.0
 var voices: Array[Dictionary] = []
 
 
+const SFX_IDS := ["hit_ink", "purify", "sentence_hit", "boss_warning", "boss_intro", "page_turn"]
+const BGM_IDS := {"library": "res://art/audio/bgm_library.ogg", "combat": "res://art/audio/bgm_combat.ogg"}
+
+var bgm_player: AudioStreamPlayer
+var current_bgm: String = ""
+
+
 func _ready() -> void:
 	for i in MAX_VOICES:
 		var p := AudioStreamPlayer.new()
 		p.bus = "SFX"
 		add_child(p)
 		players.append(p)
+	bgm_player = AudioStreamPlayer.new()
+	bgm_player.bus = "BGM"
+	add_child(bgm_player)
+	for id in SFX_IDS:
+		var path := "res://art/audio/sfx/%s.ogg" % id
+		if ResourceLoader.exists(path):
+			streams[id] = load(path)
+
+
+## BGM: 2 loops (서고/전투). Same id twice is a no-op so scene changes never restart it.
+func play_bgm(id: String) -> void:
+	if id == current_bgm:
+		return
+	var path: String = BGM_IDS.get(id, "")
+	if path == "" or not ResourceLoader.exists(path):
+		return
+	var stream: AudioStream = load(path)
+	if stream is AudioStreamOggVorbis:
+		stream.loop = true
+	bgm_player.stream = stream
+	bgm_player.play()
+	current_bgm = id
 
 
 func _process(delta: float) -> void:

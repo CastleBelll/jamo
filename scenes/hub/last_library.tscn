@@ -19,6 +19,21 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.93, 0.89, 0.8, 1)
 
+[node name="BackgroundArt" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+stretch_mode = 6
+mouse_filter = 2
+
+[node name="LayerArt" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
 [node name="Layers" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 1
@@ -305,6 +320,47 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 64)
 layout_mode = 2
 text = "시작"
+
+[node name="Title" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TitleArt" type="TextureRect" parent="Title"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+stretch_mode = 6
+
+[node name="TitleLogo" type="TextureRect" parent="Title"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 180.0
+offset_right = 300.0
+offset_bottom = 380.0
+stretch_mode = 5
+
+[node name="TitleHint" type="Label" parent="Title"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -160.0
+offset_right = 300.0
+offset_bottom = -100.0
+theme_override_font_sizes/font_size = 32
+text = "아무 키나 눌러 시작"
+horizontal_alignment = 1
 
 [node name="Opening" type="PanelContainer" parent="."]
 unique_name_in_owner = true

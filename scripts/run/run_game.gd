@@ -60,6 +60,10 @@ func _ready() -> void:
 	SettingsService.apply_text_scale($Panels, int(Meta.setting("text_scale")))
 	run.stability_changed.connect(_on_stability_changed)
 	page.get_node("LastSentence/Text").text = LibraryService.sentence_text(db)
+	AssetLib.apply(page.get_node("Paper/PaperArt"), "paper_bg")
+	AssetLib.apply(page.get_node("Overlays/InkOverlay"), "ink_overlay")
+	page.get_node("LastSentence/Row").visible = not AssetLib.apply(page.get_node("LastSentence/RowArt"), "sentence_row")
+	Sfx.play_bgm("combat")
 	clear_panel.state_changed.connect(_save_run)
 	forge_panel.state_changed.connect(_save_run)
 	if Meta.resume_pending and Meta.has_run():
@@ -161,6 +165,8 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 		RunController.Phase.RESULT:
 			director.set_hold(false)
 			result_label.text = _result_text(run.end_reason)
+			var icon_id: String = {RunController.EndReason.COMPLETED: "result_complete", RunController.EndReason.ABANDONED: "result_abandon"}.get(run.end_reason, "result_fail")
+			AssetLib.apply(%ResultIcon, icon_id)
 			%ResultLibraryButton.grab_focus()
 			RunLog.event("result", {"reason": RunController.EndReason.keys()[run.end_reason], "wave": run.wave, "cleared": run.waves_cleared,
 				"gold": run.gold_run, "causes": run.damage_causes.duplicate(), "build": run.build.words.duplicate(true), "discovered": run.discovered.duplicate()})
@@ -284,6 +290,10 @@ func _sentence_hit(loss: float) -> void:
 		row.default_color = Color(0.9, 0.2, 0.1, 1)
 		var t := create_tween()
 		t.tween_property(row, "default_color", Color(0.2, 0.18, 0.15, 1), 0.2)
+		var art: Sprite2D = sentence.get_node("RowArt")
+		if art.texture != null and AssetLib.tex("sentence_row_hit") != null:
+			art.texture = AssetLib.tex("sentence_row_hit")
+			t.tween_callback(func(): art.texture = AssetLib.tex("sentence_row"))
 	var amp := 3.0 * SettingsService.shake_factor()
 	if amp <= 0.0:
 		return
