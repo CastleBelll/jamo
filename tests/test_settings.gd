@@ -76,6 +76,7 @@ func _check_sfx() -> void:
 	Sfx.set_boss_layer(false)
 	_expect(not Sfx.boss_layer_on, "boss layer flag turns off")
 	_expect(Sfx.play_ui("ui_click") and not Sfx.play_ui("ui_click"), "UI click respects the same-sound gap")
+	_expect(Sfx.process_mode == Node.PROCESS_MODE_ALWAYS, "Sfx keeps ticking while menus pause the tree")
 	_expect(Sfx.active_voices() == 0, "UI sounds never take an SFX voice")
 	var probe := Button.new()
 	probe.name = "SetupBackButton"

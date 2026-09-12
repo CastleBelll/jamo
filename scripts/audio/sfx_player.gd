@@ -35,6 +35,9 @@ var ui_player: AudioStreamPlayer
 
 
 func _ready() -> void:
+	# Menus run with the tree paused (G2): the clock, the same-sound gap and the layer fade
+	# must keep going, and BGM keeps playing under the pause panel.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	for i in MAX_VOICES:
 		var p := AudioStreamPlayer.new()
 		p.bus = "SFX"
