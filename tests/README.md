@@ -28,4 +28,6 @@ godot --headless --path . tests/test_bosses_late.tscn
 godot --headless --path . tests/test_save.tscn
 # library: research rules, codex rows/tiers, starter decks, layers/badges, sentence stages, S5 lines, screen wiring
 godot --headless --path . tests/test_library.tscn
+# settings persistence/apply, SFX voice cap+gap, local run log, idle motion + reduced motion, status labels, banners, focus-out pause, Esc order
+godot --headless --path . tests/test_settings.tscn
 ```

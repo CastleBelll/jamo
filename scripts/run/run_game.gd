@@ -15,6 +15,10 @@ const LIBRARY_SCENE := "res://scenes/hub/last_library.tscn"
 @onready var result_panel: PanelContainer = %ResultPanel
 @onready var result_label: Label = %ResultLabel
 @onready var pause_panel: PanelContainer = %PausePanel
+@onready var settings_panel: PanelContainer = %SettingsPanel
+@onready var banner: Label = %Banner
+var last_stability: float = -1.0
+var banner_tween: Tween
 
 ## Spawn/drop RNG seed per run; tests override it for reproducible waves.
 var run_seed: int = 0
@@ -44,7 +48,13 @@ func _ready() -> void:
 	%RetryButton.pressed.connect(func(): run.retry_run())
 	%ResumeButton.pressed.connect(_close_pause)
 	%AbandonButton.pressed.connect(_on_abandon)
+	%PauseSettingsButton.pressed.connect(_open_settings)
+	settings_panel.closed.connect(func(): %ResumeButton.grab_focus())
 	pause_panel.visible = false
+	settings_panel.visible = false
+	SettingsService.apply_all()
+	SettingsService.apply_text_scale($Panels, int(Meta.setting("text_scale")))
+	run.stability_changed.connect(_on_stability_changed)
 	page.get_node("LastSentence/Text").text = LibraryService.sentence_text(db)
 	clear_panel.state_changed.connect(_save_run)
 	forge_panel.state_changed.connect(_save_run)
@@ -56,6 +66,7 @@ func _ready() -> void:
 		Meta.resume_pending = false
 		run.open_run_setup()
 		run.confirm_setup(Meta.chosen_deck if db.decks.has(Meta.chosen_deck) else &"starter_a")
+	RunLog.begin_run(run.run_id, run_seed, Meta.CONTENT_VERSION, Meta.research, String(run.deck_id))
 
 
 func _physics_process(delta: float) -> void:
@@ -70,8 +81,12 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Esc closes the topmost popup first (settings over pause), then opens the pause menu (G10).
 	if event.is_action_pressed("pause") and run.phase != RunController.Phase.RESULT:
-		if pause_panel.visible:
+		if settings_panel.visible:
+			settings_panel.visible = false
+			%ResumeButton.grab_focus()
+		elif pause_panel.visible:
 			_close_pause()
 		else:
 			_open_pause()
@@ -108,13 +123,28 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			var line := run.take_pending_line()
 			%PrepHint.text = _prep_hint() + ("\n" + line if line != "" else "")
 			%StartWaveButton.grab_focus()
+			_show_banner("Wave %d" % run.wave, 0.6)
+			RunLog.event("wave_prep", {"wave": run.wave, "stability": run.stability, "gold": run.gold_run, "deck": run.deck.jamo_list(), "build": run.build.words.duplicate(true)})
 		RunController.Phase.COMBAT:
 			director.set_hold(false)
 			hud.set_temp_drops(0)
 			director.pin_lacking = run.pin_lacking()
 			director.risk_unlocked = run.risk_unlocked
 			director.start_wave(run.wave_data(), hash("spawn:%d:%d" % [run_seed, run.wave]))
+			last_stability = run.stability
+			if run.is_boss_wave():
+				_show_banner(db_ref.bosses[run.wave_data().boss_id].name, 1.2)
+				Sfx.play("boss_intro", CombatDirector.PRIORITY_WARNING, 1.2)
+			else:
+				_show_banner("", 0.0)
+			RunLog.event("wave_start", {"wave": run.wave, "stability": run.stability})
 		RunController.Phase.CLEAR:
+			_show_banner("Wave Clear", 0.8)
+			Sfx.play("page_turn", 1, 0.5)
+			RunLog.event("wave_clear", {"wave": run.wave, "stability": run.stability, "hits": director.stats["hits"], "misses": director.miss_clicks,
+				"purified": director.stats["purified"], "reached": director.stats["reached"], "patterns_failed": director.stats["patterns_failed"],
+				"drops": run.drops.drops.duplicate(), "gold": run.gold_run, "wave_gold": director.wave_gold, "damage_taken": run.wave_damage_taken,
+				"hold_time": director.stats["hold_time"], "damage_by_source": director.stats["damage_by_source"].duplicate(), "causes": run.damage_causes.duplicate()})
 			var line := run.take_pending_line()
 			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text() + ("\n" + line if line != "" else ""))
 			_save_run()
@@ -125,6 +155,9 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			director.set_hold(false)
 			result_label.text = _result_text(run.end_reason)
 			%ResultLibraryButton.grab_focus()
+			RunLog.event("result", {"reason": RunController.EndReason.keys()[run.end_reason], "wave": run.wave, "cleared": run.waves_cleared,
+				"gold": run.gold_run, "causes": run.damage_causes.duplicate(), "build": run.build.words.duplicate(true), "discovered": run.discovered.duplicate()})
+			RunLog.end_run()
 
 
 ## G10 Wave Clear row: 정화/놓침, 안정도 손실, 회수 수.
@@ -211,6 +244,59 @@ func _save_run() -> void:
 		return
 	Meta.run = run.snapshot()
 	Meta.save()
+
+
+## Wave/boss banners (G12): 0.6s prep, 0.8s clear, 1.2s boss name; empty text hides it.
+func _show_banner(text: String, seconds: float) -> void:
+	if banner_tween != null and banner_tween.is_valid():
+		banner_tween.kill()
+	banner.text = text
+	banner.visible = text != ""
+	banner.modulate.a = 1.0
+	if text == "" or seconds <= 0.0:
+		return
+	banner_tween = create_tween()
+	banner_tween.set_ignore_time_scale(true)
+	banner_tween.tween_interval(seconds)
+	banner_tween.tween_property(banner, "modulate:a", 0.0, 0.15)
+	banner_tween.tween_callback(func(): banner.visible = false)
+
+
+## 문장 피격 (G12): border flash (unless 섬광 off), loss number, shake at most 3px for 0.12s
+## scaled by the 흔들림 setting; the sentence has no click area, so nothing moves for input.
+func _on_stability_changed(current: float, _maximum: float) -> void:
+	if last_stability >= 0.0 and current < last_stability and run.phase == RunController.Phase.COMBAT:
+		_sentence_hit(last_stability - current)
+	last_stability = current
+
+
+func _sentence_hit(loss: float) -> void:
+	var sentence: Node2D = page.get_node("LastSentence")
+	var row: Line2D = sentence.get_node("Row")
+	director.spawn_text(Vector2(960, 900), "-%.1f" % loss, Color(0.75, 0.15, 0.1))
+	if SettingsService.flash_enabled():
+		row.default_color = Color(0.9, 0.2, 0.1, 1)
+		var t := create_tween()
+		t.tween_property(row, "default_color", Color(0.2, 0.18, 0.15, 1), 0.2)
+	var amp := 3.0 * SettingsService.shake_factor()
+	if amp <= 0.0:
+		return
+	var origin := Vector2(0, 910)
+	var shake := create_tween()
+	shake.tween_property(sentence, "position", origin + Vector2(amp, 0), 0.04)
+	shake.tween_property(sentence, "position", origin - Vector2(amp, 0), 0.04)
+	shake.tween_property(sentence, "position", origin, 0.04)
+
+
+## 포커스 상실·최소화는 자동 정지 (G10).
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		if is_node_ready() and run != null and run.phase == RunController.Phase.COMBAT and not get_tree().paused:
+			_open_pause()
+
+
+func _open_settings() -> void:
+	settings_panel.open($Panels)
 
 
 func _open_pause() -> void:

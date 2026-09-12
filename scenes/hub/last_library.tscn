@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/hub/last_library.gd" id="1"]
 [ext_resource type="Theme" path="res://resources/ui/theme.tres" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_panel.tscn" id="3"]
 
 [node name="LastLibrary" type="Control"]
 layout_mode = 3
@@ -230,6 +231,13 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 size_flags_horizontal = 3
+
+[node name="설정" type="VBoxContainer" parent="Margin/Tabs"]
+layout_mode = 2
+
+[node name="SettingsPanel" parent="Margin/Tabs/설정" instance=ExtResource("3")]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="RunSetup" type="PanelContainer" parent="."]
 unique_name_in_owner = true

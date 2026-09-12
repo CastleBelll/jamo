@@ -34,6 +34,11 @@ var focused: bool = false:
 			$FocusRing.visible = value
 
 @onready var visual_pivot: Node2D = $VisualPivot
+## G11 idle motion: shared MotionProfile, applied only to VisualPivot; a 0 shake setting
+## zeroes the displacement while the click circle on the root stays identical.
+var motion: MotionProfile
+var motion_time: float = 0.0
+var motion_scale: float = 1.0
 @onready var glyph: Label = $VisualPivot/Glyph
 @onready var anim: AnimationPlayer = $AnimationPlayer
 
@@ -58,6 +63,39 @@ func _ready() -> void:
 	glyph.text = jamo
 	$FocusRing.visible = focused
 	_refresh_variant_mark()
+
+
+func _process(delta: float) -> void:
+	if motion == null or not alive:
+		return
+	motion_time += delta
+	var phase := TAU * motion_time / maxf(motion.period, 0.05)
+	visual_pivot.rotation = deg_to_rad(motion.rotation_deg) * sin(phase) * motion_scale
+	visual_pivot.position.y = -absf(motion.bob_px * sin(phase)) * motion_scale
+
+
+func set_motion(profile: MotionProfile, scale: float) -> void:
+	motion = profile
+	motion_scale = scale
+	if profile == null or scale <= 0.0:
+		visual_pivot.rotation = 0.0
+		visual_pivot.position = Vector2.ZERO
+
+
+## 상태 표시 (G12): icon text + stacks/remaining time, readable without colour.
+func refresh_status_label(now: float) -> void:
+	var label := get_node_or_null("StatusAnchor/StatusLabel") as Label
+	if label == null:
+		return
+	var parts: Array[String] = []
+	if burn_active(now):
+		parts.append("불 %.1fs" % (burn["until"] - now))
+	var stacks := poison_count(now)
+	if stacks > 0:
+		parts.append("독 x%d" % stacks)
+	if strongest_slow(now) > 0.0:
+		parts.append("둔 %.1fs" % (slow["until"] - now))
+	label.text = " ".join(parts)
 
 
 func speed() -> float:

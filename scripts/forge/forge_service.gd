@@ -56,6 +56,7 @@ func start(run_deck: DeckService, content: ContentDB, run_build: BuildState, wor
 	_shuffle(draw)
 	while hand.size() < hand_size and not draw.is_empty():
 		hand.append(draw.pop_back())
+	RunLog.event("forge_hand", {"hand": hand.duplicate(true), "rerolls": rerolls_left, "candidates": _candidate_ids()})
 
 
 func token_total() -> int:
@@ -110,6 +111,7 @@ func reroll() -> bool:
 		hand.append(draw.pop_back())
 	discard.append_array(outgoing)
 	rerolls_left -= 1
+	RunLog.event("forge_reroll", {"hand": hand.duplicate(true), "locked": locked.duplicate(), "rerolls": rerolls_left, "candidates": _candidate_ids()})
 	return true
 
 
@@ -197,6 +199,7 @@ func restore(word_id: StringName, replace_id: StringName = &"") -> bool:
 			return false
 	restores_left -= 1
 	restored_word = word.id
+	RunLog.event("forge_restore", {"word": String(word.id), "rank": build.rank_of(word.id), "replaced": String(replace_id)})
 	return true
 
 
@@ -250,6 +253,7 @@ func compound(compound_id: StringName) -> bool:
 		return false
 	compounded = compound_id
 	restores_left = 0  # no restore into the freed slot afterwards (G6)
+	RunLog.event("forge_compound", {"compound": String(compound_id)})
 	return true
 
 
@@ -296,6 +300,13 @@ func finish() -> void:
 	draw.clear()
 	discard.clear()
 	locked.clear()
+
+
+func _candidate_ids() -> Array:
+	var out := []
+	for c in candidates():
+		out.append(String(c["word"].id))
+	return out
 
 
 func _in_hand(token_id: int) -> bool:

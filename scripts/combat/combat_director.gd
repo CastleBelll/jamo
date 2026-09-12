@@ -17,6 +17,7 @@ const PATTERN_SCENE := preload("res://scenes/effects/pattern_target.tscn")
 const LANE_COUNT := 3
 const SUB_LANE_COUNT := 2
 const SOURCE_MANUAL := &"manual"
+const PRIORITY_WARNING := 100
 
 var run: RunController
 var db: ContentDB
@@ -55,7 +56,7 @@ var pending_target: JamoMonster
 var miss_clicks: int = 0
 var hold_pressed: bool = false
 var focus_index: int = -1
-var stats := {"hits": 0, "purified": 0, "reached": 0, "patterns_defused": 0, "patterns_failed": 0}
+var stats := {"hits": 0, "purified": 0, "reached": 0, "patterns_defused": 0, "patterns_failed": 0, "hold_time": 0.0, "damage_by_source": {}}
 ## Gold earned in this Wave (float, B10 fractions accumulate) for the 돈 clear heal.
 var wave_gold: float = 0.0
 ## Jamo the pinned goal lacks in the deck: B5 spawn weight x1.15, renormalised.
@@ -71,6 +72,8 @@ func setup(controller: RunController, content: ContentDB, page: Node2D) -> void:
 	enemy_root = page.get_node("Enemies")
 	effect_root = page.get_node("Effects")
 	resolver.setup(db, run.build, hash("crit:%d" % run.run_seed))
+	if not Meta.settings_changed.is_connected(_on_setting_changed):
+		Meta.settings_changed.connect(_on_setting_changed)
 
 
 func start_wave(data: WaveData, seed: int) -> void:
@@ -89,7 +92,7 @@ func start_wave(data: WaveData, seed: int) -> void:
 	pending_target = null
 	focus_index = -1
 	miss_clicks = 0
-	stats = {"hits": 0, "purified": 0, "reached": 0, "patterns_defused": 0, "patterns_failed": 0}
+	stats = {"hits": 0, "purified": 0, "reached": 0, "patterns_defused": 0, "patterns_failed": 0, "hold_time": 0.0, "damage_by_source": {}}
 	wave_gold = 0.0
 	boss = null
 	boss_data = null
@@ -229,9 +232,13 @@ func tick(delta: float, cursor_world: Vector2 = Vector2.INF) -> void:
 		return
 	clock += delta
 	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
+	if hold_pressed:
+		stats["hold_time"] += delta
 	# 1. input judgement: hold repeats through the same cooldown; a press already set pending.
 	if pending_target == null and hold_pressed and cursor_world != Vector2.INF:
 		pending_target = pick_target(cursor_world)
+	for e in enemies:
+		e.refresh_status_label(resolver.clock)
 	# 2. direct damage, or one manual input into a 대응물 (same cooldown, G8)
 	if pending_pattern != null and can_attack() and not pending_pattern.done:
 		attack_cooldown = resolver.input_interval()
@@ -268,6 +275,7 @@ func _manual_attack(target: JamoMonster) -> void:
 	var dealt := _apply_hit(target, roll["damage"], CombatResolver.SOURCE_MANUAL)
 	attack_cooldown = resolver.input_interval()
 	stats["hits"] += 1
+	Sfx.play("hit_ink", 0, 0.12)
 	_spawn_damage_number(target.global_position, dealt, crit)
 	manual_hit.emit(target, dealt, crit)
 	# 3. counters on every real hit; statuses only if the target survived (resolver decides).
@@ -280,6 +288,7 @@ func _apply_hit(target: JamoMonster, damage: float, source: StringName) -> float
 	var dealt := target.take_damage(damage * guard_multiplier(target))
 	if dealt > 0.0:
 		target.last_source = source
+		stats["damage_by_source"][String(source)] = stats["damage_by_source"].get(String(source), 0.0) + dealt
 	return dealt
 
 
@@ -300,6 +309,7 @@ func _resolve_purify() -> void:
 		if e is Boss:
 			_on_boss_purified(e as Boss)
 			run.on_boss_purified(boss_data.id)
+			RunLog.event("boss_purified", {"wave": run.wave, "boss": String(boss_data.id), "duration": clock, "patterns_failed": stats["patterns_failed"]})
 		elif boss != null and boss.alive and boss_data != null and boss_data.shield_per_minion > 0.0:
 			boss.add_shield(boss_data.shield_per_minion, clock)  # 탐욕: 지정 부하 정화마다 +3 (B9)
 		var kill := resolver.on_kill(e, e.last_source, enemies)
@@ -307,6 +317,8 @@ func _resolve_purify() -> void:
 			run.heal_stability(kill["heal"])
 		for hit in kill["derived"]:
 			_apply_hit(hit["target"], hit["damage"], hit["source"])
+		Sfx.play("purify", 1, 0.2)
+		RunLog.event("purify", {"wave": run.wave, "entity": e.entity_id, "source": String(e.last_source), "gold": gold, "t": clock})
 		enemy_purified.emit(e, e.last_source)
 		e.play_purify()
 		_retire(e, 0.2)
@@ -340,6 +352,8 @@ func _advance_enemies(delta: float) -> void:
 		e.alive = false
 		enemies.erase(e)
 		stats["reached"] += 1
+		Sfx.play("sentence_hit", 2, 0.3)
+		RunLog.event("reach", {"wave": run.wave, "entity": e.entity_id, "t": clock})
 		enemy_reached.emit(e)
 		_retire(e, 0.0)
 		run.damage_stability(resolver.stability_damage(db.balance.reach_damage), &"reach")
@@ -402,6 +416,7 @@ func _tick_boss(delta: float) -> void:
 			if not options.is_empty():
 				var chosen: StringName = options[rng_boss.randi_range(0, options.size() - 1)]
 				spec["seal_word"] = chosen
+		Sfx.play("boss_warning", PRIORITY_WARNING, 0.6)
 		var p: PatternTarget = PATTERN_SCENE.instantiate()
 		if spec.has("seal_word"):
 			p.seal_word_name = db.words[spec["seal_word"]].name
@@ -528,11 +543,29 @@ func _spawn(slot: int, jamo: String, hp: float, travel_time: float, variant: Jam
 	var sub := slot % SUB_LANE_COUNT
 	m.setup(next_entity_id, jamo, hp, paths[slot], travel_time, lane, sub)
 	m.apply_variant(variant, db.balance)
+	m.set_motion(_motion_for(jamo), SettingsService.shake_factor())
+	RunLog.event("spawn", {"wave": run.wave, "entity": m.entity_id, "jamo": jamo, "variant": m.variant_name(), "lane": lane, "sub": sub, "t": clock})
 	next_entity_id += 1
 	enemy_root.add_child(m)
 	enemies.append(m)
 	spawned += 1
 	enemies_changed.emit(remaining())
+
+
+## G10 변경 즉시 미리보기: a new 흔들림 level reaches monsters already on the field.
+func _on_setting_changed(key: String) -> void:
+	if key != "shake":
+		return
+	for e in enemies:
+		if not (e is Boss):
+			e.set_motion(e.motion, SettingsService.shake_factor())
+
+
+func _motion_for(jamo: String) -> MotionProfile:
+	for id in db.motion_profiles:
+		if jamo in db.motion_profiles[id].jamo:
+			return db.motion_profiles[id]
+	return null
 
 
 ## B5 weighted draw on the spawn RNG stream; pinned-and-lacking jamo get x1.15 once.

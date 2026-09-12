@@ -18,6 +18,7 @@ func _ready() -> void:
 	# Isolate persistence: never touch the real profile from a test (G14).
 	Meta.saver.path = "user://test_run_controller.json"
 	Meta.new_profile()
+	RunLog.enabled = false  # tests never leave run logs behind
 	var db := ContentDB.load_all()
 	var errors := db.validate()
 	if not errors.is_empty():

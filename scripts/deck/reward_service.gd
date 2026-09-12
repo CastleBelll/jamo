@@ -43,6 +43,7 @@ func can_remove(token_id: int) -> bool:
 func add(index: int) -> bool:
 	if not can_add(index):
 		return false
+	RunLog.event("reward_action", {"action": "add", "jamo": candidates[index]})
 	deck.add_token(candidates[index])
 	_consume(index)
 	return true
@@ -51,6 +52,7 @@ func add(index: int) -> bool:
 func replace(index: int, token_id: int) -> bool:
 	if not can_replace(index, token_id):
 		return false
+	RunLog.event("reward_action", {"action": "replace", "jamo": candidates[index], "token": token_id})
 	deck.replace_token(token_id, candidates[index])
 	_consume(index)
 	return true
@@ -60,6 +62,7 @@ func replace(index: int, token_id: int) -> bool:
 func skip() -> bool:
 	if not can_pick():
 		return false
+	RunLog.event("reward_action", {"action": "skip"})
 	picks_left -= 1
 	changed.emit()
 	return true
@@ -68,6 +71,7 @@ func skip() -> bool:
 func remove(token_id: int) -> bool:
 	if not can_remove(token_id):
 		return false
+	RunLog.event("reward_action", {"action": "remove", "token": token_id})
 	deck.remove_token(token_id)
 	removes_left -= 1
 	changed.emit()

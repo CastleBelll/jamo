@@ -22,6 +22,9 @@ func _ready() -> void:
 	%SetupStartButton.pressed.connect(_start_run)
 	%SetupPinOption.item_selected.connect(func(i): Meta.pinned_word = String(%SetupPinOption.get_item_metadata(i)); _refresh_setup())
 	%OpeningStartButton.pressed.connect(_start_first_run)
+	SettingsService.apply_all()
+	SettingsService.apply_text_scale(self, int(Meta.setting("text_scale")))
+	%SettingsPanel.open(self, true)  # lives inside the 설정 tab: no 계속하기, never hidden
 	var returned := LibraryService.record_return(db)
 	_refresh()
 	%NoticeLabel.text = returned
