@@ -20,11 +20,11 @@ Prompt set: orthographic warm walnut desk, central1480×820 hanji at x220..1700/
 
 | Path | Size | 9-slice margin | Method |
 |---|---|---|---|
-| `art/title/title_logo.png` | 1200×420 | none | built-in ImageGen + size normalization |
+| `art/title/title_logo.png` | 1200×420 | none | ImageGen source + user-authorized local subtitle crop / center |
 | `art/title/title_screen.png` | 1920×1080 | none | built-in ImageGen + size normalization |
 | `art/library/lib_bg_dim.png` | 1920×1080 | none | built-in ImageGen + size normalization |
 
-Retained unchanged: `art/library/lib_bg.png` (1920×1080). Selected sources: `art/_source_v2/group_D/`, IDs: `group_D.json`. OpenAI Terms apply. Logo is RGBA cream dry-brush JAMO with glow; exact Korean subtitle visually checked: “작은 글자가, 새로운 세상을 만든다.” Decorative image text is not runtime game data. Title background has four walking porcelain figures in the lower quarter and calm center; no menus. Dim library is an ImageGen lighting edit: left 40% dark walnut vignette fading to unchanged warm right. Reference `art/_reference/title_ex.png` used for style/composition. Dim edit preserves overall composition but is generative, not pixel-identical to the original.
+Retained unchanged: `art/library/lib_bg.png` (1920×1080). Selected sources: `art/_source_v2/group_D/`, IDs: `group_D.json`. OpenAI Terms apply. Logo is RGBA cream dry-brush JAMO with glow and **no Korean subtitle**. The original baked subtitle was reported misspelled and removed, correcting the earlier visual-check claim. User authorized local postprocessing after ImageGen hit its limit: `art/title/crop_logo_only.py` crops the retained original above the subtitle, keeps the entire JAMO lettering/visible glow and centers it on a 1200×420 straight-alpha canvas. Subtitle is coordinator-rendered font text, not image data. Title background has four walking porcelain figures in the lower quarter and calm center; no menus. Dim library is an ImageGen lighting edit: left 40% dark walnut vignette fading to unchanged warm right. Reference `art/_reference/title_ex.png` used for style/composition. Dim edit preserves overall composition but is generative, not pixel-identical to the original.
 
 Prompt set: isolated cream dry-brush uppercase JAMO with exact subtitle and transparent alpha; warm dusk dark-walnut library desk background with ㄱ/ㅁ/ㅇ/ㄴ walking lower center, no UI/text; edit original library lighting only, left40% dark vignette for menus, preserve objects and sunset.
 
