@@ -34,7 +34,7 @@ func set_build(build: BuildState, db: ContentDB, sealed: Dictionary = {}) -> voi
 		if i < build.words.size():
 			var word: WordData = db.words[build.words[i]["id"]]
 			var l := Label.new()
-			l.text = "%s\nR%d%s" % [word.name, build.words[i]["rank"], ("\n봉인 %.1f초" % sealed[word.id]) if sealed.has(word.id) else ""]
+			l.text = "%s %s%s" % [word.name, "●".repeat(build.words[i]["rank"]) + "○".repeat(3 - build.words[i]["rank"]), ("\n봉인 %.1f초" % sealed[word.id]) if sealed.has(word.id) else ""]
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			l.set_anchors_preset(Control.PRESET_FULL_RECT)
 			slot.add_child(l)
@@ -46,11 +46,11 @@ func set_hover(target: JamoMonster) -> void:
 		hover_label.text = ""
 		return
 	var kind := "보스" if target is Boss else target.variant_name()
-	hover_label.text = "%s  HP %.1f / %.1f  %s" % [target.jamo if not (target is Boss) else target.data.name, target.hp, target.hp_max, kind]
+	hover_label.text = "%s  %.1f/%.1f  %s" % [target.jamo if not (target is Boss) else target.data.name, target.hp, target.hp_max, kind]
 
 
 func set_enemies_left(count: int) -> void:
-	enemies_label.text = "남은 적 %d" % count
+	enemies_label.text = "적 %d" % count
 
 
 func set_temp_drops(count: int) -> void:
@@ -58,11 +58,11 @@ func set_temp_drops(count: int) -> void:
 
 
 func _on_wave_changed(wave: int) -> void:
-	wave_label.text = "Wave %d" % wave
+	wave_label.text = "W%d" % wave
 
 
 func _on_stability_changed(current: float, maximum: float) -> void:
-	stability_label.text = "안정도 %.1f / %.0f" % [current, maximum]
+	stability_label.text = "안정도 %.0f/%.0f" % [current, maximum]
 	stability_bar.max_value = maximum
 	stability_bar.value = current
 

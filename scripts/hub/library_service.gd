@@ -16,13 +16,13 @@ static func research_rows(db: ContentDB) -> Array[Dictionary]:
 		var purchased := Meta.has_research(r.id)
 		var reasons: Array[String] = []
 		if r.requires_research != &"" and not Meta.has_research(r.requires_research):
-			reasons.append("선행 연구: %s" % db.research[r.requires_research].name)
+			reasons.append("선행 연구 · %s" % db.research[r.requires_research].name)
 		if r.requires_reach_wave > 0 and Meta.best_reached < r.requires_reach_wave:
-			reasons.append("W%d 도달 필요 (최고 W%d)" % [r.requires_reach_wave, Meta.best_reached])
+			reasons.append("W%d 도달 필요" % r.requires_reach_wave)
 		var allowed := reasons.is_empty()
 		var affordable := Meta.gold >= r.price
 		if allowed and not affordable and not purchased:
-			reasons.append("Gold 부족 (%d / %d)" % [Meta.gold, r.price])
+			reasons.append("Gold 부족 %d/%d" % [Meta.gold, r.price])
 		out.append({"research": r, "purchased": purchased, "affordable": affordable, "allowed": allowed,
 			"reason": ", ".join(reasons), "current": _research_current(db, r), "after": _research_after(db, r)})
 	return out
@@ -72,11 +72,11 @@ static func codex_row(db: ContentDB, word: WordData) -> Dictionary:
 	var unlocked := word.unlock == &"start" or (word.unlock == &"after_mieum" and Meta.mieum_purified) or word.is_compound
 	var condition := ""
 	if word.unlock == &"after_mieum" and not Meta.mieum_purified:
-		condition = "거대한 ㅁ을 처음 정화한 뒤 다음 RUN부터"
+		condition = "거대한 ㅁ 정화 후 다음 RUN"
 	if word.is_compound:
 		var recipe: CompoundData = db.compounds.get(word.id)
 		if recipe != null:
-			condition = "%s Rank %d + %s Rank %d 합성" % [db.words[recipe.material_a].name, recipe.material_a_min_rank, db.words[recipe.material_b].name, recipe.material_b_min_rank]
+			condition = "%s R%d + %s R%d" % [db.words[recipe.material_a].name, recipe.material_a_min_rank, db.words[recipe.material_b].name, recipe.material_b_min_rank]
 	var effects: Array[String] = []
 	for rank in range(1, word.max_rank() + 1):
 		effects.append("R%d: %s" % [rank, EffectText.describe_rank(word, rank)])

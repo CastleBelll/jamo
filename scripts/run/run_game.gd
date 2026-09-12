@@ -126,7 +126,7 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 		RunController.Phase.WAVE_PREP:
 			_save_run()  # 체크포인트: 전투 시작 직전 상태 (G14)
 			hud.set_build(run.build, db_ref)
-			prep_label.text = "Wave %d%s" % [run.wave, " 보스" if run.is_boss_wave() else ""]
+			prep_label.text = "W%d%s" % [run.wave, " · " + db_ref.bosses[run.wave_data().boss_id].name if run.is_boss_wave() else ""]
 			var line := run.take_pending_line()
 			%PrepHint.text = _prep_hint() + ("\n" + line if line != "" else "")
 			%StartWaveButton.grab_focus()
@@ -169,7 +169,7 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 
 ## G10 Wave Clear row: 정화/놓침, 안정도 손실, 회수 수.
 func _clear_stats_text() -> String:
-	return "정화 %d · 놓침 %d · 안정도 손실 %.1f · 회수 %d" % [director.stats["purified"], director.stats["reached"], run.wave_damage_taken, run.drops.drops.size()]
+	return "정화 %d · 놓침 %d · 손실 %.0f · 회수 %d" % [director.stats["purified"], director.stats["reached"], run.wave_damage_taken, run.drops.drops.size()]
 
 
 ## Data first, then the 회수 feedback (G12): the drop is counted before the glyph floats.
@@ -185,10 +185,9 @@ func _on_enemy_purified(monster: JamoMonster, _source: StringName) -> void:
 func _prep_hint() -> String:
 	if not run.is_boss_wave():
 		# The W1 guidance belongs to the first RUN only (G2: 재도전은 안내를 다시 보이지 않는다).
-		return "자모를 눌러 마지막 문장을 지키세요" if run.wave == 1 and run.first_run else ""
+		return "자모를 눌러 문장을 지켜요" if run.wave == 1 and run.first_run else ""
 	var b: BossData = db_ref.bosses[run.wave_data().boss_id]
-	var hint := b.response_hint if b.response_hint != "" else "표식이 나타나면 %d번 눌러 대응하세요." % b.respond_count
-	return "%s 등장. %s" % [b.name, hint]
+	return b.response_hint if b.response_hint != "" else "표식 %d번 → 대응" % b.respond_count
 
 
 ## RUN Result (G9): reason, reached/cleared Wave, top loss causes, build, discoveries, Gold,
@@ -202,30 +201,30 @@ func _result_text(reason: RunController.EndReason) -> String:
 			head = "귀환."
 		_:
 			head = "이번 페이지의 연결이 끊어졌다. 서고의 기록은 남아 있다."
-	var lines: Array[String] = [head, "도달 Wave %d · 클리어 Wave %d" % [run.wave, run.waves_cleared]]
+	var lines: Array[String] = [head, "W%d 도달 · W%d 클리어" % [run.wave, run.waves_cleared]]
 	var causes: Array[String] = []
 	var keys := run.damage_causes.keys()
 	keys.sort_custom(func(a, b): return run.damage_causes[a] > run.damage_causes[b])
 	for k in keys.slice(0, 2):
-		causes.append("%s %.1f" % [_cause_name(k), run.damage_causes[k]])
-	lines.append("안정도 피해 원인: %s" % (", ".join(causes) if not causes.is_empty() else "없음"))
+		causes.append("%s %.0f" % [_cause_name(k), run.damage_causes[k]])
+	lines.append("손실 · %s" % (" · ".join(causes) if not causes.is_empty() else "없음"))
 	var build_parts: Array[String] = []
 	for held in run.build.words:
 		build_parts.append("%s R%d" % [db_ref.words[held["id"]].name, held["rank"]])
-	lines.append("대표 빌드: %s" % (", ".join(build_parts) if not build_parts.is_empty() else "없음"))
+	lines.append("빌드 · %s" % (", ".join(build_parts) if not build_parts.is_empty() else "없음"))
 	var found: Array[String] = []
 	for id in run.discovered:
 		found.append(db_ref.words[id].name)
-	lines.append("신규 복원: %s" % (", ".join(found) if not found.is_empty() else "없음"))
-	lines.append("획득 Gold: %d G" % int(run.gold_run))
-	lines.append("다음 목표: %s" % _next_goal())
+	lines.append("신규 · %s" % (", ".join(found) if not found.is_empty() else "없음"))
+	lines.append("%dG" % int(run.gold_run))
+	lines.append("다음 · %s" % _next_goal())
 	return "\n".join(lines)
 
 
 func _cause_name(cause: StringName) -> String:
 	match cause:
-		&"reach": return "적 도달"
-		&"pattern": return "보스 패턴"
+		&"reach": return "도달"
+		&"pattern": return "패턴"
 	return String(cause)
 
 
@@ -235,14 +234,14 @@ func _next_goal() -> String:
 	if run.pinned_word != &"":
 		var lacking := run.pin_lacking()
 		if not lacking.is_empty():
-			return "%s에 부족한 자모 %s 회수" % [db_ref.words[run.pinned_word].name, ", ".join(lacking)]
+			return "%s: %s 회수" % [db_ref.words[run.pinned_word].name, " ".join(lacking)]
 	var ids := db_ref.compounds.keys()
 	ids.sort()
 	for id in ids:
 		var c: CompoundData = db_ref.compounds[id]
 		if not (run.build.has(c.material_a) and run.build.has(c.material_b)):
-			return "%s과 %s을 함께 복원하면 새로운 뜻을 엮을 수 있다" % [db_ref.words[c.material_a].name, db_ref.words[c.material_b].name]
-	return "거대한 ㅁ에 도전하기"
+			return "%s+%s 합성" % [db_ref.words[c.material_a].name, db_ref.words[c.material_b].name]
+	return "거대한 ㅁ 도전"
 
 
 ## Atomic save of the whole logical RUN state (G14). Never called during COMBAT.

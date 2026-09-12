@@ -85,7 +85,7 @@ func _refresh_research() -> void:
 		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		var state: String = "구매 완료" if row["purchased"] else ("구매 가능" if row["allowed"] and row["affordable"] else row["reason"])
-		text.text = "%s · %dG\n현재: %s → 구매 후: %s\n%s" % [r.name, r.price, row["current"], row["after"], state]
+		text.text = "%s  %dG\n%s → %s\n%s" % [r.name, r.price, row["current"], row["after"], state]
 		box.add_child(text)
 		var b := Button.new()
 		b.text = "구매" if not row["purchased"] else "완료"
@@ -121,8 +121,8 @@ func _refresh_codex() -> void:
 			if w.is_compound != (codex_tab == "compound"):
 				continue
 			var row := LibraryService.codex_row(db, w)
-			var mark := "발견 %s" % row["tier"] if row["discovered"] else ("미발견" if row["unlocked"] else "미해금")
-			_add_codex_button("%s (%s) · %s" % [w.name, row["materials"], mark], String(w.id))
+			var mark: String = ("발견 " + row["tier"]).strip_edges() if row["discovered"] else ("미발견" if row["unlocked"] else "잠김")
+			_add_codex_button("%s %s  %s" % [w.name, row["materials"], mark], String(w.id))
 			if first == "":
 				first = String(w.id)
 	if codex_selected == "":
@@ -156,18 +156,19 @@ func _refresh_codex_detail() -> void:
 		return
 	var row := LibraryService.codex_row(db, db.words[StringName(codex_selected)])
 	var w: WordData = row["word"]
-	var lines: Array[String] = ["%s (%s) · 분류 %s · 태그 %s" % [w.name, row["materials"], w.category, " ".join(w.tags)]]
-	lines.append("해금: %s" % ("해금됨" if row["unlocked"] else "미해금 — " + row["condition"]))
+	var lines: Array[String] = ["%s %s · %s" % [w.name, row["materials"], " ".join(w.tags)]]
+	if not row["unlocked"]:
+		lines.append("잠김 · " + row["condition"])
 	if w.is_compound and row["condition"] != "":
 		lines.append("레시피: %s" % row["condition"])
 	lines.append_array(row["effects"])
 	if row["discovered"] and w.is_compound:
 		lines.append("최초 발견 기록 · 첫 합성 %s" % row["first_at"])  # B10: 합성은 복원도 없이 발견 기록만
 	elif row["discovered"]:
-		lines.append("복원도 %s (%d회) · 최고 Rank %d · 첫 복원 %s" % [row["tier"], row["mastery"], row["best_rank"], row["first_at"]])
+		lines.append("복원도 %s (%d회) · 최고 R%d" % [row["tier"], row["mastery"], row["best_rank"]])
 	else:
-		lines.append("아직 복원한 적 없음")
-	lines.append("관련 보스: %s" % row["boss"])
+		lines.append("미복원")
+	lines.append("보스 · %s" % row["boss"])
 	%CodexDetail.text = "\n".join(lines)
 
 
@@ -175,7 +176,7 @@ func _refresh_codex_detail() -> void:
 
 func _refresh_records() -> void:
 	var b := LibraryService.badges(db)
-	%BadgesLabel.text = "배지: 첫 합성 %s · 첫 완주 %s · 기본 12종 발견 %s" % [_mark(b["first_compound"]), _mark(b["first_clear"]), _mark(b["twelve_words"])]
+	%BadgesLabel.text = "배지 · 첫 합성 %s · 첫 완주 %s · 12종 %s" % [_mark(b["first_compound"]), _mark(b["first_clear"]), _mark(b["twelve_words"])]
 	_clear(%EventRows)
 	var lines := LibraryService.event_lines(db)
 	if lines.is_empty():
@@ -190,7 +191,7 @@ func _refresh_records() -> void:
 
 
 func _mark(on: bool) -> String:
-	return "획득" if on else "미획득"
+	return "○" if on else "—"
 
 
 # --- RUN 시작 구성 (G10 row) ------------------------------------------------------------
@@ -228,8 +229,7 @@ func _refresh_setup() -> void:
 		var counts: Array[String] = []
 		for j in row["counts"]:
 			counts.append("%s%d" % [j, row["counts"][j]])
-		b.text = "%s · %d장 · %s\n제작 가능 %d단어%s" % [row["deck"].name, row["size"], " ".join(counts), row["craftable"].size(),
-			"" if row["unlocked"] else " · 연구로 해금"]
+		b.text = "%s · %d장 · 제작 %d%s\n%s" % [row["deck"].name, row["size"], row["craftable"].size(), "" if row["unlocked"] else " · 잠김", " ".join(counts)]
 		var deck_id: StringName = id
 		b.pressed.connect(func(): setup_deck = deck_id; _refresh_setup())
 		%DeckRows.add_child(b)
@@ -242,8 +242,8 @@ func _refresh_setup() -> void:
 		for j in need:
 			if chosen["counts"].get(j, 0) < need[j]:
 				lacking.append(j)
-		pin_text = "목표 %s: %s" % [word.name, "현재 덱으로 가능" if lacking.is_empty() else "현재 덱에 %s 없음" % ", ".join(lacking)]
-	%SetupInfo.text = "%s로 만들 수 없는 단어: %s\n%s" % [chosen["deck"].name, ", ".join(chosen["blocked"]) if not chosen["blocked"].is_empty() else "없음", pin_text]
+		pin_text = "목표 %s · %s" % [word.name, "가능" if lacking.is_empty() else "부족 %s" % " ".join(lacking)]
+	%SetupInfo.text = "못 만드는 단어 · %s\n%s" % [", ".join(chosen["blocked"]) if not chosen["blocked"].is_empty() else "없음", pin_text]
 
 
 func _start_run() -> void:

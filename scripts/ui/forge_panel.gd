@@ -68,10 +68,10 @@ func _refresh() -> void:
 	if forge == null:
 		return
 	_rebuild_hand()
-	lock_label.text = "Lock %d / %d" % [forge.locked.size(), forge.lock_max]
-	reroll_button.text = "Reroll (%d) · 바뀔 칸 %d" % [forge.rerolls_left, forge.reroll_slots()]
+	lock_label.text = "잠금 %d/%d" % [forge.locked.size(), forge.lock_max]
+	reroll_button.text = "Reroll %d (바뀜 %d)" % [forge.rerolls_left, forge.reroll_slots()]
 	reroll_button.disabled = not forge.can_reroll()
-	build_label.text = "보유 %d / %d: %s" % [forge.build.words.size(), forge.build.slots, _build_text()]
+	build_label.text = "빌드 %d/%d · %s" % [forge.build.words.size(), forge.build.slots, _build_text()]
 	_rebuild_candidates()
 	_rebuild_replace_row()
 	var c := forge.candidate_for(selected) if selected != &"" else {}
@@ -112,13 +112,11 @@ func _rebuild_candidates() -> void:
 		selected = &""
 	for c in list:
 		var w: WordData = c["word"]
-		var tag := "Rank %d→%d" % [forge.build.rank_of(w.id), forge.build.rank_of(w.id) + 1] if c["kind"] == ForgeService.KIND_RANK_UP else "신규"
-		if c["needs_replace"]:
-			tag += " · 교체 필요"
-		if c["replace_risk"]:
-			tag += " · 위험 교체 필요"
+		var tag := "R%d→%d" % [forge.build.rank_of(w.id), forge.build.rank_of(w.id) + 1] if c["kind"] == ForgeService.KIND_RANK_UP else "신규"
+		if c["needs_replace"] or c["replace_risk"]:
+			tag += " · 교체"
 		var b := Button.new()
-		b.text = "%s (%s) [%s]  %s" % [w.name, "".join(w.required_jamo), tag, EffectText.describe_rank(w, forge.build.rank_of(w.id) + 1)]
+		b.text = "%s  %s   %s" % [w.name, tag, EffectText.describe_rank(w, forge.build.rank_of(w.id) + 1)]
 		b.custom_minimum_size = Vector2(0, 64)
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.toggle_mode = true
@@ -129,7 +127,7 @@ func _rebuild_candidates() -> void:
 		candidates_box.add_child(b)
 	if list.is_empty():
 		var l := Label.new()
-		l.text = "복원한 단어: %s" % db.words[forge.restored_word].name if forge.restored_word != &"" else "현재 손패로 만들 수 있는 단어 없음"
+		l.text = "복원: %s" % db.words[forge.restored_word].name if forge.restored_word != &"" else "만들 수 있는 단어 없음"
 		candidates_box.add_child(l)
 
 
@@ -171,49 +169,49 @@ func _build_text() -> String:
 ## 효과 비교 (G10): current Rank line vs the Rank this restore would give, plus what a swap loses.
 func _compare_text(c: Dictionary) -> String:
 	if c.is_empty():
-		return "후보를 고르면 효과 변화를 보여줍니다."
+		return "후보 선택 → 효과 비교"
 	var w: WordData = c["word"]
 	var cur := forge.build.rank_of(w.id)
 	var text := "%s: %s" % [w.name, EffectText.describe_rank(w, cur + 1)]
 	if cur > 0:
-		text = "%s Rank %d → %d\n지금: %s\n다음: %s" % [w.name, cur, cur + 1, EffectText.describe_rank(w, cur), EffectText.describe_rank(w, cur + 1)]
+		text = "%s R%d→%d\n%s → %s" % [w.name, cur, cur + 1, EffectText.describe_rank(w, cur), EffectText.describe_rank(w, cur + 1)]
 	if w.is_risk():
-		text += "\n위험: 페널티는 효과에 포함되어 있습니다."
+		text += "\n위험 단어"
 	if replace_target != &"":
 		var old: WordData = db.words[replace_target]
-		text += "\n잃는 효과 (%s R%d): %s" % [old.name, forge.build.rank_of(old.id), EffectText.describe_rank(old, forge.build.rank_of(old.id))]
+		text += "\n잃음 %s R%d: %s" % [old.name, forge.build.rank_of(old.id), EffectText.describe_rank(old, forge.build.rank_of(old.id))]
 	return text
 
 
 func _pin_text() -> String:
 	if run.pinned_word == &"":
-		return "목표를 핀하면 부족한 자모와 덱 보유 수를 보여줍니다."
+		return "목표 핀 → 부족 자모 표시"
 	var st := forge.pin_status(run.pinned_word)
 	var w: WordData = st["word"]
 	var parts: Array[String] = []
 	for j in w.required_jamo:
 		parts.append("%s(덱 %d)" % [j, st["deck_counts"].get(j, 0)])
 	if st["possible"]:
-		return "목표 %s: %s · 현재 덱으로 가능" % [w.name, " ".join(parts)]
+		return "목표 %s · 가능 · %s" % [w.name, " ".join(parts)]
 	var lacking: Array[String] = []
 	for j in st["missing"]:
-		lacking.append("%s %d개 없음" % [j, st["missing"][j]])
-	return "목표 %s: %s · 현재 덱에 %s" % [w.name, " ".join(parts), ", ".join(lacking)]
+		lacking.append("%s×%d" % [j, st["missing"][j]])
+	return "목표 %s · 부족 %s" % [w.name, " ".join(lacking)]
 
 
 func _status_text() -> String:
 	if forge.restored_word != &"":
-		return "복원 완료: %s. 빌드 확정으로 다음 Wave." % db.words[forge.restored_word].name
+		return "복원 완료 · %s" % db.words[forge.restored_word].name
 	if forge.is_failed():
-		return "복원 실패: 안정도 +%.0f, 다음 Forge Reroll +%d." % [db.balance.forge_fail_heal, db.balance.forge_fail_bonus_reroll]
+		return "복원 실패 · 안정도 +%.0f · 다음 Reroll +%d" % [db.balance.forge_fail_heal, db.balance.forge_fail_bonus_reroll]
 	if forge.rerolls_left == 0 and not forge.candidates().is_empty():
-		return "후보가 있습니다. 복원하지 않고 넘기면 보정은 없습니다."
-	return "손패를 눌러 Lock, Reroll로 나머지를 다시 뽑습니다."
+		return "후보 있음 · 넘기면 보정 없음"
+	return "활자 눌러 잠금 · Reroll"
 
 
 func _on_token(token_id: int) -> void:
 	if not forge.toggle_lock(token_id):
-		status_label.text = "Lock은 %d개까지입니다." % forge.lock_max
+		status_label.text = "잠금 최대 %d" % forge.lock_max
 		_rebuild_hand()
 		return
 	_refresh()
@@ -255,7 +253,7 @@ func _rebuild_compounds() -> void:
 	compound_box.visible = not options.is_empty() or forge.compounded != &""
 	compound_button.visible = compound_box.visible
 	if forge.compounded != &"":
-		compound_label.text = "합성 완료: %s. 이번 빌드 확정에서는 더 합성할 수 없습니다." % db.words[db.compounds[forge.compounded].result].name
+		compound_label.text = "합성 완료 · %s" % db.words[db.compounds[forge.compounded].result].name
 		compound_button.disabled = true
 		return
 	if options.is_empty():
@@ -263,7 +261,7 @@ func _rebuild_compounds() -> void:
 		compound_button.disabled = true
 		return
 	if not forge.restore_closed():
-		compound_label.text = "합성은 복원을 마친 뒤(또는 복원 건너뛰기 뒤) 빌드 확정 화면에서 선택합니다."
+		compound_label.text = "복원 뒤 합성 가능"
 		compound_button.disabled = true
 		return
 	if selected_compound == &"" or db.compounds.get(selected_compound) == null or not (db.compounds[selected_compound] in options):
@@ -289,15 +287,14 @@ func _compound_preview_text(id: StringName) -> String:
 	var c: CompoundData = pv["compound"]
 	var result: WordData = pv["result"]
 	var lines: Array[String] = []
-	lines.append("잃는 효과: %s R%d (%s) / %s R%d (%s)" % [db.words[c.material_a].name, pv["material_a_rank"], EffectText.describe_rank(db.words[c.material_a], pv["material_a_rank"]),
-		db.words[c.material_b].name, pv["material_b_rank"], EffectText.describe_rank(db.words[c.material_b], pv["material_b_rank"])])
-	lines.append("얻는 효과: %s R1 (%s)" % [result.name, EffectText.describe_rank(result, 1)])
-	lines.append("슬롯 2 → 1. 결과 Rank는 1로 고정되며 재료의 높은 Rank는 사라집니다.")
+	lines.append("잃음 · %s R%d, %s R%d" % [db.words[c.material_a].name, pv["material_a_rank"], db.words[c.material_b].name, pv["material_b_rank"]])
+	lines.append("얻음 · %s R1: %s" % [result.name, EffectText.describe_rank(result, 1)])
+	lines.append("슬롯 2→1 · Rank 1 고정")
 	if not pv["synergies_lost"].is_empty():
 		var names: Array[String] = []
 		for sid in pv["synergies_lost"]:
 			names.append(String(sid))
-		lines.append("꺼지는 시너지: %s" % ", ".join(names))
+		lines.append("시너지 꺼짐 · %s" % ", ".join(names))
 	return "\n".join(lines)
 
 

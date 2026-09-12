@@ -83,7 +83,7 @@ func _live_pattern() -> PatternTarget:
 func _check_silence() -> void:
 	_boot(10, [[&"W01", 1], [&"W06", 1]])
 	_expect(director.boss_data.id == &"B_SILENCE" and director.boss.hp == 220.0 and director.boss.global_position == Vector2(960, 260), "W10 spawns 침묵 HP 220 at the anchor")
-	_expect(game.get_node("%PrepHint").text.begins_with("침묵 등장. 봉인선이"), "boss intro uses the data hint")
+	_expect(game.get_node("%PrepHint").text.begins_with("봉인선이"), "boss intro uses the data hint")
 	_expect(director.remaining() == 1 + 8, "8 minions scheduled")
 	_tick_to(6.0)
 	var p := _live_pattern()
