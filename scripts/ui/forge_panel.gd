@@ -138,6 +138,8 @@ func _rebuild_candidates() -> void:
 	if list.is_empty():
 		var l := Label.new()
 		l.text = "복원: %s" % db.words[forge.restored_word].name if forge.restored_word != &"" else "만들 수 있는 단어 없음"
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		candidates_box.add_child(l)
 
 

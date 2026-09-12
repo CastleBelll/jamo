@@ -41,6 +41,11 @@ func _shoot_library() -> void:
 	lib.get_node("%Tabs").current_tab = 0
 	lib._open_setup()
 	await _snap("04_setup")
+	lib.get_node("%RunSetup").visible = false
+	Meta.run = {"wave": 3}
+	lib._refresh()
+	await _snap("05_hub_suspended")
+	Meta.run = {}
 	lib.queue_free()
 	await get_tree().process_frame
 
@@ -62,9 +67,9 @@ func _shoot_run() -> void:
 	game.get_node("%ForgePanel").get_node("%FinishButton").pressed.emit()
 	game.get_node("%StartWaveButton").pressed.emit()
 	await get_tree().create_timer(1.0).timeout
-	game.pause_panel.visible = true
+	game._open_pause()
 	await _snap("15_pause")
-	game.pause_panel.visible = false
+	game._close_pause()
 	run.damage_stability(200.0)
 	await _snap("16_result")
 	game.queue_free()

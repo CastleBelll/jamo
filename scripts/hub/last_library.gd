@@ -52,7 +52,9 @@ func _ready() -> void:
 	AssetLib.apply(%Title/TitleLogo, "title_logo")
 	SettingsService.apply_text_scale(self, int(Meta.setting("text_scale")))
 	%SettingsPanel.add_theme_stylebox_override("panel", StyleBoxEmpty.new())  # the card already draws the paper
-	%SettingsPanel.get_node("Box/Title").visible = false  # the card header names the tab
+	var embedded_title := %SettingsPanel.get_node_or_null("Box/Title")
+	if embedded_title != null:
+		embedded_title.visible = false  # the card header names the tab
 	%SettingsPanel.open(self, true)  # lives inside the 설정 tab: never hidden, 서고로 returns to the hub tab
 	%SettingsPanel.closed.connect(func(): _show_tab(0))
 	var returned := LibraryService.record_return(db)
@@ -82,8 +84,10 @@ func _dismiss_title() -> void:
 
 ## Menu buttons open one tab inside the paper card; tab 0 (서고) is the bare hub.
 func _show_tab(index: int) -> void:
-	%Tabs.current_tab = index
-	_on_tab_changed(index)
+	if %Tabs.current_tab == index:
+		_on_tab_changed(index)  # no tab_changed signal when the index is unchanged
+	else:
+		%Tabs.current_tab = index
 	if index == 0:
 		if Meta.has_run():
 			%ContinueButton.grab_focus()
@@ -104,7 +108,7 @@ func _refresh() -> void:
 	%SentenceLabel.text = "원본: " + LibraryService.sentence_text(db)
 	%ContinueButton.visible = Meta.has_run()
 	%RunButton.text = "새 RUN" if Meta.has_run() else "RUN 시작"
-	%RunButton.theme_type_variation = &"Button" if Meta.has_run() else &"PrimaryButton"
+	%RunButton.theme_type_variation = &"" if Meta.has_run() else &"PrimaryButton"
 	%CorruptLabel.visible = Meta.corrupt
 	%NewProfileButton.visible = Meta.corrupt and Meta.load_source == "none"
 	if Meta.corrupt:
