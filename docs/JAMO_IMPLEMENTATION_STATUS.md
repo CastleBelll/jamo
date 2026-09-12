@@ -34,9 +34,15 @@
 
 `test_content`(데이터·빈도표·한글 분해), `test_run_controller`(G2·화면 골격), `test_combat`(W1 스폰·입력·정화·도달), `test_deck`, `test_forge`, `test_effects`(B1/B7 전 효과), `test_boss`(W5), `test_variants`(변형·합성·위험 풀), `test_bosses_late`(W10/15/20), `test_save`(저장·재개·정산), `test_library`, `test_settings`. 테스트는 `Meta.saver.path`를 테스트별 파일로 돌리고 로그를 끈다.
 
-## 5. 남은 일 (사람·에셋)
+## 5. 에셋 연결 (S8, 2026-09-12)
 
-1. **아트**: 자모 글리프 20종(56×56, 현재 Label 텍스트), 종이 배경·외곽 먹 Overlay, 서고 배경·상태 레이어 5종, 보스 글자 4종, 공통 표식, 상태 아이콘 3종, 단어 카드·분류 아이콘 4종, 버튼/패널 Theme, **타이틀 화면**(참고: `art/_reference/title_ex.png`). AI 생성 가능하되 실제 한글은 검수된 폰트로.
-2. **음향**: `Sfx.streams`에 id별 AudioStream 등록(hit_ink, purify, sentence_hit, boss_warning, boss_intro, page_turn 등), BGM 2루프+보스 레이어, UI 버스.
+- 에셋 키트(`art/ASSET_MAP.md`, PNG 104·OGG 8·Noto Sans KR)는 codex 세션이 제작, `scripts/ui/asset_lib.gd`(`AssetLib`)가 id → 텍스처로 해석. 파일이 없으면 `null`을 돌려 Label/Line2D 텍스트 폴백이 그대로 남는다.
+- 연결 지점: 몬스터 글리프·변종·상태 아이콘, 보스 글자, 패턴 표식, 종이 배경·먹 Overlay·문장 행(피격 시 `sentence_row_hit` 교체), HUD 아이콘(수치만 표시)·슬롯 프레임, 보상/포지/결과 아이콘, 서고 배경·레이어 아트·탭 아이콘, 세션당 1회 타이틀 화면(`Meta.title_seen`), Theme(폰트·9-slice 패널/버튼·포커스 테두리·슬라이더·체크), `Sfx` SFX 6종 등록 + BGM 2루프(`Sfx.play_bgm`).
+- 문구 규칙은 `docs/JAMO_UI_TEXT_ASSET_SPLIT.md`. 아이콘이 있으면 HUD 라벨은 숫자만, 상태 라벨은 시간·스택 숫자만.
+
+## 6. 남은 일 (사람·검증)
+
+1. **시각 검수**: 실제 실행으로 서고·전투 화면 눈으로 확인(headless QA는 프레임 렌더로 버튼 포커스·타이틀만 검증). 타이틀 힌트 대비 약 3.1:1(외곽선 색을 어둡게 하면 개선), 보상/포지 타일의 아이콘+텍스트 배치 미확인.
+2. **음향**: 보스 레이어 BGM, UI 버스 효과음은 미제작.
 3. **검증**: B12 사용자 5명 첫 5분 관찰, 기준 PC 60fps 실측, 클릭 피로 척도.
 4. **알려진 미세 이슈**: 합성 사전 항목 표기·설정 탭 문구 등 검수 비차단 지적은 각 검수 보고서 참조.
