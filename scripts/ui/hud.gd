@@ -93,4 +93,4 @@ func _on_stability_changed(current: float, maximum: float) -> void:
 
 
 func _on_gold_changed(gold: float) -> void:
-	gold_label.text = "%d G" % int(gold)
+	gold_label.text = ("%d" if has_icons() else "%d G") % int(gold)

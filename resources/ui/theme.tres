@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=15 format=3]
+[gd_resource type="Theme" load_steps=18 format=3]
 
 [ext_resource type="FontFile" path="res://art/fonts/NotoSansKR-Regular.ttf" id="font"]
 [ext_resource type="Texture2D" path="res://art/ui/panel_9slice.png" id="panel"]
@@ -49,6 +49,32 @@ texture_margin_bottom = 10.0
 content_margin_left = 20.0
 content_margin_right = 20.0
 
+[sub_resource type="StyleBoxTexture" id="sb_bd"]
+texture = ExtResource("bd")
+texture_margin_left = 12.0
+texture_margin_top = 10.0
+texture_margin_right = 12.0
+texture_margin_bottom = 10.0
+content_margin_left = 20.0
+content_margin_right = 20.0
+
+[sub_resource type="StyleBoxTexture" id="sb_slider"]
+texture = ExtResource("st")
+texture_margin_left = 4.0
+texture_margin_right = 4.0
+
+[sub_resource type="StyleBoxFlat" id="sb_focus"]
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.55, 0.32, 0.12, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [resource]
 default_font = ExtResource("font")
 default_font_size = 28
@@ -59,7 +85,10 @@ Button/colors/font_disabled_color = Color(0.45, 0.42, 0.38, 1)
 Button/styles/normal = SubResource("sb_bn")
 Button/styles/hover = SubResource("sb_bh")
 Button/styles/pressed = SubResource("sb_bp")
-Button/styles/focus = SubResource("sb_bh")
+Button/styles/disabled = SubResource("sb_bd")
+Button/styles/focus = SubResource("sb_focus")
+HSlider/styles/slider = SubResource("sb_slider")
+Panel/styles/panel = SubResource("sb_panel")
 CheckButton/icons/checked = ExtResource("con")
 CheckButton/icons/unchecked = ExtResource("coff")
 HSlider/icons/grabber = ExtResource("sg")

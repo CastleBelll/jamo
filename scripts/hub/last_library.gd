@@ -25,13 +25,13 @@ func _ready() -> void:
 	SettingsService.apply_all()
 	Sfx.play_bgm("library")
 	AssetLib.apply($BackgroundArt, "lib_bg")
-	for pair in [["lamp", "LayerTitleLamp"], ["spines", "LayerSpines"], ["lines", "LayerLines"], ["handwriting", "LayerHandwriting"], ["openbook", "LayerOpenBook"]]:
+	for layer in ["lamp", "spines", "lines", "handwriting", "openbook"]:
 		var rect := TextureRect.new()
-		rect.name = "Art_" + pair[0]
+		rect.name = "Art_" + layer
 		rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		rect.stretch_mode = TextureRect.STRETCH_SCALE
+		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		if AssetLib.apply(rect, "lib_layer_" + pair[0]):
+		if AssetLib.apply(rect, "lib_layer_" + layer):
 			$LayerArt.add_child(rect)
 		else:
 			rect.free()
@@ -40,7 +40,8 @@ func _ready() -> void:
 		var t := AssetLib.tex(tab_icons[i])
 		if t != null:
 			%Tabs.set_tab_icon(i, t)
-	%Tabs.tab_changed.connect(func(_i): %Title.visible = false)
+	%Tabs.tab_changed.connect(func(_i): _dismiss_title())
+	%Title.gui_input.connect(func(event): if event is InputEventMouseButton and event.is_pressed(): _dismiss_title())
 	AssetLib.apply(%Title/TitleArt, "title_screen")
 	AssetLib.apply(%Title/TitleLogo, "title_logo")
 	SettingsService.apply_text_scale(self, int(Meta.setting("text_scale")))
@@ -61,10 +62,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if %Opening.visible and (event is InputEventKey or event is InputEventMouseButton) and event.is_pressed():
 		_start_first_run()
 		get_viewport().set_input_as_handled()
-	elif %Title.visible and (event is InputEventKey or event is InputEventMouseButton) and event.is_pressed():
-		%Title.visible = false
-		Meta.title_seen = true
+	elif %Title.visible and event is InputEventKey and event.is_pressed():
+		_dismiss_title()
 		get_viewport().set_input_as_handled()
+
+
+func _dismiss_title() -> void:
+	%Title.visible = false
+	Meta.title_seen = true
 
 
 func _refresh() -> void:

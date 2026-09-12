@@ -334,6 +334,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 stretch_mode = 6
 
 [node name="TitleLogo" type="TextureRect" parent="Title"]
@@ -345,6 +346,7 @@ offset_left = -300.0
 offset_top = 180.0
 offset_right = 300.0
 offset_bottom = 380.0
+mouse_filter = 2
 stretch_mode = 5
 
 [node name="TitleHint" type="Label" parent="Title"]
@@ -358,6 +360,9 @@ offset_left = -300.0
 offset_top = -160.0
 offset_right = 300.0
 offset_bottom = -100.0
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0.96, 0.94, 0.88, 1)
+theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 32
 text = "아무 키나 눌러 시작"
 horizontal_alignment = 1
