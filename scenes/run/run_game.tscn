@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/run_game.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/run/run_controller.gd" id="2"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/combat/combat_director.gd" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/ui/reward_panel.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://scenes/ui/forge_panel.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_panel.tscn" id="9"]
 
 [node name="RunGame" type="Node"]
 process_mode = 3
@@ -32,6 +33,22 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 theme = ExtResource("5")
+
+[node name="Banner" type="Label" parent="Panels"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 150.0
+offset_right = 400.0
+offset_bottom = 230.0
+theme_override_font_sizes/font_size = 56
+text = ""
+horizontal_alignment = 1
+mouse_filter = 2
 
 [node name="Center" type="CenterContainer" parent="Panels"]
 layout_mode = 1
@@ -134,9 +151,19 @@ custom_minimum_size = Vector2(260, 64)
 layout_mode = 2
 text = "계속하기"
 
+[node name="PauseSettingsButton" type="Button" parent="Panels/Center/PausePanel/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+text = "설정"
+
 [node name="AbandonButton" type="Button" parent="Panels/Center/PausePanel/Box"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 64)
 layout_mode = 2
 text = "포기하고 귀환"
 
+[node name="SettingsPanel" parent="Panels/Center" instance=ExtResource("9")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2

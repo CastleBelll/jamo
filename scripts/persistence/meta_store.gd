@@ -21,6 +21,8 @@ var mieum_purified: bool = false
 var first_run_done: bool = false
 ## Goal pin survives RUNs (G2 재도전은 목표 핀을 유지한다).
 var pinned_word: String = ""
+## G10 설정 row: volumes 0-100 per bus, display, text scale, motion/flash accessibility.
+var settings: Dictionary = default_settings()
 var run: Dictionary = {}            # suspended RUN snapshot, empty when none
 ## Session-only handoff from the library: resume the suspended RUN / which starter to use.
 var resume_pending: bool = false
@@ -81,11 +83,20 @@ func deck_unlocked(deck: DeckData) -> bool:
 	return deck.unlock_research == &"" or has_research(deck.unlock_research)
 
 
+static func default_settings() -> Dictionary:
+	return {"master": 80, "bgm": 70, "sfx": 80, "ui": 80, "fullscreen": false, "text_scale": 100,
+		"shake": 50, "flash": true, "keyboard_mode": false}
+
+
+func setting(key: String):
+	return settings.get(key, default_settings().get(key))
+
+
 func to_dict() -> Dictionary:
 	return {"gold": gold, "research": research.duplicate(), "codex": codex.duplicate(true),
 		"boss_records": boss_records.duplicate(), "best_reached": best_reached, "best_cleared": best_cleared,
 		"events": events.duplicate(), "settled_results": settled_results.duplicate(),
-		"mieum_purified": mieum_purified, "first_run_done": first_run_done, "pinned_word": pinned_word}
+		"mieum_purified": mieum_purified, "first_run_done": first_run_done, "pinned_word": pinned_word, "settings": settings.duplicate()}
 
 
 func from_dict(d: Dictionary) -> void:
@@ -100,3 +111,7 @@ func from_dict(d: Dictionary) -> void:
 	mieum_purified = bool(d.get("mieum_purified", false))
 	first_run_done = bool(d.get("first_run_done", false))
 	pinned_word = String(d.get("pinned_word", ""))
+	settings = default_settings()
+	for key in d.get("settings", {}):
+		if settings.has(key):
+			settings[key] = d["settings"][key]
