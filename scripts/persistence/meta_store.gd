@@ -4,6 +4,9 @@ extends Node
 
 const CONTENT_VERSION := "planning-v0.7"
 
+## Emitted after a setting is applied and saved, so live scenes can preview it (G10).
+signal settings_changed(key: String)
+
 var saver := SaveManager.new()
 var loaded: bool = false
 var load_source: String = "none"

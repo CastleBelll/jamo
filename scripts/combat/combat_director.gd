@@ -56,7 +56,7 @@ var pending_target: JamoMonster
 var miss_clicks: int = 0
 var hold_pressed: bool = false
 var focus_index: int = -1
-var stats := {"hits": 0, "purified": 0, "reached": 0, "patterns_defused": 0, "patterns_failed": 0}
+var stats := {"hits": 0, "purified": 0, "reached": 0, "patterns_defused": 0, "patterns_failed": 0, "hold_time": 0.0, "damage_by_source": {}}
 ## Gold earned in this Wave (float, B10 fractions accumulate) for the 돈 clear heal.
 var wave_gold: float = 0.0
 ## Jamo the pinned goal lacks in the deck: B5 spawn weight x1.15, renormalised.
@@ -72,6 +72,8 @@ func setup(controller: RunController, content: ContentDB, page: Node2D) -> void:
 	enemy_root = page.get_node("Enemies")
 	effect_root = page.get_node("Effects")
 	resolver.setup(db, run.build, hash("crit:%d" % run.run_seed))
+	if not Meta.settings_changed.is_connected(_on_setting_changed):
+		Meta.settings_changed.connect(_on_setting_changed)
 
 
 func start_wave(data: WaveData, seed: int) -> void:
@@ -90,7 +92,7 @@ func start_wave(data: WaveData, seed: int) -> void:
 	pending_target = null
 	focus_index = -1
 	miss_clicks = 0
-	stats = {"hits": 0, "purified": 0, "reached": 0, "patterns_defused": 0, "patterns_failed": 0}
+	stats = {"hits": 0, "purified": 0, "reached": 0, "patterns_defused": 0, "patterns_failed": 0, "hold_time": 0.0, "damage_by_source": {}}
 	wave_gold = 0.0
 	boss = null
 	boss_data = null
@@ -230,6 +232,8 @@ func tick(delta: float, cursor_world: Vector2 = Vector2.INF) -> void:
 		return
 	clock += delta
 	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
+	if hold_pressed:
+		stats["hold_time"] += delta
 	# 1. input judgement: hold repeats through the same cooldown; a press already set pending.
 	if pending_target == null and hold_pressed and cursor_world != Vector2.INF:
 		pending_target = pick_target(cursor_world)
@@ -284,6 +288,7 @@ func _apply_hit(target: JamoMonster, damage: float, source: StringName) -> float
 	var dealt := target.take_damage(damage * guard_multiplier(target))
 	if dealt > 0.0:
 		target.last_source = source
+		stats["damage_by_source"][String(source)] = stats["damage_by_source"].get(String(source), 0.0) + dealt
 	return dealt
 
 
@@ -304,6 +309,7 @@ func _resolve_purify() -> void:
 		if e is Boss:
 			_on_boss_purified(e as Boss)
 			run.on_boss_purified(boss_data.id)
+			RunLog.event("boss_purified", {"wave": run.wave, "boss": String(boss_data.id), "duration": clock, "patterns_failed": stats["patterns_failed"]})
 		elif boss != null and boss.alive and boss_data != null and boss_data.shield_per_minion > 0.0:
 			boss.add_shield(boss_data.shield_per_minion, clock)  # 탐욕: 지정 부하 정화마다 +3 (B9)
 		var kill := resolver.on_kill(e, e.last_source, enemies)
@@ -544,6 +550,15 @@ func _spawn(slot: int, jamo: String, hp: float, travel_time: float, variant: Jam
 	enemies.append(m)
 	spawned += 1
 	enemies_changed.emit(remaining())
+
+
+## G10 변경 즉시 미리보기: a new 흔들림 level reaches monsters already on the field.
+func _on_setting_changed(key: String) -> void:
+	if key != "shake":
+		return
+	for e in enemies:
+		if not (e is Boss):
+			e.set_motion(e.motion, SettingsService.shake_factor())
 
 
 func _motion_for(jamo: String) -> MotionProfile:

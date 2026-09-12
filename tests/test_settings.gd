@@ -5,6 +5,7 @@ extends Node
 
 const RUN_GAME := preload("res://scenes/run/run_game.tscn")
 const MONSTER := preload("res://scenes/monsters/jamo_monster.tscn")
+const LIBRARY := preload("res://scenes/hub/last_library.tscn")
 
 var failures: Array[String] = []
 var db: ContentDB
@@ -24,6 +25,7 @@ func _ready() -> void:
 		_check_log()
 		_check_motion_and_status()
 		_check_run_game()
+		_check_qa_fixes()
 	for f in failures:
 		printerr("FAIL: " + f)
 	print("test_settings: %s (%d failures)" % ["PASS" if failures.is_empty() else "FAIL", failures.size()])
@@ -163,3 +165,59 @@ func _check_run_game() -> void:
 	_expect("result" in kinds and "wave_clear" not in kinds, "result logged (no clear on a failed wave)")
 	DirAccess.remove_absolute(log_path)
 	game.free()
+
+
+## QA fixes: embedded settings never hide, 흔들림 previews on live monsters, B12 log fields.
+func _check_qa_fixes() -> void:
+	Meta.new_profile()
+	Meta.first_run_done = true
+	var lib := LIBRARY.instantiate()
+	add_child(lib)
+	var panel := lib.get_node("%SettingsPanel")
+	_expect(panel.visible and panel.embedded and not panel.get_node("%CloseButton").visible, "library settings tab: embedded, no 계속하기")
+	panel.get_node("%CloseButton").pressed.emit()
+	_expect(panel.visible, "embedded panel stays visible after a close press")
+	lib.free()
+	Meta.settings["shake"] = 100
+	RunLog.enabled = true
+	var game := RUN_GAME.instantiate()
+	game.run_seed = 5
+	game.set_physics_process(false)
+	add_child(game)
+	var run: RunController = game.get_node("RunController")
+	var director: CombatDirector = game.get_node("CombatDirector")
+	run.begin_combat()
+	director.tick(0.0)
+	var e: JamoMonster = director.enemies[0]
+	_expect(is_equal_approx(e.motion_scale, 1.0), "spawned with shake 100%%")
+	SettingsService.set_and_save("shake", 0)
+	_expect(is_equal_approx(e.motion_scale, 0.0) and e.visual_pivot.position == Vector2.ZERO, "changing 흔들림 previews on monsters already on the field")
+	SettingsService.set_and_save("shake", 50)
+	_expect(is_equal_approx(e.motion_scale, 0.5), "and back to 50%%")
+	director.set_hold(true)
+	director.tick(0.3, e.global_position)
+	director.set_hold(false)
+	run.drops.pity_misses = 0
+	e.hp = 0.5
+	director.request_click(e.global_position)
+	director.tick(0.3)
+	director.clear_enemies()
+	run.on_wave_cleared()
+	var reward := run.build_reward()
+	reward.add(0)
+	run.finish_clear()
+	var forge := run.start_forge()
+	forge.reroll()
+	var kinds := []
+	var clear_row := {}
+	for r in RunLog.read_all():
+		kinds.append(r["kind"])
+		if r["kind"] == "wave_clear":
+			clear_row = r
+	_expect("forge_hand" in kinds and "forge_reroll" in kinds and "reward_action" in kinds, "Forge hand/reroll and reward actions logged (%s)" % [kinds])
+	_expect(clear_row.has("hold_time") and float(clear_row["hold_time"]) > 0.25 and clear_row.has("damage_by_source") and clear_row["damage_by_source"].has("manual"), "wave_clear logs hold time and damage by source")
+	var log_path := RunLog.path
+	game.free()
+	RunLog.end_run()
+	if log_path != "":
+		DirAccess.remove_absolute(log_path)

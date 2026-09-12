@@ -70,3 +70,4 @@ static func set_and_save(key: String, value) -> void:
 			return
 	Meta.settings[key] = value
 	Meta.save()
+	Meta.settings_changed.emit(key)

@@ -143,7 +143,8 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 			Sfx.play("page_turn", 1, 0.5)
 			RunLog.event("wave_clear", {"wave": run.wave, "stability": run.stability, "hits": director.stats["hits"], "misses": director.miss_clicks,
 				"purified": director.stats["purified"], "reached": director.stats["reached"], "patterns_failed": director.stats["patterns_failed"],
-				"drops": run.drops.drops.duplicate(), "gold": run.gold_run, "wave_gold": director.wave_gold, "damage_taken": run.wave_damage_taken})
+				"drops": run.drops.drops.duplicate(), "gold": run.gold_run, "wave_gold": director.wave_gold, "damage_taken": run.wave_damage_taken,
+				"hold_time": director.stats["hold_time"], "damage_by_source": director.stats["damage_by_source"].duplicate(), "causes": run.damage_causes.duplicate()})
 			var line := run.take_pending_line()
 			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text() + ("\n" + line if line != "" else ""))
 			_save_run()
