@@ -411,6 +411,10 @@ func load_snapshot(d: Dictionary) -> void:
 	stability = float(d.get("stability", stability_max))
 	gold_run = float(d.get("gold_run", 0.0))
 	deck = DeckService.from_snapshot(d.get("deck", {}), db.balance)
+	if deck.size() < db.balance.deck_min or deck.size() > db.balance.deck_max:
+		# A snapshot from another build or a corrupt file: never resume with a broken deck.
+		push_warning("RunController: snapshot deck had %d tokens, rebuilding the starter deck" % deck.size())
+		deck = DeckService.from_deck_data(db.decks.get(deck_id, db.decks["starter_a"]), db.balance)
 	build = BuildState.new()
 	build.setup(db.balance)
 	for w in d.get("build", []):
@@ -445,6 +449,13 @@ func load_snapshot(d: Dictionary) -> void:
 		forge = ForgeService.new()
 		forge.load_snapshot(d["forge"], deck, db, build, word_pool())
 		forge.pinned = pinned_word
+		var deck_ids := []
+		for t in deck.tokens:
+			deck_ids.append(int(t["id"]))
+		deck_ids.sort()
+		if forge.token_ids() != deck_ids:
+			push_warning("RunController: Forge snapshot does not match the deck, dealing a fresh Forge")
+			forge = null
 	if target == Phase.CLEAR and not d.get("reward", {}).is_empty():
 		reward = RewardService.new()
 		reward.load_snapshot(d["reward"], deck)

@@ -5,6 +5,8 @@
 
 [node name="ForgePanel" type="PanelContainer"]
 custom_minimum_size = Vector2(1300, 0)
+# B11: keep every action button inside the 1080 logical height; candidates scroll instead.
+clip_contents = true
 theme = ExtResource("2")
 script = ExtResource("1")
 
@@ -47,9 +49,16 @@ autowrap_mode = 3
 horizontal_alignment = 1
 text = "보유 0 / 6"
 
-[node name="Candidates" type="VBoxContainer" parent="Box"]
+[node name="CandidateScroll" type="ScrollContainer" parent="Box"]
+custom_minimum_size = Vector2(0, 220)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Candidates" type="VBoxContainer" parent="Box/CandidateScroll"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="CompareLabel" type="Label" parent="Box"]

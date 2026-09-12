@@ -23,6 +23,7 @@ func _ready() -> void:
 		_check_failure_pity()
 		_check_tutorial_and_pin()
 		_check_scene_flow()
+		_check_small_deck_reroll()
 	for f in failures:
 		printerr("FAIL: " + f)
 	print("test_forge: %s (%d failures)" % ["PASS" if failures.is_empty() else "FAIL", failures.size()])
@@ -304,3 +305,51 @@ func _check_scene_flow() -> void:
 	_expect(run.phase == RunController.Phase.WAVE_PREP and run.wave == 2 and run.forge == null, "빌드 확정 -> W2 prep")
 	_expect(run.deck.size() == 20, "deck intact after the Forge")
 	game.queue_free()
+
+
+## Codex playtest finding: with fewer tokens left to draw than unlocked hand slots, a Reroll
+## must swap only what it can and never leave the hand short (token invariant).
+func _check_small_deck_reroll() -> void:
+	var deck := DeckService.from_deck_data(db.decks["starter_a"], db.balance)
+	deck.deck_min = 1  # simulate a shrunken deck from an old profile
+	while deck.size() > 9:
+		deck.remove_token(deck.tokens[0]["id"])
+	var f := _forge(deck, _build(), 5)
+	_expect(f.hand.size() == 7 and f.draw.size() == 2, "9 tokens: hand 7, draw 2")
+	_expect(f.reroll_slots() == 2 and f.can_reroll(), "only 2 slots can change")
+	var ids := _ids(f.hand)
+	_expect(f.reroll(), "reroll with 2 slots")
+	_expect(f.hand.size() == 7 and f.token_total() == 9 and f.draw.is_empty() and f.discard.size() == 2, "hand stays 7, two tokens swapped (draw %d discard %d)" % [f.draw.size(), f.discard.size()])
+	var kept := 0
+	for id in _ids(f.hand):
+		if id in ids:
+			kept += 1
+	_expect(kept == 5, "five hand tokens kept, two replaced (kept %d)" % kept)
+	_expect(f.reroll_slots() == 2 and f.reroll() and f.hand.size() == 7, "second reroll reshuffles the discard and keeps 7")
+	while deck.size() > 6:
+		deck.remove_token(deck.tokens[0]["id"])
+	var g := _forge(deck, _build(), 6)
+	_expect(g.hand.size() == 6 and g.draw.is_empty(), "6 tokens: whole deck in hand")
+	_expect(g.reroll_slots() == 0 and not g.can_reroll() and not g.reroll(), "nothing to draw: Reroll disabled")
+	_expect(g.hand.size() == 6 and g.token_total() == 6, "hand untouched")
+	# Broken snapshots never resume with a short deck or a mismatched Forge.
+	var run := RunController.new()
+	run.setup(db)
+	run.open_run_setup()
+	run.confirm_setup(&"starter_a")
+	run.begin_combat()
+	run.on_wave_cleared()
+	run.finish_clear()
+	run.start_forge()
+	var snap := run.snapshot()
+	snap["deck"] = {"tokens": snap["deck"]["tokens"].slice(0, 6), "next_id": 99}
+	snap["forge"]["draw"] = snap["forge"]["draw"].slice(0, 5)  # the Forge lost tokens too
+	var run2 := RunController.new()
+	run2.setup(db)
+	run2.load_snapshot(snap)
+	_expect(run2.deck.size() == 20, "short snapshot deck rebuilt to the starter (%d)" % run2.deck.size())
+	_expect(run2.phase == RunController.Phase.FORGE and run2.forge == null, "mismatched Forge snapshot dropped")
+	var fresh := run2.start_forge()
+	_expect(fresh != null and fresh.token_total() == 20 and fresh.hand.size() == 7, "the screen then deals a fresh Forge from the rebuilt deck")
+	run.free()
+	run2.free()
