@@ -241,3 +241,33 @@ except 48px status markers. All margins below are `—` (no 9-slice).
 | `art/fonts/OFL-NanumBrushScript.txt` | license text | — | NHN Corporation / SIL OFL-1.1 |
 
 Download URLs and intended uses are recorded in `art/fonts/README.txt`.
+
+
+## v2 A — porcelain jamo characters
+
+20 front-facing porcelain figures. Built-in ImageGen; Noto Sans KR OFL-1.1 silhouettes used only as shape guides. Exact strokes, two dot eyes and two black feet visually reviewed; malformed and baked-checkerboard attempts excluded. Straight-alpha PNGs, canvas-only crop/resize, bottom baseline 12px inset. Selected sources and preview: `art/_source_v2/characters/`, `characters_contact.png`; source IDs: `character_sources.json`.
+
+| Path | Size | 9-slice margin | Method |
+|---|---|---|---|
+| `art/glyphs/char_giyeok.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_nieun.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_digeut.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_mieum.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_rieul.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_bieup.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_siot.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_ieung.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_jieut.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_chieut.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_kieuk.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_pieup.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_hieut.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_a.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_eo.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_yeo.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_o.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_yo.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_u.png` | 256×256 | none | ImageGen + canvas normalization |
+| `art/glyphs/char_i.png` | 256×256 | none | ImageGen + canvas normalization |
+
+Prompt set: Exact attached Korean jamo silhouette, cream glazed ceramic miniature, fine glaze cracks, warm upper-left light, two black dot eyes and two short black feet, strict front view, no mouth/arms/props, genuine transparent alpha. Stroke topology named explicitly for each guide. Rieul and chieut regenerated to correct geometry/transparency. Variant/status overlays are included in v2 F.
