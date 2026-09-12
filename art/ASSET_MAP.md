@@ -1,5 +1,17 @@
 # JAMO Asset Map
 
+## v2 B — porcelain bosses
+
+| Path | Size | 9-slice margin | Method |
+|---|---|---|---|
+| `art/bosses/boss_mieum.png` | 512×512 | none | built-in ImageGen + canvas normalization |
+| `art/bosses/boss_silence.png` | 512×512 | none | built-in ImageGen + canvas normalization |
+| `art/bosses/boss_ieung.png` | 512×512 | none | built-in ImageGen + canvas normalization |
+| `art/bosses/boss_greed.png` | 512×512 | none | built-in ImageGen + canvas normalization |
+
+Sources: `art/_source_v2/group_B/`; model source IDs: `group_B.json`. All four RGBA cutouts visually reviewed. Prompt set: exact guide topology; black cracked ink-porcelain square ring / blank gray silhouette dissolving to ink particles / tilted running circular ring / gold-leaf bieup; warm rim light, two feet, front view, no ground/scenery/text, transparent alpha. OpenAI Terms apply; no third-party stock assets. Boss silhouette, hole topology and empty silence face checked.
+
+
 Source codes: **FONT** = locally rendered Noto Sans KR (OFL-1.1); **PROC** = deterministic
 project-original geometry (JAMO use, no third-party restriction); **IMG** = OpenAI
 ImageGen output (OpenAI Terms); **AUDIO** = project-original procedural synthesis encoded
