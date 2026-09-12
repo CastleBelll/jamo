@@ -15,7 +15,7 @@ const BOSS_NAMES := {"B_MIEUM": "boss_mieum", "B_SILENCE": "boss_silence", "B_IE
 
 ## Character sprites (char_*.png, 256px) stand on their shadow; glyph_*.png (56px) is the flat fallback.
 const CHARACTER_MIN_SIZE := 200
-const CHARACTER_SCALE := 0.6
+const CHARACTER_SCALE := 0.36  # 256px art -> 92px body = B11 enemy_visual_px
 
 static var _cache: Dictionary = {}
 
@@ -42,8 +42,8 @@ static func tex_light(id: String) -> Texture2D:
 		return _cache[key]
 	var base := tex(id)
 	var out: Texture2D = null
-	if base != null:
-		var img := base.get_image()
+	var img: Image = base.get_image() if base != null else null
+	if img != null:
 		img.convert(Image.FORMAT_RGBA8)
 		for y in img.get_height():
 			for x in img.get_width():

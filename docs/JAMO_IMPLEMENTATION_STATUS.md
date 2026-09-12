@@ -36,9 +36,9 @@
 
 ## 5. 에셋 연결 (S8, 2026-09-12)
 
-- **v2 키트(2026-09-12 오후)**: codex 세션이 붓 버튼/한지 패널/HUD 띠/타일(C), 먹 아이콘(F), Nanum Myeongjo·Brush(G), 도자기 자모 캐릭터 20종(A), 보스 4종(B), 붓 로고·타이틀·서고 배경(D), 전투 책상·문장 띠·먹 비네팅(E)을 생성. Theme은 StyleBoxTexture 9-slice로 붓 텍스처를 쓰고, 캐릭터·보스·책상은 `AssetLib`가 `char_*`/`boss_*`/`combat_desk`를 자동 우선한다. 로고의 구운 부제는 오타라 제거하고 부제는 폰트로 그린다.
+- **v2 키트(2026-09-12 오후)**: codex 세션이 붓 버튼/한지 패널/HUD 띠/타일(C), 먹 아이콘(F), Nanum Myeongjo·Brush(G), 도자기 자모 캐릭터 20종(A), 보스 4종(B), 붓 로고·타이틀·서고 배경(D), 전투 책상·문장 띠·먹 비네팅(E)을 생성. Theme은 StyleBoxTexture 9-slice로 붓 텍스처를 쓰고, 캐릭터·보스·책상은 `AssetLib`가 `char_*`/`boss_*`/`combat_desk`를 자동 우선한다. 로고의 구운 부제는 오타라 제거하고 부제는 폰트로 그린다. B11 수치 조정: 캐릭터 아트에 맞춰 일반 자모 시각 56→92px, 클릭 원 76→92px(간격 92 유지), 보스 클릭 캡슐은 190px 아트를 덮는 ±30/반지름 95.
 
-- 에셋 키트(`art/ASSET_MAP.md`, PNG 104·OGG 8·Noto Sans KR)는 codex 세션이 제작, `scripts/ui/asset_lib.gd`(`AssetLib`)가 id → 텍스처로 해석. 파일이 없으면 `null`을 돌려 Label/Line2D 텍스트 폴백이 그대로 남는다.
+- 에셋 키트(`art/ASSET_MAP.md`, PNG 104·OGG 8·v1 Noto Sans KR, v2부터 Nanum Myeongjo/Brush)는 codex 세션이 제작, `scripts/ui/asset_lib.gd`(`AssetLib`)가 id → 텍스처로 해석. 파일이 없으면 `null`을 돌려 Label/Line2D 텍스트 폴백이 그대로 남는다.
 - 연결 지점: 몬스터 글리프·변종·상태 아이콘, 보스 글자, 패턴 표식, 종이 배경·먹 Overlay·문장 행(피격 시 `sentence_row_hit` 교체), HUD 아이콘(수치만 표시)·슬롯 프레임, 보상/포지/결과 아이콘, 서고 배경·레이어 아트·탭 아이콘, 세션당 1회 타이틀 화면(`Meta.title_seen`), Theme(폰트·9-slice 패널/버튼·포커스 테두리·슬라이더·체크), `Sfx` SFX 6종 등록 + BGM 2루프(`Sfx.play_bgm`).
 - 문구 규칙은 `docs/JAMO_UI_TEXT_ASSET_SPLIT.md`. 아이콘이 있으면 HUD 라벨은 숫자만, 상태 라벨은 시간·스택 숫자만.
 

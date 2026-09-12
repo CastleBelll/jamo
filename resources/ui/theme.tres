@@ -106,10 +106,10 @@ corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxTexture" id="tx_ink"]
 texture = ExtResource("t_ink")
-texture_margin_left = 48.0
-texture_margin_top = 14.0
-texture_margin_right = 48.0
-texture_margin_bottom = 10.0
+texture_margin_left = 24.0
+texture_margin_top = 16.0
+texture_margin_right = 24.0
+texture_margin_bottom = 12.0
 content_margin_left = 36.0
 content_margin_top = 10.0
 content_margin_right = 36.0
@@ -117,10 +117,10 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="tx_ink_hover"]
 texture = ExtResource("t_ink_hover")
-texture_margin_left = 48.0
-texture_margin_top = 14.0
-texture_margin_right = 48.0
-texture_margin_bottom = 10.0
+texture_margin_left = 24.0
+texture_margin_top = 16.0
+texture_margin_right = 24.0
+texture_margin_bottom = 12.0
 content_margin_left = 36.0
 content_margin_top = 10.0
 content_margin_right = 36.0
@@ -128,10 +128,10 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="tx_ink_pressed"]
 texture = ExtResource("t_ink_pressed")
-texture_margin_left = 48.0
-texture_margin_top = 14.0
-texture_margin_right = 48.0
-texture_margin_bottom = 10.0
+texture_margin_left = 24.0
+texture_margin_top = 16.0
+texture_margin_right = 24.0
+texture_margin_bottom = 12.0
 content_margin_left = 36.0
 content_margin_top = 10.0
 content_margin_right = 36.0
@@ -139,10 +139,10 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="tx_ink_disabled"]
 texture = ExtResource("t_ink_disabled")
-texture_margin_left = 48.0
-texture_margin_top = 14.0
-texture_margin_right = 48.0
-texture_margin_bottom = 10.0
+texture_margin_left = 24.0
+texture_margin_top = 16.0
+texture_margin_right = 24.0
+texture_margin_bottom = 12.0
 content_margin_left = 36.0
 content_margin_top = 10.0
 content_margin_right = 36.0
@@ -150,10 +150,10 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="tx_paper"]
 texture = ExtResource("t_paper")
-texture_margin_left = 48.0
-texture_margin_top = 14.0
-texture_margin_right = 48.0
-texture_margin_bottom = 10.0
+texture_margin_left = 24.0
+texture_margin_top = 16.0
+texture_margin_right = 24.0
+texture_margin_bottom = 12.0
 content_margin_left = 36.0
 content_margin_top = 10.0
 content_margin_right = 36.0
@@ -161,10 +161,10 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="tx_paper_hover"]
 texture = ExtResource("t_paper_hover")
-texture_margin_left = 48.0
-texture_margin_top = 14.0
-texture_margin_right = 48.0
-texture_margin_bottom = 10.0
+texture_margin_left = 24.0
+texture_margin_top = 16.0
+texture_margin_right = 24.0
+texture_margin_bottom = 12.0
 content_margin_left = 36.0
 content_margin_top = 10.0
 content_margin_right = 36.0
@@ -172,10 +172,10 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="tx_paper_pressed"]
 texture = ExtResource("t_paper_pressed")
-texture_margin_left = 48.0
-texture_margin_top = 14.0
-texture_margin_right = 48.0
-texture_margin_bottom = 10.0
+texture_margin_left = 24.0
+texture_margin_top = 16.0
+texture_margin_right = 24.0
+texture_margin_bottom = 12.0
 content_margin_left = 36.0
 content_margin_top = 10.0
 content_margin_right = 36.0
@@ -217,9 +217,9 @@ content_margin_bottom = 24.0
 [sub_resource type="StyleBoxTexture" id="tx_bar_track"]
 texture = ExtResource("t_bar_track")
 texture_margin_left = 20.0
-texture_margin_top = 8.0
+texture_margin_top = 0.0
 texture_margin_right = 20.0
-texture_margin_bottom = 8.0
+texture_margin_bottom = 0.0
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -228,9 +228,9 @@ content_margin_bottom = 0.0
 [sub_resource type="StyleBoxTexture" id="tx_bar_fill"]
 texture = ExtResource("t_bar_fill")
 texture_margin_left = 20.0
-texture_margin_top = 8.0
+texture_margin_top = 0.0
 texture_margin_right = 20.0
-texture_margin_bottom = 8.0
+texture_margin_bottom = 0.0
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -238,10 +238,10 @@ content_margin_bottom = 0.0
 
 [sub_resource type="StyleBoxTexture" id="tx_tile"]
 texture = ExtResource("t_tile")
-texture_margin_left = 28.0
-texture_margin_top = 28.0
-texture_margin_right = 28.0
-texture_margin_bottom = 28.0
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
 content_margin_left = 16.0
 content_margin_top = 10.0
 content_margin_right = 16.0
@@ -249,10 +249,10 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="tx_tile_selected"]
 texture = ExtResource("t_tile_selected")
-texture_margin_left = 28.0
-texture_margin_top = 28.0
-texture_margin_right = 28.0
-texture_margin_bottom = 28.0
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
 content_margin_left = 16.0
 content_margin_top = 10.0
 content_margin_right = 16.0
@@ -260,10 +260,10 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="tx_tile_locked"]
 texture = ExtResource("t_tile_locked")
-texture_margin_left = 28.0
-texture_margin_top = 28.0
-texture_margin_right = 28.0
-texture_margin_bottom = 28.0
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
 content_margin_left = 16.0
 content_margin_top = 10.0
 content_margin_right = 16.0
@@ -326,8 +326,8 @@ GhostButton/colors/icon_hover_color = Color(0.12, 0.1, 0.09, 1)
 GhostButton/colors/icon_pressed_color = Color(0.12, 0.1, 0.09, 1)
 GhostButton/colors/icon_focus_color = Color(0.12, 0.1, 0.09, 1)
 GhostButton/font_sizes/font_size = 28
-GhostButton/colors/font_disabled_color = Color(0.12, 0.1, 0.09, 0.55)
-GhostButton/colors/icon_disabled_color = Color(0.12, 0.1, 0.09, 0.55)
+GhostButton/colors/font_disabled_color = Color(0.12, 0.1, 0.09, 0.8)
+GhostButton/colors/icon_disabled_color = Color(0.12, 0.1, 0.09, 0.8)
 GhostButton/styles/normal = SubResource("tx_tile")
 GhostButton/styles/hover = SubResource("tx_tile_selected")
 GhostButton/styles/pressed = SubResource("tx_tile_selected")
@@ -359,7 +359,7 @@ OptionButton/colors/icon_normal_color = Color(0.12, 0.1, 0.09, 1)
 OptionButton/colors/icon_hover_color = Color(0.12, 0.1, 0.09, 1)
 OptionButton/colors/icon_pressed_color = Color(0.12, 0.1, 0.09, 1)
 OptionButton/colors/icon_focus_color = Color(0.12, 0.1, 0.09, 1)
-OptionButton/colors/font_disabled_color = Color(0.12, 0.1, 0.09, 0.55)
+OptionButton/colors/font_disabled_color = Color(0.12, 0.1, 0.09, 0.8)
 OptionButton/styles/normal = SubResource("tx_tile")
 OptionButton/styles/hover = SubResource("tx_tile_selected")
 OptionButton/styles/pressed = SubResource("tx_tile_selected")
@@ -391,7 +391,7 @@ ProgressBar/styles/background = SubResource("tx_bar_track")
 ProgressBar/styles/fill = SubResource("tx_bar_fill")
 ScrollContainer/styles/panel = SubResource("empty")
 SlotPanel/base_type = &"Panel"
-SlotPanel/styles/panel = SubResource("empty")
+SlotPanel/styles/panel = SubResource("panel_paper_thin")
 TabContainer/colors/font_selected_color = Color(0.12, 0.1, 0.09, 1)
 TabContainer/colors/font_unselected_color = Color(0.95, 0.91, 0.82, 1)
 TabContainer/colors/font_hovered_color = Color(1, 0.98, 0.92, 1)

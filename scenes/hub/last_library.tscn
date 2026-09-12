@@ -502,10 +502,9 @@ offset_top = 470.0
 offset_right = 600.0
 offset_bottom = 540.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.97, 0.94, 0.86, 1)
-theme_override_colors/font_outline_color = Color(0.12, 0.1, 0.09, 0.85)
-theme_override_constants/outline_size = 10
-theme_override_font_sizes/font_size = 44
+theme_type_variation = &"BannerLabel"
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 48
 text = "작은 글자가, 새로운 세상을 만든다."
 horizontal_alignment = 1
 

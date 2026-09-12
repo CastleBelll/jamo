@@ -15,8 +15,8 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
 [sub_resource type="CapsuleShape2D" id="capsule"]
-radius = 50.0
-height = 360.0
+radius = 95.0
+height = 250.0
 
 [sub_resource type="Animation" id="hit"]
 resource_name = "hit"
