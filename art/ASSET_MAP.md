@@ -1,5 +1,21 @@
 # JAMO Asset Map
 
+v2 handoff: 94 final PNGs + 3 Nanum fonts, no required omissions (optional separate character shadows omitted; runtime draws ellipses). `python art/tools/validate_assets_v2.py` validates all final paths/dimensions/RGBA, transparency, vignette center and font files. HUD bottom fade corrected to alpha=0 during final validation. Scene wiring and in-game UI review remain coordinator-owned; no code/scenes/project settings changed in these commits. C/F are textured project-original procedural work, A/B/D/E use built-in ImageGen. 9-slice margins are listed in the C section.
+
+## v2 E — battle desk and ink overlays
+
+| Path | Size | 9-slice margin | Method |
+|---|---|---|---|
+| `art/backgrounds/combat_desk.png` | 1920×1080 | none | built-in ImageGen + size normalization |
+| `art/backgrounds/sentence_row.png` | 1480×110 | none | built-in ImageGen + alpha-bound crop / size normalization |
+| `art/backgrounds/sentence_row_hit.png` | 1480×110 | none | built-in ImageGen + alpha-bound crop / size normalization |
+| `art/backgrounds/ink_vignette.png` | 1920×1080 | none | built-in ImageGen + size normalization |
+
+Sources: `art/_source_v2/group_E/`, IDs: `group_E.json`. OpenAI Terms apply. Top-down desk: bright central hanji scroll, two subtle fold lines, warm lamp, brush/inkstone/tea props outside gameplay surface. Layout is approximate art only; B11 coordinates/click geometry unchanged. Sentence strips contain only faint decorative marks, blank center, charcoal underline; hit version has vermillion edge bleed. Vignette has alpha-transparent center. PNG modes, dimensions and transparency validated; no readable generated game text.
+
+Prompt set: orthographic warm walnut desk, central1480×820 hanji at x220..1700/y130..950, two faint fold lines x≈760/1160, props only outside paper, no characters/text/UI; torn cream hanji sentence ribbon with faint illegible brush traces and charcoal underline, uniform center, transparent alpha; same ribbon with vermillion bleed; border-only sumi wash vignette, empty central80%, transparent alpha.
+
+
 ## v2 D — title and menu lighting
 
 | Path | Size | 9-slice margin | Method |
@@ -67,8 +83,8 @@ as Vorbis (JAMO use, no third-party restriction).
 | status_slow | `art/ui/status_slow.png` | 48×48 | v2 PROC |
 | paper_bg | `art/backgrounds/paper_bg.png` | 1920×1080 | IMG / OpenAI Terms |
 | ink_overlay | `art/backgrounds/ink_overlay.png` | 1920×1080 | PROC |
-| sentence_row | `art/backgrounds/sentence_row.png` | 1480×90 | PROC |
-| sentence_row_hit | `art/backgrounds/sentence_row_hit.png` | 1480×90 | PROC |
+| sentence_row | `art/backgrounds/sentence_row.png` | 1480×110 | v2 IMG |
+| sentence_row_hit | `art/backgrounds/sentence_row_hit.png` | 1480×110 | v2 IMG |
 | boss_mieum | `art/bosses/boss_mieum.png` | 512×512 | v2 IMG |
 | boss_silence | `art/bosses/boss_silence.png` | 512×512 | v2 IMG |
 | boss_ieung | `art/bosses/boss_ieung.png` | 512×512 | v2 IMG |

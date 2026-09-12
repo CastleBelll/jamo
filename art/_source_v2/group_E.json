@@ -1,0 +1,46 @@
+[
+  {
+    "name": "combat_desk",
+    "path": "backgrounds/combat_desk.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "opaque": true,
+    "crop": false,
+    "source": "exec-c75a13f4-d82b-4ded-b685-82ffd87aecb1.png"
+  },
+  {
+    "name": "sentence_row",
+    "path": "backgrounds/sentence_row.png",
+    "size": [
+      1480,
+      110
+    ],
+    "opaque": false,
+    "crop": true,
+    "source": "exec-7d26491a-d1c5-4dc1-b996-9fc7a085a05d.png"
+  },
+  {
+    "name": "sentence_row_hit",
+    "path": "backgrounds/sentence_row_hit.png",
+    "size": [
+      1480,
+      110
+    ],
+    "opaque": false,
+    "crop": true,
+    "source": "exec-ae20a457-09b0-408d-b66a-727a832d8334.png"
+  },
+  {
+    "name": "ink_vignette",
+    "path": "backgrounds/ink_vignette.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "opaque": false,
+    "crop": false,
+    "source": "exec-eccb22ab-c16c-4753-9a37-8987dba37906.png"
+  }
+]

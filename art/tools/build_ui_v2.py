@@ -105,7 +105,7 @@ def hud_bar():
     yy,xx=np.mgrid[0:h,0:w]
     grain=np.sin(yy*.32+np.sin(xx*.008)*1.3)*4 + np.sin(yy*.78+xx*.002)*2
     rgb=np.stack([np.clip(c+grain,0,255) for c in (45,31,23)],axis=2).astype(np.uint8)
-    alpha=np.clip((140-yy)/32,0,1)*245
+    alpha=np.clip((h-1-yy)/32,0,1)*245
     im=Image.fromarray(np.dstack([rgb,alpha.astype(np.uint8)]),"RGBA")
     d=ImageDraw.Draw(im); d.line((0,104,w,104),fill=(166,117,53,100),width=2)
     save(im,"hud_bar")
