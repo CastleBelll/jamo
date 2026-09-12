@@ -63,6 +63,16 @@ func token_total() -> int:
 	return hand.size() + draw.size() + discard.size()
 
 
+## Sorted token ids across hand/draw/discard: must equal the deck ids while a Forge is open.
+func token_ids() -> Array:
+	var out := []
+	for pile in [hand, draw, discard]:
+		for t in pile:
+			out.append(int(t["id"]))
+	out.sort()
+	return out
+
+
 func is_locked(token_id: int) -> bool:
 	return token_id in locked
 
@@ -78,8 +88,10 @@ func toggle_lock(token_id: int) -> bool:
 	return true
 
 
+## Slots a Reroll can actually change: unlocked hand tokens, capped by what is left to draw
+## (draw + discard). A shrunken deck therefore never empties the hand.
 func reroll_slots() -> int:
-	return hand.size() - locked.size()
+	return mini(hand.size() - locked.size(), draw.size() + discard.size())
 
 
 func can_reroll() -> bool:
@@ -91,11 +103,12 @@ func can_reroll() -> bool:
 func reroll() -> bool:
 	if not can_reroll():
 		return false
+	var slots := reroll_slots()
 	var kept: Array[Dictionary] = []
 	var outgoing: Array[Dictionary] = []
 	for t in hand:
-		if t["id"] in locked:
-			kept.append(t)
+		if t["id"] in locked or outgoing.size() >= slots:
+			kept.append(t)  # locked, or nothing left to draw for it: it stays (token invariant)
 		else:
 			outgoing.append(t)
 	hand = kept
@@ -106,8 +119,6 @@ func reroll() -> bool:
 			draw = discard
 			discard = []
 			_shuffle(draw)
-		if draw.is_empty():
-			break
 		hand.append(draw.pop_back())
 	discard.append_array(outgoing)
 	rerolls_left -= 1
