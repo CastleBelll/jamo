@@ -54,7 +54,7 @@ as Vorbis (JAMO use, no third-party restriction).
 | hud_enemy | `art/hud/hud_enemy.png` | 32×32 | PROC |
 | hud_gold | `art/hud/hud_gold.png` | 32×32 | PROC |
 | hud_drop | `art/hud/hud_drop.png` | 32×32 | PROC |
-| slot_frame | `art/ui/slot_frame.png` | 90×90 | PROC |
+| slot_frame | `art/ui/slot_frame.png` | 160×160 | v2 textured brush ring / PROC |
 | rank_pip_on | `art/ui/rank_pip_on.png` | 12×12 | PROC |
 | rank_pip_off | `art/ui/rank_pip_off.png` | 12×12 | PROC |
 | seal_lock | `art/ui/seal_lock.png` | 20×20 | PROC |
@@ -148,3 +148,30 @@ as Vorbis (JAMO use, no third-party restriction).
 | page_turn | `art/audio/sfx/page_turn.ogg` | 0.48 s | AUDIO |
 | bgm_library | `art/audio/bgm_library.ogg` | 16.00 s loop | AUDIO |
 | bgm_combat | `art/audio/bgm_combat.ogg` | 16.00 s loop | AUDIO |
+
+## v2 C — painterly UI surfaces
+
+All images are RGBA PNG with straight (not premultiplied) alpha. Margins are symmetric
+left/top/right/bottom pixel values; `—` means not intended for 9-slice stretching.
+
+| Path | Size | 9-slice margin | Generation method |
+|---|---:|---:|---|
+| `art/ui/btn_ink_normal.png` | 512×112 | 48 | textured bristle mask + charcoal material |
+| `art/ui/btn_ink_hover.png` | 512×112 | 48 | brighter wet-ink bleed |
+| `art/ui/btn_ink_pressed.png` | 512×112 | 48 | flattened dark ink stroke |
+| `art/ui/btn_ink_disabled.png` | 512×112 | 48 | translucent grey ink stroke |
+| `art/ui/btn_paper_normal.png` | 512×112 | 48 | cream paper brush stroke |
+| `art/ui/btn_paper_hover.png` | 512×112 | 48 | brighter paper brush stroke |
+| `art/ui/btn_paper_pressed.png` | 512×112 | 48 | warm compressed paper stroke |
+| `art/ui/panel_paper.png` | 512×512 | 72 | ragged hanji silhouette + fiber texture + alpha shadow |
+| `art/ui/panel_ink.png` | 512×512 | 48 | translucent ragged ink material |
+| `art/ui/hud_bar.png` | 1920×140 | — | dark wood grain + lower alpha fade |
+| `art/ui/slot_frame.png` | 160×160 | — | multi-bristle circular brush stroke |
+| `art/ui/slot_frame_empty.png` | 160×160 | — | interrupted circular brush stroke |
+| `art/ui/bar_track.png` | 512×40 | 20 | ink stability track |
+| `art/ui/bar_fill.png` | 512×40 | 20 | antique-gold stability fill |
+| `art/ui/tab_active.png` | 256×80 | — | cream book-tab silhouette |
+| `art/ui/tab_inactive.png` | 256×80 | — | ink book-tab silhouette |
+| `art/ui/tooltip_arrow.png` | 32×16 | — | ink tooltip pointer |
+
+Source: `art/tools/build_ui_v2.py`, project-original procedural texture/geometry (PROC).
