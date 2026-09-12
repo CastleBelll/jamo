@@ -230,3 +230,14 @@ except 48px status markers. All margins below are `—` (no 9-slice).
 | `art/ui/tile_jamo.png` | 144×144 | — | glazed ceramic shading + alpha shadow |
 | `art/ui/tile_jamo_selected.png` | 144×144 | — | glazed ceramic shading + alpha shadow |
 | `art/ui/tile_jamo_locked.png` | 144×144 | — | glazed ceramic shading + alpha shadow |
+## v2 G — OFL typography
+
+| Path | Format | 9-slice margin | Source / license |
+|---|---|---:|---|
+| `art/fonts/NanumMyeongjo-Regular.ttf` | TTF regular | — | official google/fonts / SIL OFL-1.1 |
+| `art/fonts/NanumMyeongjo-Bold.ttf` | TTF bold | — | official google/fonts / SIL OFL-1.1 |
+| `art/fonts/NanumBrushScript-Regular.ttf` | TTF regular | — | official google/fonts / SIL OFL-1.1 |
+| `art/fonts/OFL-NanumMyeongjo.txt` | license text | — | NHN Corporation / SIL OFL-1.1 |
+| `art/fonts/OFL-NanumBrushScript.txt` | license text | — | NHN Corporation / SIL OFL-1.1 |
+
+Download URLs and intended uses are recorded in `art/fonts/README.txt`.
