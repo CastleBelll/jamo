@@ -53,11 +53,11 @@ func set_build(build: BuildState, db: ContentDB, sealed: Dictionary = {}) -> voi
 		if i < build.words.size():
 			var word: WordData = db.words[build.words[i]["id"]]
 			var l := Label.new()
-			l.text = "%s %s%s" % [word.name, "●".repeat(build.words[i]["rank"]) + "○".repeat(3 - build.words[i]["rank"]), ("\n봉인 %.1f초" % sealed[word.id]) if sealed.has(word.id) else ""]
+			# Two fixed lines (name / rank pips) so a 108px slot never wraps mid-token (G10).
+			l.text = "%s\n%s%s" % [word.name, "●".repeat(build.words[i]["rank"]) + "○".repeat(3 - build.words[i]["rank"]), ("\n봉인 %.1f초" % sealed[word.id]) if sealed.has(word.id) else ""]
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			l.add_theme_font_size_override("font_size", 22)
+			l.add_theme_font_size_override("font_size", 20)
 			l.set_anchors_preset(Control.PRESET_FULL_RECT)
 			slot.add_child(l)
 			var frame := slot.get_node_or_null("Frame")

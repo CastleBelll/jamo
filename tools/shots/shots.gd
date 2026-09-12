@@ -94,3 +94,24 @@ func _shoot_boss() -> void:
 	await get_tree().create_timer(3.0).timeout
 	await _snap("17_boss")
 	game.queue_free()
+	await get_tree().process_frame
+	await _shoot_forge_loaded()
+
+
+## Forge with a full RUN behind it (W12, six held words, candidates/replace/compound rows):
+## the layout risk the empty W1 Forge never shows.
+func _shoot_forge_loaded() -> void:
+	var bot := B12Bot.new()
+	bot.direction = &"무기"
+	bot.boot(RUN_GAME, ContentDB.load_all(), 11, self)
+	bot.play_run(11)
+	if bot.play_wave():
+		B12Sim.reward_policy(bot.db, bot.run, bot.run.build_reward(), bot.direction)
+		bot.run.finish_clear()  # the scene opens the Forge panel on this phase change
+		await get_tree().process_frame
+		var panel := bot.game.get_node("%ForgePanel")
+		var list: Array = bot.run.forge.candidates()
+		if not list.is_empty():
+			panel._select(list[0]["word"].id)
+		await _snap("18_forge_loaded")
+	bot.free_game()
