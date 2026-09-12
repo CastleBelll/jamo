@@ -4,8 +4,11 @@ extends JamoMonster
 ## pattern schedule (예고 -> 대응 -> 결과). The director spawns the PatternTarget and
 ## resolves success/failure; this node only reports when a pattern starts.
 
-const CAPSULE_HALF_LENGTH := 130.0   # 360x100 glyph area: segment +-130, radius 50
-const CAPSULE_RADIUS := 50.0
+const BOSS_ART_HEIGHT := 190.0
+# B11: the click capsule covers the glyph area. With the 190px porcelain art that area is
+# ~190x190 centred 10px above the anchor: segment +-30, radius 95 (scene CapsuleShape matches).
+const CAPSULE_HALF_LENGTH := 30.0
+const CAPSULE_RADIUS := 95.0
 
 var data: BossData
 var is_boss: bool = true
@@ -53,6 +56,12 @@ func _refresh_visual() -> void:
 	var sprite := $VisualPivot/Sprite2D as Sprite2D
 	sprite.texture = AssetLib.boss_glyph(data.id)
 	glyph.visible = sprite.texture == null
+	if sprite.texture != null:
+		# 512px porcelain art shown at BOSS_ART_HEIGHT so it stays in the B11 zone above the
+		# lanes; the click capsule (segment +-30, radius 95) covers that body.
+		var s := BOSS_ART_HEIGHT / float(sprite.texture.get_height())
+		sprite.scale = Vector2(s, s)
+		sprite.position = Vector2(0, -10)
 	hp_bar.max_value = hp_max
 	hp_bar.value = hp
 	_refresh_shield()

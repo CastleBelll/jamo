@@ -1,0 +1,42 @@
+[
+  {
+    "name": "boss_mieum",
+    "path": "bosses/boss_mieum.png",
+    "size": [
+      512,
+      512
+    ],
+    "bottom": true,
+    "source": "exec-ea5d55e6-15f3-48db-860f-fdcbf0216bda.png"
+  },
+  {
+    "name": "boss_silence",
+    "path": "bosses/boss_silence.png",
+    "size": [
+      512,
+      512
+    ],
+    "bottom": true,
+    "source": "exec-b1264fd6-b3a7-47b9-81d2-8eb9b87ff2d1.png"
+  },
+  {
+    "name": "boss_ieung",
+    "path": "bosses/boss_ieung.png",
+    "size": [
+      512,
+      512
+    ],
+    "bottom": true,
+    "source": "exec-0325542c-efd8-431a-802e-a1ad988b882e.png"
+  },
+  {
+    "name": "boss_greed",
+    "path": "bosses/boss_greed.png",
+    "size": [
+      512,
+      512
+    ],
+    "bottom": true,
+    "source": "exec-bc03440b-12c5-46fd-b9de-f3ade4f17d45.png"
+  }
+]

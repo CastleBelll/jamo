@@ -15,7 +15,7 @@ const BOSS_NAMES := {"B_MIEUM": "boss_mieum", "B_SILENCE": "boss_silence", "B_IE
 
 ## Character sprites (char_*.png, 256px) stand on their shadow; glyph_*.png (56px) is the flat fallback.
 const CHARACTER_MIN_SIZE := 200
-const CHARACTER_SCALE := 0.6
+const CHARACTER_SCALE := 0.36  # 256px art -> 92px body = B11 enemy_visual_px
 
 static var _cache: Dictionary = {}
 
@@ -33,6 +33,26 @@ static func tex(id: String) -> Texture2D:
 	var t: Texture2D = load(path) if ResourceLoader.exists(path) else null
 	_cache[id] = t
 	return t
+
+
+## Ink icons recoloured to cream for dark surfaces (the HUD wood bar): alpha kept, colour replaced.
+static func tex_light(id: String) -> Texture2D:
+	var key := id + "#light"
+	if _cache.has(key):
+		return _cache[key]
+	var base := tex(id)
+	var out: Texture2D = null
+	var img: Image = base.get_image() if base != null else null
+	if img != null:
+		img.convert(Image.FORMAT_RGBA8)
+		for y in img.get_height():
+			for x in img.get_width():
+				var a := img.get_pixel(x, y).a
+				if a > 0.0:
+					img.set_pixel(x, y, Color(0.95, 0.91, 0.82, a))
+		out = ImageTexture.create_from_image(img)
+	_cache[key] = out
+	return out
 
 
 static func glyph(jamo: String) -> Texture2D:

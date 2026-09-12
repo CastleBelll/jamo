@@ -82,9 +82,10 @@ func _check_boss_wave_setup() -> void:
 	_expect(game.get_node("HUD").get_node("%EnemiesLabel").text == "3", "HUD counts the boss wave")
 	_expect(game.get_node("%PrepHint").text.begins_with("착지 예고"), "boss intro line before combat")
 	var b := director.boss
-	_expect(director.pick_target(Vector2(1130, 260)) == b, "capsule end (170px) hits")
-	_expect(director.pick_target(Vector2(1160, 260)) == null, "beyond the capsule misses")
-	_expect(director.pick_target(Vector2(960, 305)) == b and director.pick_target(Vector2(960, 320)) == null, "capsule radius 50 vertically")
+	# Capsule covers the 190px porcelain art (B11): segment +-30, radius 95 -> x reach 125, y reach 95.
+	_expect(director.pick_target(Vector2(1080, 260)) == b, "capsule end (125px) hits")
+	_expect(director.pick_target(Vector2(1090, 260)) == null, "beyond the capsule misses")
+	_expect(director.pick_target(Vector2(960, 352)) == b and director.pick_target(Vector2(960, 360)) == null, "capsule radius 95 vertically")
 	var hp := b.hp
 	_click(Vector2(960, 260))
 	_expect(is_equal_approx(hp - b.hp, 1.0), "boss takes manual damage")

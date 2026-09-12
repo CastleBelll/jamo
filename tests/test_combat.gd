@@ -100,8 +100,8 @@ func _check_targeting_and_cooldown() -> void:
 	director.tick(0.0)
 	var e1: JamoMonster = director.enemies[0]
 	var p := e1.global_position
-	_expect(director.pick_target(p + Vector2(37, 0)) == e1, "click inside the 76px circle hits")
-	_expect(director.pick_target(p + Vector2(39, 0)) == null, "click outside the 76px circle misses")
+	_expect(director.pick_target(p + Vector2(45, 0)) == e1, "click inside the 92px circle hits")
+	_expect(director.pick_target(p + Vector2(47, 0)) == null, "click outside the 92px circle misses")
 	director.request_click(Vector2(100, 100))
 	_expect(director.miss_clicks == 1 and director.pending_target == null, "empty click is only a miss statistic")
 	director.request_click(p)

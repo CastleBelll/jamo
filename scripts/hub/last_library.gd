@@ -31,7 +31,10 @@ func _ready() -> void:
 	%HubTitle.visible = %Logo.texture == null
 	SettingsService.apply_all()
 	Sfx.play_bgm("library")
-	AssetLib.apply($BackgroundArt, "lib_bg")
+	if AssetLib.apply($BackgroundArt, "lib_bg_dim"):
+		$MenuShade.visible = false
+	else:
+		AssetLib.apply($BackgroundArt, "lib_bg")
 	for layer in ["lamp", "spines", "lines", "handwriting", "openbook"]:
 		var rect := TextureRect.new()
 		rect.name = "Art_" + layer

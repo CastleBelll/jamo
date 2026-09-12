@@ -16,7 +16,7 @@ extends CanvasLayer
 func _ready() -> void:
 	# HUD icons (G10): the label then carries only the number.
 	for pair in [["WaveIcon", "hud_wave"], ["StabilityIcon", "hud_stability"], ["EnemyIcon", "hud_enemy"], ["GoldIcon", "hud_gold"], ["DropIcon", "hud_drop"]]:
-		AssetLib.apply(top_bar.get_node(pair[0]), pair[1])
+		top_bar.get_node(pair[0]).texture = AssetLib.tex_light(pair[1])  # cream silhouettes on the wood bar
 	for slot in build_bar.get_children():
 		var frame := TextureRect.new()
 		frame.name = "Frame"
@@ -63,6 +63,9 @@ func set_build(build: BuildState, db: ContentDB, sealed: Dictionary = {}) -> voi
 			var frame := slot.get_node_or_null("Frame")
 			if frame != null:
 				slot.move_child(frame, 0)
+				AssetLib.apply(frame, "slot_frame")
+		else:
+			AssetLib.apply(slot.get_node_or_null("Frame"), "slot_frame_empty")
 
 
 ## 적 Hover (G10): HP and variant of the enemy under the cursor, empty when none.

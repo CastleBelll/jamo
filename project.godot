@@ -20,6 +20,10 @@ Meta="*res://scripts/persistence/meta_store.gd"
 Sfx="*res://scripts/audio/sfx_player.gd"
 RunLog="*res://scripts/log/run_logger.gd"
 
+[gui]
+
+theme/custom="res://resources/ui/theme.tres"
+
 [display]
 
 window/size/viewport_width=1920
