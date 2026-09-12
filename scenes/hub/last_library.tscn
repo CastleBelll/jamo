@@ -361,6 +361,7 @@ offset_top = -160.0
 offset_right = 300.0
 offset_bottom = -100.0
 mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.13, 0.11, 1)
 theme_override_colors/font_outline_color = Color(0.96, 0.94, 0.88, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 32
