@@ -57,8 +57,8 @@ func _refresh_visual() -> void:
 	sprite.texture = AssetLib.boss_glyph(data.id)
 	glyph.visible = sprite.texture == null
 	if sprite.texture != null:
-		# 512px porcelain art shown at ~205px so it stays in the B11 zone above the lanes;
-		# the click capsule (360x100) is unchanged and sits on the body's centre.
+		# 512px porcelain art shown at BOSS_ART_HEIGHT so it stays in the B11 zone above the
+		# lanes; the click capsule (segment +-30, radius 95) covers that body.
 		var s := BOSS_ART_HEIGHT / float(sprite.texture.get_height())
 		sprite.scale = Vector2(s, s)
 		sprite.position = Vector2(0, -10)

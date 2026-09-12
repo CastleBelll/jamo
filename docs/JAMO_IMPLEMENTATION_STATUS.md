@@ -15,7 +15,7 @@
 | 화면 | `scripts/run/run_game.gd`, `scenes/run/*.tscn`, `scenes/ui/*.tscn` | 단계별 패널, HUD, 배너, 문장 피격, Esc/포커스 정지, 입력 실드, 저장 시점 |
 | 전투 | `scripts/combat/combat_director.gd` | G7 틱 순서, 스폰(통로/하위경로/간격/보류), 클릭·홀드·키보드 입력, 정화/도달 1회 처리, 보스 패턴·부하, 변형 GUARD 감소, Gold 지급 단일 소유자 |
 | 효과 | `scripts/combat/combat_resolver.gd` | B1 수식, 시너지, 상태이상 틱, 자동 타격, 카운터, 봉인, 보호막 |
-| 개체 | `jamo_monster.gd`, `boss.gd`, `pattern_target.gd` | 경로 이동, 76px 클릭 원, 상태이상 상태, 모션, 보스 캡슐/보호막, 대응물 |
+| 개체 | `jamo_monster.gd`, `boss.gd`, `pattern_target.gd` | 경로 이동, 92px 클릭 원(v2 캐릭터 아트 기준), 상태이상 상태, 모션, 보스 캡슐/보호막, 대응물 |
 | 덱·Forge | `scripts/deck/*.gd`, `scripts/forge/*.gd` | 토큰 덱, 회수 피티/상한, 정리 예산, Forge 셔플/Lock/Reroll/후보/복원/실패/합성 |
 | 서고 | `scripts/hub/*.gd` | 연구·사전·기록·RUN 시작·오프닝·서고 레이어 |
 | 저장 | `scripts/persistence/*.gd` | `SaveManager`(temp→검증→교체·백업 복구), `Meta` 오토로드(프로필+중단 RUN) |
