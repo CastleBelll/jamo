@@ -17,6 +17,10 @@ const LIBRARY_SCENE := "res://scenes/hub/last_library.tscn"
 @onready var pause_panel: PanelContainer = %PausePanel
 @onready var settings_panel: PanelContainer = %SettingsPanel
 @onready var banner: Label = %Banner
+@onready var input_shield: Control = %InputShield
+## Clicks arriving right after a screen change belong to the fight, not the new panel.
+const INPUT_SHIELD_SECONDS := 0.45
+var shield_timer: SceneTreeTimer
 var last_stability: float = -1.0
 var banner_tween: Tween
 
@@ -109,6 +113,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> void:
+	if to in [RunController.Phase.CLEAR, RunController.Phase.FORGE, RunController.Phase.RESULT]:
+		_raise_input_shield()
+	director.set_hold(false)
 	prep_panel.visible = to == RunController.Phase.WAVE_PREP
 	clear_panel.visible = to == RunController.Phase.CLEAR
 	forge_panel.visible = to == RunController.Phase.FORGE
@@ -293,6 +300,19 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
 		if is_node_ready() and run != null and run.phase == RunController.Phase.COMBAT and not get_tree().paused:
 			_open_pause()
+
+
+## A transparent full-screen Control eats mouse input for a moment after a panel opens, so the
+## clicks (and a held button) aimed at the last enemy never land on 자모/단어 buttons (G10).
+func _raise_input_shield() -> void:
+	input_shield.visible = true
+	shield_timer = get_tree().create_timer(INPUT_SHIELD_SECONDS, true, false, true)
+	shield_timer.timeout.connect(_drop_input_shield)
+
+
+func _drop_input_shield() -> void:
+	input_shield.visible = false
+	shield_timer = null
 
 
 func _open_settings() -> void:
