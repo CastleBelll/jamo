@@ -6,12 +6,16 @@ extends RefCounted
 const GLYPH_NAMES := {"ㄱ": "giyeok", "ㄴ": "nieun", "ㄷ": "digeut", "ㄹ": "rieul", "ㅁ": "mieum", "ㅂ": "bieup",
 	"ㅅ": "siot", "ㅇ": "ieung", "ㅈ": "jieut", "ㅊ": "chieut", "ㅋ": "kieuk", "ㅍ": "pieup", "ㅎ": "hieut",
 	"ㅏ": "a", "ㅓ": "eo", "ㅕ": "yeo", "ㅗ": "o", "ㅛ": "yo", "ㅜ": "u", "ㅣ": "i"}
-const DIRS := {"glyph": "art/glyphs", "boss": "art/bosses", "hud": "art/hud", "lib": "art/library",
+const DIRS := {"glyph": "art/glyphs", "char": "art/glyphs", "boss": "art/bosses", "combat": "art/backgrounds", "hud": "art/hud", "lib": "art/library",
 	"title": "art/title", "paper": "art/backgrounds", "ink": "art/backgrounds", "sentence": "art/backgrounds"}
 const TAG_NAMES := {"무기": "weapon", "화염": "fire", "지속": "dot", "방어": "guard", "자동": "auto",
 	"냉기": "cold", "경제": "econ", "행운": "luck", "위험": "risk"}
 const CATEGORY_NAMES := {"E": "equip", "R": "relic", "S": "special", "X": "risk"}
 const BOSS_NAMES := {"B_MIEUM": "boss_mieum", "B_SILENCE": "boss_silence", "B_IEUNG": "boss_ieung", "B_GREED": "boss_greed"}
+
+## Character sprites (char_*.png, 256px) stand on their shadow; glyph_*.png (56px) is the flat fallback.
+const CHARACTER_MIN_SIZE := 200
+const CHARACTER_SCALE := 0.6
 
 static var _cache: Dictionary = {}
 
@@ -34,7 +38,8 @@ static func tex(id: String) -> Texture2D:
 static func glyph(jamo: String) -> Texture2D:
 	if not GLYPH_NAMES.has(jamo):
 		return null
-	return tex("glyph_%s" % GLYPH_NAMES[jamo])
+	var character := tex("char_%s" % GLYPH_NAMES[jamo])
+	return character if character != null else tex("glyph_%s" % GLYPH_NAMES[jamo])
 
 
 static func tag_icon(tag: StringName) -> Texture2D:

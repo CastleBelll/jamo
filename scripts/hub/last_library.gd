@@ -22,6 +22,13 @@ func _ready() -> void:
 	%SetupStartButton.pressed.connect(_start_run)
 	%SetupPinOption.item_selected.connect(func(i): Meta.pinned_word = String(%SetupPinOption.get_item_metadata(i)); _refresh_setup())
 	%OpeningStartButton.pressed.connect(_start_first_run)
+	%ResearchButton.pressed.connect(func(): _show_tab(1))
+	%CodexButton.pressed.connect(func(): _show_tab(2))
+	%RecordsButton.pressed.connect(func(): _show_tab(3))
+	%SettingsButton.pressed.connect(func(): _show_tab(4))
+	%CloseCardButton.pressed.connect(func(): _show_tab(0))
+	AssetLib.apply(%Logo, "title_logo")
+	%HubTitle.visible = %Logo.texture == null
 	SettingsService.apply_all()
 	Sfx.play_bgm("library")
 	AssetLib.apply($BackgroundArt, "lib_bg")
@@ -35,18 +42,19 @@ func _ready() -> void:
 			$LayerArt.add_child(rect)
 		else:
 			rect.free()
-	var tab_icons := ["tab_hub", "tab_research", "tab_codex", "tab_records", "tab_settings"]
-	for i in mini(tab_icons.size(), %Tabs.get_tab_count()):
-		var t := AssetLib.tex(tab_icons[i])
-		if t != null:
-			%Tabs.set_tab_icon(i, t)
-	%Tabs.tab_changed.connect(func(_i): _dismiss_title())
+	var tab_icons := ["", "tab_research", "tab_codex", "tab_records", "tab_settings"]
+	var menu_buttons := [null, %ResearchButton, %CodexButton, %RecordsButton, %SettingsButton]
+	for i in range(1, mini(tab_icons.size(), %Tabs.get_tab_count())):
+		AssetLib.apply(menu_buttons[i], tab_icons[i])
+	%Tabs.tab_changed.connect(_on_tab_changed)
 	%Title.gui_input.connect(func(event): if event is InputEventMouseButton and event.is_pressed(): _dismiss_title())
 	AssetLib.apply(%Title/TitleArt, "title_screen")
 	AssetLib.apply(%Title/TitleLogo, "title_logo")
 	SettingsService.apply_text_scale(self, int(Meta.setting("text_scale")))
+	%SettingsPanel.add_theme_stylebox_override("panel", StyleBoxEmpty.new())  # the card already draws the paper
+	%SettingsPanel.get_node("Box/Title").visible = false  # the card header names the tab
 	%SettingsPanel.open(self, true)  # lives inside the 설정 tab: never hidden, 서고로 returns to the hub tab
-	%SettingsPanel.closed.connect(func(): %Tabs.current_tab = 0; %RunButton.grab_focus())
+	%SettingsPanel.closed.connect(func(): _show_tab(0))
 	var returned := LibraryService.record_return(db)
 	_refresh()
 	%NoticeLabel.text = returned
@@ -72,13 +80,31 @@ func _dismiss_title() -> void:
 	Meta.title_seen = true
 
 
+## Menu buttons open one tab inside the paper card; tab 0 (서고) is the bare hub.
+func _show_tab(index: int) -> void:
+	%Tabs.current_tab = index
+	_on_tab_changed(index)
+	if index == 0:
+		if Meta.has_run():
+			%ContinueButton.grab_focus()
+		else:
+			%RunButton.grab_focus()
+
+
+func _on_tab_changed(index: int) -> void:
+	_dismiss_title()
+	%ContentCard.visible = index != 0
+	%CardTitle.text = %Tabs.get_tab_title(index)
+
+
 func _refresh() -> void:
 	%GoldLabel.text = "Gold %d" % Meta.gold
 	%DiscoveredLabel.text = "발견 %d" % LibraryService.base_discovered(db)
 	%BestLabel.text = "최고 기록 도달 W%d · 클리어 W%d" % [Meta.best_reached, Meta.best_cleared] if Meta.best_reached > 0 else "최고 기록 -"
 	%SentenceLabel.text = "원본: " + LibraryService.sentence_text(db)
 	%ContinueButton.visible = Meta.has_run()
-	%RunButton.text = "새 RUN (진행 중 RUN 삭제)" if Meta.has_run() else "RUN"
+	%RunButton.text = "새 RUN" if Meta.has_run() else "RUN 시작"
+	%RunButton.theme_type_variation = &"Button" if Meta.has_run() else &"PrimaryButton"
 	%CorruptLabel.visible = Meta.corrupt
 	%NewProfileButton.visible = Meta.corrupt and Meta.load_source == "none"
 	if Meta.corrupt:
@@ -127,6 +153,9 @@ func _refresh_research() -> void:
 		var b := Button.new()
 		b.text = "구매" if not row["purchased"] else "완료"
 		b.custom_minimum_size = Vector2(160, 64)
+		b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		if not row["purchased"]:
+			b.theme_type_variation = &"PrimaryButton"
 		b.disabled = row["purchased"] or not row["allowed"] or not row["affordable"]
 		var id := r.id
 		b.pressed.connect(func(): if LibraryService.buy_research(db, id): _refresh())
@@ -170,8 +199,9 @@ func _refresh_codex() -> void:
 func _add_codex_button(text: String, id: String) -> void:
 	var b := Button.new()
 	b.text = text
+	b.theme_type_variation = &"GhostButton"
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	b.custom_minimum_size = Vector2(0, 56)
+	b.custom_minimum_size = Vector2(0, 60)
 	b.toggle_mode = true
 	b.button_pressed = id == codex_selected
 	b.pressed.connect(func(): codex_selected = id; _refresh_codex())
@@ -261,8 +291,9 @@ func _refresh_setup() -> void:
 		b.toggle_mode = true
 		b.button_pressed = id == setup_deck
 		b.disabled = not row["unlocked"]
+		b.theme_type_variation = &"GhostButton"
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.custom_minimum_size = Vector2(0, 64)
+		b.custom_minimum_size = Vector2(0, 84)
 		var counts: Array[String] = []
 		for j in row["counts"]:
 			counts.append("%s%d" % [j, row["counts"][j]])

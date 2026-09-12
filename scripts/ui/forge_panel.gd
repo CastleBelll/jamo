@@ -95,13 +95,16 @@ func _rebuild_hand() -> void:
 	for t in forge.hand:
 		var b := Button.new()
 		b.text = t["jamo"]
-		b.custom_minimum_size = Vector2(72, 72)
+		b.custom_minimum_size = Vector2(120, 120)
+		b.theme_type_variation = &"GhostButton"
+		b.add_theme_font_size_override("font_size", 52)
 		b.toggle_mode = true
 		b.button_pressed = forge.is_locked(t["id"])
 		b.disabled = forge.restored_word != &""
-		AssetLib.apply(b, "lock_on" if forge.is_locked(t["id"]) else "tile_jamo")
-		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.expand_icon = true
+		if forge.is_locked(t["id"]):
+			AssetLib.apply(b, "lock_on")
+			b.icon_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
 		var token_id: int = t["id"]
 		b.pressed.connect(func(): _on_token(token_id))
 		hand_row.add_child(b)
@@ -123,7 +126,8 @@ func _rebuild_candidates() -> void:
 		var b := Button.new()
 		b.text = "%s  %s   %s" % [w.name, tag, EffectText.describe_rank(w, forge.build.rank_of(w.id) + 1)]
 		AssetLib.apply(b, "cand_rankup" if c["kind"] == ForgeService.KIND_RANK_UP else ("cand_replace" if c["needs_replace"] or c["replace_risk"] else "cand_new"))
-		b.custom_minimum_size = Vector2(0, 64)
+		b.custom_minimum_size = Vector2(0, 72)
+		b.theme_type_variation = &"GhostButton"
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.toggle_mode = true
 		b.button_pressed = w.id == selected
@@ -157,7 +161,8 @@ func _rebuild_replace_row() -> void:
 			continue
 		var b := Button.new()
 		b.text = "%s R%d" % [w.name, held["rank"]]
-		b.custom_minimum_size = Vector2(120, 56)
+		b.custom_minimum_size = Vector2(140, 64)
+		b.theme_type_variation = &"GhostButton"
 		b.toggle_mode = true
 		b.button_pressed = w.id == replace_target
 		var id := w.id
@@ -276,7 +281,8 @@ func _rebuild_compounds() -> void:
 		var b := Button.new()
 		var result: WordData = db.words[c.result]
 		b.text = "%s + %s → %s" % [db.words[c.material_a].name, db.words[c.material_b].name, result.name]
-		b.custom_minimum_size = Vector2(0, 56)
+		b.custom_minimum_size = Vector2(0, 64)
+		b.theme_type_variation = &"GhostButton"
 		b.toggle_mode = true
 		b.button_pressed = c.id == selected_compound
 		var id := c.id

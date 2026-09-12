@@ -7,16 +7,18 @@
 custom_minimum_size = Vector2(1300, 0)
 # B11: keep every action button inside the 1080 logical height; candidates scroll instead.
 clip_contents = true
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_bottom = 20
 theme = ExtResource("2")
 script = ExtResource("1")
 
 [node name="Box" type="VBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="Box"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"HeadingLabel"
 horizontal_alignment = 1
 text = "단어 복원"
 
@@ -38,19 +40,20 @@ text = "Lock 0 / 3"
 
 [node name="RerollButton" type="Button" parent="Box/LockRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 64)
+custom_minimum_size = Vector2(340, 72)
 layout_mode = 2
 text = "Reroll (2)"
 
 [node name="BuildLabel" type="Label" parent="Box"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"MutedLabel"
 autowrap_mode = 3
 horizontal_alignment = 1
 text = "보유 0 / 6"
 
 [node name="CandidateScroll" type="ScrollContainer" parent="Box"]
-custom_minimum_size = Vector2(0, 220)
+custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
@@ -92,6 +95,7 @@ layout_mode = 2
 [node name="PinLabel" type="Label" parent="Box"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"MutedLabel"
 autowrap_mode = 3
 horizontal_alignment = 1
 text = ""
@@ -99,6 +103,7 @@ text = ""
 [node name="StatusLabel" type="Label" parent="Box"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"MutedLabel"
 autowrap_mode = 3
 horizontal_alignment = 1
 text = ""
@@ -123,27 +128,28 @@ alignment = 1
 
 [node name="RestoreButton" type="Button" parent="Box/ActionRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 64)
+custom_minimum_size = Vector2(220, 76)
 layout_mode = 2
 text = "복원"
 
 [node name="SkipRestoreButton" type="Button" parent="Box/ActionRow"]
 unique_name_in_owner = true
 visible = false
-custom_minimum_size = Vector2(220, 64)
+custom_minimum_size = Vector2(240, 76)
 layout_mode = 2
 text = "복원 건너뛰기"
 
 [node name="CompoundButton" type="Button" parent="Box/ActionRow"]
 unique_name_in_owner = true
 visible = false
-custom_minimum_size = Vector2(200, 64)
+custom_minimum_size = Vector2(220, 76)
 layout_mode = 2
 text = "합성"
 
 [node name="FinishButton" type="Button" parent="Box/ActionRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 64)
+custom_minimum_size = Vector2(260, 76)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 text = "빌드 확정"
 

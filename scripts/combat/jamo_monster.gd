@@ -79,6 +79,13 @@ func _apply_glyph_texture() -> void:
 	var t := AssetLib.glyph(jamo)
 	sprite.texture = t
 	glyph.visible = t == null
+	if t == null:
+		return
+	# Character art stands on the shadow; the flat 56px glyph is just enlarged.
+	var is_character := t.get_height() >= AssetLib.CHARACTER_MIN_SIZE
+	var s := AssetLib.CHARACTER_SCALE if is_character else 1.7
+	sprite.scale = Vector2(s, s)
+	sprite.position = Vector2(0, -t.get_height() * s * 0.5 + 40.0) if is_character else Vector2.ZERO
 
 
 func _process(delta: float) -> void:
