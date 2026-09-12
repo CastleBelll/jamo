@@ -35,6 +35,26 @@ static func tex(id: String) -> Texture2D:
 	return t
 
 
+## Ink icons recoloured to cream for dark surfaces (the HUD wood bar): alpha kept, colour replaced.
+static func tex_light(id: String) -> Texture2D:
+	var key := id + "#light"
+	if _cache.has(key):
+		return _cache[key]
+	var base := tex(id)
+	var out: Texture2D = null
+	if base != null:
+		var img := base.get_image()
+		img.convert(Image.FORMAT_RGBA8)
+		for y in img.get_height():
+			for x in img.get_width():
+				var a := img.get_pixel(x, y).a
+				if a > 0.0:
+					img.set_pixel(x, y, Color(0.95, 0.91, 0.82, a))
+		out = ImageTexture.create_from_image(img)
+	_cache[key] = out
+	return out
+
+
 static func glyph(jamo: String) -> Texture2D:
 	if not GLYPH_NAMES.has(jamo):
 		return null

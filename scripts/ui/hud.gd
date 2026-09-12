@@ -16,7 +16,7 @@ extends CanvasLayer
 func _ready() -> void:
 	# HUD icons (G10): the label then carries only the number.
 	for pair in [["WaveIcon", "hud_wave"], ["StabilityIcon", "hud_stability"], ["EnemyIcon", "hud_enemy"], ["GoldIcon", "hud_gold"], ["DropIcon", "hud_drop"]]:
-		AssetLib.apply(top_bar.get_node(pair[0]), pair[1])
+		top_bar.get_node(pair[0]).texture = AssetLib.tex_light(pair[1])  # cream silhouettes on the wood bar
 	for slot in build_bar.get_children():
 		var frame := TextureRect.new()
 		frame.name = "Frame"
