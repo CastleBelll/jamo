@@ -18,17 +18,24 @@ func _ready() -> void:
 	%KeyboardCheck.toggled.connect(func(on): SettingsService.set_and_save("keyboard_mode", on))
 	%TextScaleOption.item_selected.connect(func(i): SettingsService.set_and_save("text_scale", SettingsService.TEXT_SCALES[i]); _apply_text_scale())
 	%ShakeOption.item_selected.connect(func(i): SettingsService.set_and_save("shake", SettingsService.SHAKE_LEVELS[i]))
-	%CloseButton.pressed.connect(func(): if not embedded: visible = false; closed.emit())
+	%CloseButton.pressed.connect(_on_close_pressed)
 	for v in SettingsService.TEXT_SCALES:
 		%TextScaleOption.add_item("%d%%" % v)
 	for v in SettingsService.SHAKE_LEVELS:
 		%ShakeOption.add_item("%d%%" % v)
 
 
+## 계속하기 (G10): closes the popup, or hands control back to the host when embedded.
+func _on_close_pressed() -> void:
+	if not embedded:
+		visible = false
+	closed.emit()
+
+
 func open(root_for_text: Control = null, embed: bool = false) -> void:
 	text_root = root_for_text
 	embedded = embed
-	%CloseButton.visible = not embed
+	%CloseButton.text = "서고로" if embed else "계속하기"
 	for key in ["master", "bgm", "sfx", "ui"]:
 		get_node("%%%sSlider" % key.capitalize()).set_value_no_signal(int(Meta.setting(key)))
 	%FullscreenCheck.set_pressed_no_signal(bool(Meta.setting("fullscreen")))
