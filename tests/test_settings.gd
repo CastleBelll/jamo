@@ -91,6 +91,9 @@ func _check_log() -> void:
 	var rows := RunLog.read_all()
 	_expect(rows.size() == 2 and rows[0]["kind"] == "run_start" and int(rows[0]["seed"]) == 42 and rows[0]["deck"] == "starter_a", "run_start line with seed/deck/research")
 	_expect(rows[0]["content_version"] == Meta.CONTENT_VERSION and rows[1]["kind"] == "purify" and rows[1]["run_id"] == "test:1", "events carry run id and content version")
+	RunLog.event("spawn", {"t": 3.5})
+	var last := RunLog.read_all()[-1]
+	_expect(last.has("ms") and is_equal_approx(float(last["t"]), 3.5), "wall clock in ms, wave clock t preserved")
 	_expect(RunLog.path.begins_with("user://logs/"), "log stays local under user://logs")
 	var path := RunLog.path
 	RunLog.end_run()
@@ -174,9 +177,10 @@ func _check_qa_fixes() -> void:
 	var lib := LIBRARY.instantiate()
 	add_child(lib)
 	var panel := lib.get_node("%SettingsPanel")
-	_expect(panel.visible and panel.embedded and not panel.get_node("%CloseButton").visible, "library settings tab: embedded, no 계속하기")
+	_expect(panel.visible and panel.embedded and panel.get_node("%CloseButton").text == "서고로", "library settings tab: embedded, close reads 서고로")
+	lib.get_node("%Tabs").current_tab = 4
 	panel.get_node("%CloseButton").pressed.emit()
-	_expect(panel.visible, "embedded panel stays visible after a close press")
+	_expect(panel.visible and lib.get_node("%Tabs").current_tab == 0, "embedded close returns to the 서고 tab and keeps the panel")
 	lib.free()
 	Meta.settings["shake"] = 100
 	RunLog.enabled = true

@@ -21,7 +21,8 @@ func begin_run(id: String, seed: int, content_version: String, research: Array, 
 func event(kind: String, data: Dictionary = {}) -> void:
 	if not enabled or path == "":
 		return
-	var record := {"t": Time.get_ticks_msec(), "run_id": run_id, "kind": kind}
+	# "ms" is the wall clock; events keep their own "t" (wave clock) untouched by merge().
+	var record := {"ms": Time.get_ticks_msec(), "run_id": run_id, "kind": kind}
 	record.merge(data)
 	var f := FileAccess.open(path, FileAccess.READ_WRITE if FileAccess.file_exists(path) else FileAccess.WRITE)
 	if f == null:
