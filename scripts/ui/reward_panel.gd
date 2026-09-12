@@ -82,10 +82,7 @@ func _rebuild_candidates() -> void:
 	for i in reward.candidates.size():
 		var b := Button.new()
 		b.text = reward.candidates[i]
-		b.custom_minimum_size = Vector2(64, 64)
-		AssetLib.apply(b, "tile_jamo")
-		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.expand_icon = true
+		_style_tile(b, 120, 52)
 		b.toggle_mode = true
 		b.button_pressed = i == selected_candidate
 		b.pressed.connect(func(): _select_candidate(i))
@@ -106,10 +103,17 @@ func _rebuild_deck() -> void:
 	for t in reward.deck.tokens:
 		var b := Button.new()
 		b.text = t["jamo"]
-		b.custom_minimum_size = Vector2(56, 56)
+		_style_tile(b, 72, 34)
 		var token_id: int = t["id"]
 		b.pressed.connect(func(): _on_token(token_id))
 		deck_grid.add_child(b)
+
+
+## Jamo tiles (G10): square ghost buttons with a big glyph.
+func _style_tile(b: Button, size: int, font_size: int) -> void:
+	b.custom_minimum_size = Vector2(size, size)
+	b.theme_type_variation = &"GhostButton"
+	b.add_theme_font_size_override("font_size", font_size)
 
 
 func _select_candidate(i: int) -> void:

@@ -247,7 +247,7 @@ func _check_input_shield() -> void:
 	director.clear_enemies()
 	run.on_wave_cleared()
 	_expect(shield.visible and shield.mouse_filter == Control.MOUSE_FILTER_STOP and not director.hold_pressed, "wave clear raises the input shield and drops the held click")
-	_expect(shield.get_index() > game.get_node("Panels/Center").get_index(), "shield is drawn above the panels")
+	_expect(shield.get_index() > game.get_node("UI/Panels/Center").get_index(), "shield is drawn above the panels")
 	await game.shield_timer.timeout
 	_expect(not shield.visible, "shield drops after %.2fs" % game.INPUT_SHIELD_SECONDS)
 	game.get_node("%ClearPanel").get_node("%FinishButton").pressed.emit()

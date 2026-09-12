@@ -215,7 +215,7 @@ func _check_research_and_library() -> void:
 	Meta.run = {}
 	var lib := LIBRARY.instantiate()
 	add_child(lib)
-	_expect(not lib.get_node("%ContinueButton").visible and lib.get_node("%RunButton").text == "RUN", "no suspended run: plain RUN")
+	_expect(not lib.get_node("%ContinueButton").visible and lib.get_node("%RunButton").text == "RUN 시작", "no suspended run: plain RUN")
 	lib.free()
 	Meta.run = {"wave": 4, "phase": RunController.Phase.WAVE_PREP}
 	Meta.gold = 40

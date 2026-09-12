@@ -10,12 +10,13 @@ extends CanvasLayer
 @onready var drops_label: Label = %DropsLabel
 @onready var build_bar: HBoxContainer = $Root/BuildBar
 @onready var hover_label: Label = %HoverLabel
+@onready var top_bar: HBoxContainer = $Root/TopPanel/TopBar
 
 
 func _ready() -> void:
 	# HUD icons (G10): the label then carries only the number.
 	for pair in [["WaveIcon", "hud_wave"], ["StabilityIcon", "hud_stability"], ["EnemyIcon", "hud_enemy"], ["GoldIcon", "hud_gold"], ["DropIcon", "hud_drop"]]:
-		AssetLib.apply($Root/TopBar.get_node(pair[0]), pair[1])
+		AssetLib.apply(top_bar.get_node(pair[0]), pair[1])
 	for slot in build_bar.get_children():
 		var frame := TextureRect.new()
 		frame.name = "Frame"
@@ -54,6 +55,9 @@ func set_build(build: BuildState, db: ContentDB, sealed: Dictionary = {}) -> voi
 			var l := Label.new()
 			l.text = "%s %s%s" % [word.name, "●".repeat(build.words[i]["rank"]) + "○".repeat(3 - build.words[i]["rank"]), ("\n봉인 %.1f초" % sealed[word.id]) if sealed.has(word.id) else ""]
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			l.add_theme_font_size_override("font_size", 22)
 			l.set_anchors_preset(Control.PRESET_FULL_RECT)
 			slot.add_child(l)
 			var frame := slot.get_node_or_null("Frame")
@@ -71,7 +75,7 @@ func set_hover(target: JamoMonster) -> void:
 
 
 func has_icons() -> bool:
-	return $Root/TopBar/WaveIcon.texture != null
+	return top_bar.get_node("WaveIcon").texture != null
 
 
 func set_enemies_left(count: int) -> void:

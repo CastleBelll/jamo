@@ -14,73 +14,122 @@ anchor_bottom = 1.0
 mouse_filter = 2
 theme = ExtResource("2")
 
-[node name="TopBar" type="HBoxContainer" parent="Root"]
+[node name="TopPanel" type="PanelContainer" parent="Root"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 40.0
-offset_top = 24.0
-offset_right = -40.0
-offset_bottom = 96.0
-theme_override_constants/separation = 48
+offset_left = 24.0
+offset_top = 16.0
+offset_right = -24.0
+offset_bottom = 104.0
+mouse_filter = 2
+theme_type_variation = &"InkPanel"
+
+[node name="TopBar" type="HBoxContainer" parent="Root/TopPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
 mouse_filter = 2
 
-[node name="WaveIcon" type="TextureRect" parent="Root/TopBar"]
+[node name="WaveIcon" type="TextureRect" parent="Root/TopPanel/TopBar"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
 stretch_mode = 5
 
-[node name="WaveLabel" type="Label" parent="Root/TopBar"]
+[node name="WaveLabel" type="Label" parent="Root/TopPanel/TopBar"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
-text = "Wave 1"
+theme_type_variation = &"CreamLabel"
+theme_override_font_sizes/font_size = 38
+vertical_alignment = 1
+text = "W1"
 
-[node name="StabilityIcon" type="TextureRect" parent="Root/TopBar"]
+[node name="Gap1" type="Control" parent="Root/TopPanel/TopBar"]
+custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
+
+[node name="StabilityIcon" type="TextureRect" parent="Root/TopPanel/TopBar"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
 stretch_mode = 5
 
-[node name="StabilityBox" type="VBoxContainer" parent="Root/TopBar"]
+[node name="StabilityBox" type="VBoxContainer" parent="Root/TopPanel/TopBar"]
+custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 4
 
-[node name="StabilityLabel" type="Label" parent="Root/TopBar/StabilityBox"]
+[node name="StabilityLabel" type="Label" parent="Root/TopPanel/TopBar/StabilityBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "안정도 100 / 100"
+theme_type_variation = &"CreamLabel"
+theme_override_font_sizes/font_size = 26
+text = "100/100"
 
-[node name="StabilityBar" type="ProgressBar" parent="Root/TopBar/StabilityBox"]
+[node name="StabilityBar" type="ProgressBar" parent="Root/TopPanel/TopBar/StabilityBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 20)
+custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
 max_value = 100.0
 value = 100.0
 show_percentage = false
 
-[node name="EnemyIcon" type="TextureRect" parent="Root/TopBar"]
+[node name="Spacer" type="Control" parent="Root/TopPanel/TopBar"]
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyIcon" type="TextureRect" parent="Root/TopPanel/TopBar"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
 stretch_mode = 5
 
-[node name="EnemiesLabel" type="Label" parent="Root/TopBar"]
+[node name="EnemiesLabel" type="Label" parent="Root/TopPanel/TopBar"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
-text = "남은 적 0"
+theme_type_variation = &"CreamLabel"
+theme_override_font_sizes/font_size = 34
+vertical_alignment = 1
+text = "0"
 
-[node name="GoldIcon" type="TextureRect" parent="Root/TopBar"]
+[node name="GoldIcon" type="TextureRect" parent="Root/TopPanel/TopBar"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
 stretch_mode = 5
 
-[node name="GoldLabel" type="Label" parent="Root/TopBar"]
+[node name="GoldLabel" type="Label" parent="Root/TopPanel/TopBar"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
-text = "0 G"
+theme_type_variation = &"CreamLabel"
+theme_override_colors/font_color = Color(0.93, 0.78, 0.45, 1)
+theme_override_font_sizes/font_size = 34
+vertical_alignment = 1
+text = "0"
 
-[node name="DropIcon" type="TextureRect" parent="Root/TopBar"]
+[node name="DropIcon" type="TextureRect" parent="Root/TopPanel/TopBar"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
 stretch_mode = 5
 
-[node name="DropsLabel" type="Label" parent="Root/TopBar"]
+[node name="DropsLabel" type="Label" parent="Root/TopPanel/TopBar"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
-text = "회수 0"
+theme_type_variation = &"CreamLabel"
+theme_override_font_sizes/font_size = 34
+vertical_alignment = 1
+text = "0"
 
 [node name="HoverLabel" type="Label" parent="Root"]
 unique_name_in_owner = true
@@ -88,9 +137,12 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 40.0
-offset_top = 100.0
+offset_top = 116.0
 offset_right = -40.0
-offset_bottom = 136.0
+offset_bottom = 160.0
+theme_override_colors/font_outline_color = Color(0.97, 0.94, 0.86, 0.95)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 28
 text = ""
 horizontal_alignment = 1
 
@@ -101,34 +153,33 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 220.0
-offset_top = -110.0
+offset_top = -124.0
 offset_right = -220.0
-offset_bottom = -20.0
-theme_override_constants/separation = 16
+offset_bottom = -16.0
+theme_override_constants/separation = 18
 alignment = 1
 mouse_filter = 2
 
 [node name="Slot1" type="Panel" parent="Root/BuildBar"]
-custom_minimum_size = Vector2(90, 90)
+custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
 
 [node name="Slot2" type="Panel" parent="Root/BuildBar"]
-custom_minimum_size = Vector2(90, 90)
+custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
 
 [node name="Slot3" type="Panel" parent="Root/BuildBar"]
-custom_minimum_size = Vector2(90, 90)
+custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
 
 [node name="Slot4" type="Panel" parent="Root/BuildBar"]
-custom_minimum_size = Vector2(90, 90)
+custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
 
 [node name="Slot5" type="Panel" parent="Root/BuildBar"]
-custom_minimum_size = Vector2(90, 90)
+custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
 
 [node name="Slot6" type="Panel" parent="Root/BuildBar"]
-custom_minimum_size = Vector2(90, 90)
+custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
-

@@ -20,6 +20,7 @@ const LIBRARY_SCENE := "res://scenes/hub/last_library.tscn"
 @onready var input_shield: Control = %InputShield
 ## Clicks arriving right after a screen change belong to the fight, not the new panel.
 const INPUT_SHIELD_SECONDS := 0.45
+const SHEET_RECT := Rect2(200, 160, 1500, 810)
 var shield_timer: SceneTreeTimer
 var last_stability: float = -1.0
 var banner_tween: Tween
@@ -57,11 +58,12 @@ func _ready() -> void:
 	pause_panel.visible = false
 	settings_panel.visible = false
 	SettingsService.apply_all()
-	SettingsService.apply_text_scale($Panels, int(Meta.setting("text_scale")))
+	SettingsService.apply_text_scale($UI/Panels, int(Meta.setting("text_scale")))
 	run.stability_changed.connect(_on_stability_changed)
 	page.get_node("LastSentence/Text").text = LibraryService.sentence_text(db)
-	AssetLib.apply(page.get_node("Paper/PaperArt"), "paper_bg")
-	AssetLib.apply(page.get_node("Overlays/InkOverlay"), "ink_overlay")
+	_dress_page()
+	if not AssetLib.apply(page.get_node("Overlays/InkOverlay"), "ink_vignette"):
+		AssetLib.apply(page.get_node("Overlays/InkOverlay"), "ink_overlay")
 	page.get_node("LastSentence/Row").visible = not AssetLib.apply(page.get_node("LastSentence/RowArt"), "sentence_row")
 	Sfx.play_bgm("combat")
 	clear_panel.state_changed.connect(_save_run)
@@ -79,6 +81,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	# Root runs always (for Esc); the combat clock only advances while unpaused in COMBAT.
+	%Dim.visible = get_tree().paused and not %Banner.visible
 	if get_tree().paused:
 		return
 	var cursor := page.get_global_mouse_position()
@@ -258,6 +261,22 @@ func _save_run() -> void:
 	Meta.save()
 
 
+## Page art (S8): a dedicated desk painting when present; otherwise the library painting,
+## dimmed, under a paper sheet clipped to the play area (B11 sheet rect).
+func _dress_page() -> void:
+	var art: Sprite2D = page.get_node("Paper/PaperArt")
+	if AssetLib.apply(art, "combat_desk"):
+		page.get_node("Paper/Sheet").visible = false
+		return
+	var desk: Sprite2D = page.get_node("Paper/DeskArt")
+	if AssetLib.apply(desk, "lib_bg"):
+		desk.scale = Vector2(1920.0 / desk.texture.get_width(), 1080.0 / desk.texture.get_height())
+	if AssetLib.apply(art, "paper_bg"):
+		art.position = SHEET_RECT.get_center()
+		art.scale = SHEET_RECT.size / Vector2(art.texture.get_size())
+		page.get_node("Paper/Sheet/SheetPaper").visible = false
+
+
 ## Wave/boss banners (G12): 0.6s prep, 0.8s clear, 1.2s boss name; empty text hides it.
 func _show_banner(text: String, seconds: float) -> void:
 	if banner_tween != null and banner_tween.is_valid():
@@ -325,7 +344,7 @@ func _drop_input_shield() -> void:
 
 
 func _open_settings() -> void:
-	settings_panel.open($Panels)
+	settings_panel.open($UI/Panels)
 
 
 func _open_pause() -> void:

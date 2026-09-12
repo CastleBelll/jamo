@@ -15,7 +15,7 @@ theme_override_constants/separation = 14
 
 [node name="Title" type="Label" parent="Box"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"HeadingLabel"
 horizontal_alignment = 1
 text = "설정"
 
@@ -139,12 +139,15 @@ layout_mode = 2
 
 [node name="Note" type="Label" parent="Box"]
 layout_mode = 2
+theme_type_variation = &"MutedLabel"
 horizontal_alignment = 1
 autowrap_mode = 3
 text = "변경은 즉시 적용되고 저장됩니다. 전투 시계는 멈춘 채 유지됩니다."
 
 [node name="CloseButton" type="Button" parent="Box"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"PrimaryButton"
 text = "계속하기"

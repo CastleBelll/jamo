@@ -34,8 +34,22 @@ _data = {
 [node name="CorruptedPage" type="Node2D"]
 
 [node name="Paper" type="Polygon2D" parent="."]
-color = Color(0.96, 0.94, 0.88, 1)
+color = Color(0.32, 0.22, 0.15, 1)
 polygon = PackedVector2Array(0, 0, 1920, 0, 1920, 1080, 0, 1080)
+
+[node name="DeskArt" type="Sprite2D" parent="Paper"]
+modulate = Color(0.42, 0.36, 0.3, 1)
+position = Vector2(960, 540)
+
+[node name="Sheet" type="Node2D" parent="Paper"]
+
+[node name="SheetShadow" type="Polygon2D" parent="Paper/Sheet"]
+color = Color(0.05, 0.03, 0.02, 0.5)
+polygon = PackedVector2Array(216, 176, 1720, 176, 1720, 990, 216, 990)
+
+[node name="SheetPaper" type="Polygon2D" parent="Paper/Sheet"]
+color = Color(0.95, 0.91, 0.82, 1)
+polygon = PackedVector2Array(200, 160, 1700, 160, 1700, 970, 200, 970)
 
 [node name="PaperArt" type="Sprite2D" parent="Paper"]
 position = Vector2(960, 540)
@@ -46,18 +60,18 @@ position = Vector2(960, 540)
 position = Vector2(960, 540)
 
 [node name="LaneGuideL" type="Line2D" parent="Overlays"]
-points = PackedVector2Array(480, 370, 480, 850)
-width = 2.0
-default_color = Color(0.55, 0.5, 0.42, 0.35)
+points = PackedVector2Array(480, 330, 480, 870)
+width = 6.0
+default_color = Color(0.45, 0.38, 0.28, 0.28)
 
 [node name="LaneGuideC" type="Line2D" parent="Overlays"]
-points = PackedVector2Array(960, 370, 960, 850)
-width = 2.0
-default_color = Color(0.55, 0.5, 0.42, 0.35)
+points = PackedVector2Array(960, 330, 960, 870)
+width = 6.0
+default_color = Color(0.45, 0.38, 0.28, 0.28)
 
 [node name="LaneGuideR" type="Line2D" parent="Overlays"]
-points = PackedVector2Array(1440, 370, 1440, 850)
-width = 2.0
+points = PackedVector2Array(1440, 330, 1440, 870)
+width = 6.0
 default_color = Color(0.55, 0.5, 0.42, 0.35)
 
 [node name="Paths" type="Node2D" parent="."]
@@ -86,14 +100,14 @@ curve = SubResource("curve_r_b")
 position = Vector2(960, 260)
 
 [node name="LastSentence" type="Node2D" parent="."]
-position = Vector2(0, 910)
+position = Vector2(0, 900)
 
 [node name="RowArt" type="Sprite2D" parent="LastSentence"]
 position = Vector2(960, 0)
 
 [node name="Row" type="Line2D" parent="LastSentence"]
-points = PackedVector2Array(220, 0, 1700, 0)
-width = 3.0
+points = PackedVector2Array(260, 0, 1660, 0)
+width = 5.0
 default_color = Color(0.2, 0.18, 0.15, 1)
 
 [node name="Text" type="Label" parent="LastSentence"]
@@ -102,7 +116,7 @@ offset_top = -60.0
 offset_right = 1700.0
 offset_bottom = -8.0
 theme_override_colors/font_color = Color(0.2, 0.18, 0.15, 1)
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 40
 text = "「□□□ □□□ □□□□□.」"
 horizontal_alignment = 1
 

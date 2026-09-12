@@ -14,13 +14,14 @@ theme_override_constants/separation = 20
 
 [node name="Title" type="Label" parent="Box"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"HeadingLabel"
 horizontal_alignment = 1
 text = "Wave Clear · 자모 정리"
 
 [node name="StatsLabel" type="Label" parent="Box"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"MutedLabel"
 horizontal_alignment = 1
 text = ""
 
@@ -39,6 +40,7 @@ alignment = 1
 [node name="HintLabel" type="Label" parent="Box"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"MutedLabel"
 horizontal_alignment = 1
 autowrap_mode = 3
 text = ""
@@ -50,25 +52,25 @@ alignment = 1
 
 [node name="AddButton" type="Button" parent="Box/Actions"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 64)
+custom_minimum_size = Vector2(200, 72)
 layout_mode = 2
 text = "추가"
 
 [node name="ReplaceButton" type="Button" parent="Box/Actions"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 64)
+custom_minimum_size = Vector2(200, 72)
 layout_mode = 2
 text = "교체"
 
 [node name="SkipButton" type="Button" parent="Box/Actions"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 64)
+custom_minimum_size = Vector2(200, 72)
 layout_mode = 2
 text = "건너뛰기"
 
 [node name="RemoveButton" type="Button" parent="Box/Actions"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 64)
+custom_minimum_size = Vector2(200, 72)
 layout_mode = 2
 text = "제거"
 
@@ -82,7 +84,9 @@ columns = 13
 
 [node name="FinishButton" type="Button" parent="Box"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 64)
+custom_minimum_size = Vector2(320, 84)
 layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"PrimaryButton"
 text = "정리 완료"
 

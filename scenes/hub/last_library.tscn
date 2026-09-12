@@ -1,8 +1,17 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/hub/last_library.gd" id="1"]
 [ext_resource type="Theme" path="res://resources/ui/theme.tres" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_panel.tscn" id="3"]
+
+[sub_resource type="Gradient" id="menu_shade"]
+offsets = PackedFloat32Array(0, 0.42, 0.6)
+colors = PackedColorArray(0.06, 0.04, 0.03, 0.82, 0.06, 0.04, 0.03, 0.55, 0.06, 0.04, 0.03, 0)
+
+[sub_resource type="GradientTexture2D" id="menu_shade_tex"]
+gradient = SubResource("menu_shade")
+width = 256
+height = 4
 
 [node name="LastLibrary" type="Control"]
 layout_mode = 3
@@ -17,15 +26,15 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.93, 0.89, 0.8, 1)
+color = Color(0.1, 0.08, 0.07, 1)
 
 [node name="BackgroundArt" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-stretch_mode = 6
 mouse_filter = 2
+stretch_mode = 6
 
 [node name="LayerArt" type="Control" parent="."]
 layout_mode = 1
@@ -33,6 +42,14 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+
+[node name="MenuShade" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = SubResource("menu_shade_tex")
 
 [node name="Layers" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -47,177 +64,283 @@ offset_bottom = 300.0
 [node name="LayerTitleLamp" type="Label" parent="Layers"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"CreamLabel"
 text = "책 제목과 작은 등불"
 
 [node name="LayerSpines" type="Label" parent="Layers"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"CreamLabel"
 text = "책등이 늘었다"
 
 [node name="LayerLines" type="Label" parent="Layers"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"CreamLabel"
 text = "배경의 글줄이 늘었다"
 
 [node name="LayerHandwriting" type="Label" parent="Layers"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "여백에 다른 필체"
+theme_type_variation = &"CreamLabel"
+text = "손글씨 메모"
 
 [node name="LayerOpenBook" type="Label" parent="Layers"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "닫혀 있던 책이 열렸다"
+theme_type_variation = &"CreamLabel"
+text = "펼쳐진 책"
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Menu" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 120.0
+offset_top = 72.0
+offset_right = 600.0
+offset_bottom = 800.0
+theme_override_constants/separation = 10
+
+[node name="Logo" type="TextureRect" parent="Menu"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HubTitle" type="Label" parent="Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CreamLabel"
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+text = "마지막 서고"
+
+[node name="MenuGap" type="Control" parent="Menu"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="ContinueButton" type="Button" parent="Menu"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "이어하기"
+
+[node name="RunButton" type="Button" parent="Menu"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "RUN 시작"
+
+[node name="ResearchButton" type="Button" parent="Menu"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+text = "연구"
+
+[node name="CodexButton" type="Button" parent="Menu"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+text = "복원 사전"
+
+[node name="RecordsButton" type="Button" parent="Menu"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+text = "기록"
+
+[node name="SettingsButton" type="Button" parent="Menu"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+text = "설정"
+
+[node name="NewProfileButton" type="Button" parent="Menu"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+text = "새 프로필 만들기"
+
+[node name="StatsCard" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 120.0
+offset_top = -236.0
+offset_right = 600.0
+offset_bottom = -64.0
+grow_vertical = 0
+theme_type_variation = &"InkPanel"
+
+[node name="Box" type="VBoxContainer" parent="StatsCard"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="GoldLabel" type="Label" parent="StatsCard/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CreamLabel"
+theme_override_font_sizes/font_size = 30
+text = "Gold 0"
+
+[node name="DiscoveredLabel" type="Label" parent="StatsCard/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CreamLabel"
+theme_override_font_sizes/font_size = 22
+text = "발견 0"
+
+[node name="BestLabel" type="Label" parent="StatsCard/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CreamLabel"
+theme_override_font_sizes/font_size = 22
+text = "최고 기록 -"
+
+[node name="SentenceLabel" type="Label" parent="StatsCard/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CreamLabel"
+theme_override_colors/font_color = Color(0.8, 0.75, 0.66, 1)
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
+text = ""
+
+[node name="NoticeLabel" type="Label" parent="StatsCard/Box"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"CreamLabel"
+theme_override_colors/font_color = Color(0.93, 0.8, 0.5, 1)
+theme_override_font_sizes/font_size = 24
+autowrap_mode = 3
+text = ""
+
+[node name="CorruptLabel" type="Label" parent="StatsCard/Box"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"CreamLabel"
+theme_override_colors/font_color = Color(0.95, 0.55, 0.45, 1)
+theme_override_font_sizes/font_size = 24
+autowrap_mode = 3
+text = ""
+
+[node name="ContentCard" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/margin_left = 80
-theme_override_constants/margin_top = 40
-theme_override_constants/margin_right = 460
-theme_override_constants/margin_bottom = 40
+offset_left = 680.0
+offset_top = 80.0
+offset_right = -100.0
+offset_bottom = -80.0
 
-[node name="Tabs" type="TabContainer" parent="Margin"]
-unique_name_in_owner = true
+[node name="Box" type="VBoxContainer" parent="ContentCard"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="ContentCard/Box"]
 layout_mode = 2
 
-[node name="서고" type="VBoxContainer" parent="Margin/Tabs"]
+[node name="CardTitle" type="Label" parent="ContentCard/Box/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HeadingLabel"
+text = "연구"
+
+[node name="CloseCardButton" type="Button" parent="ContentCard/Box/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 56)
+layout_mode = 2
+theme_type_variation = &"GhostButton"
+text = "닫기"
+
+[node name="Rule" type="ColorRect" parent="ContentCard/Box"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.55, 0.45, 0.32, 0.6)
+
+[node name="Tabs" type="TabContainer" parent="ContentCard/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+tabs_visible = false
+
+[node name="서고" type="Control" parent="ContentCard/Box/Tabs"]
+layout_mode = 2
+
+[node name="연구" type="VBoxContainer" parent="ContentCard/Box/Tabs"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="Margin/Tabs/서고"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 48
-horizontal_alignment = 1
-text = "마지막 서고"
-
-[node name="GoldLabel" type="Label" parent="Margin/Tabs/서고"]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_alignment = 1
-text = "Gold 0"
-
-[node name="DiscoveredLabel" type="Label" parent="Margin/Tabs/서고"]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_alignment = 1
-text = "발견 0"
-
-[node name="BestLabel" type="Label" parent="Margin/Tabs/서고"]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_alignment = 1
-text = "최고 기록 -"
-
-[node name="SentenceLabel" type="Label" parent="Margin/Tabs/서고"]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_alignment = 1
-text = ""
-
-[node name="NoticeLabel" type="Label" parent="Margin/Tabs/서고"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-horizontal_alignment = 1
-autowrap_mode = 3
-text = ""
-
-[node name="CorruptLabel" type="Label" parent="Margin/Tabs/서고"]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_alignment = 1
-autowrap_mode = 3
-visible = false
-text = ""
-
-[node name="MainButtons" type="HBoxContainer" parent="Margin/Tabs/서고"]
-layout_mode = 2
-theme_override_constants/separation = 12
-alignment = 1
-
-[node name="ContinueButton" type="Button" parent="Margin/Tabs/서고/MainButtons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
-layout_mode = 2
-text = "이어하기"
-
-[node name="RunButton" type="Button" parent="Margin/Tabs/서고/MainButtons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
-layout_mode = 2
-text = "RUN"
-
-[node name="NewProfileButton" type="Button" parent="Margin/Tabs/서고/MainButtons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
-layout_mode = 2
-text = "새 프로필 만들기"
-
-[node name="연구" type="VBoxContainer" parent="Margin/Tabs"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="ResearchScroll" type="ScrollContainer" parent="Margin/Tabs/연구"]
+[node name="ResearchScroll" type="ScrollContainer" parent="ContentCard/Box/Tabs/연구"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 520)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ResearchRows" type="VBoxContainer" parent="Margin/Tabs/연구/ResearchScroll"]
+[node name="ResearchRows" type="VBoxContainer" parent="ContentCard/Box/Tabs/연구/ResearchScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 size_flags_horizontal = 3
 
-[node name="사전" type="VBoxContainer" parent="Margin/Tabs"]
+[node name="사전" type="VBoxContainer" parent="ContentCard/Box/Tabs"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="CodexTabs" type="HBoxContainer" parent="Margin/Tabs/사전"]
+[node name="CodexTabs" type="HBoxContainer" parent="ContentCard/Box/Tabs/사전"]
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="CodexBaseButton" type="Button" parent="Margin/Tabs/사전/CodexTabs"]
+[node name="CodexBaseButton" type="Button" parent="ContentCard/Box/Tabs/사전/CodexTabs"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(160, 64)
+custom_minimum_size = Vector2(160, 60)
 layout_mode = 2
+theme_type_variation = &"GhostButton"
 text = "기본"
 
-[node name="CodexCompoundButton" type="Button" parent="Margin/Tabs/사전/CodexTabs"]
+[node name="CodexCompoundButton" type="Button" parent="ContentCard/Box/Tabs/사전/CodexTabs"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(160, 64)
+custom_minimum_size = Vector2(160, 60)
 layout_mode = 2
+theme_type_variation = &"GhostButton"
 text = "합성"
 
-[node name="CodexBossButton" type="Button" parent="Margin/Tabs/사전/CodexTabs"]
+[node name="CodexBossButton" type="Button" parent="ContentCard/Box/Tabs/사전/CodexTabs"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(160, 64)
+custom_minimum_size = Vector2(160, 60)
 layout_mode = 2
+theme_type_variation = &"GhostButton"
 text = "보스"
 
-[node name="CodexBody" type="HBoxContainer" parent="Margin/Tabs/사전"]
+[node name="CodexBody" type="HBoxContainer" parent="ContentCard/Box/Tabs/사전"]
 layout_mode = 2
 theme_override_constants/separation = 12
-alignment = 1
 alignment = 0
 
-[node name="CodexScroll" type="ScrollContainer" parent="Margin/Tabs/사전/CodexBody"]
+[node name="CodexScroll" type="ScrollContainer" parent="ContentCard/Box/Tabs/사전/CodexBody"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 520)
+custom_minimum_size = Vector2(440, 520)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CodexRows" type="VBoxContainer" parent="Margin/Tabs/사전/CodexBody/CodexScroll"]
+[node name="CodexRows" type="VBoxContainer" parent="ContentCard/Box/Tabs/사전/CodexBody/CodexScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 custom_minimum_size = Vector2(420, 0)
 
-[node name="CodexDetail" type="Label" parent="Margin/Tabs/사전/CodexBody"]
+[node name="CodexDetail" type="Label" parent="ContentCard/Box/Tabs/사전/CodexBody"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
@@ -225,38 +348,51 @@ size_flags_horizontal = 3
 vertical_alignment = 0
 text = ""
 
-[node name="기록" type="VBoxContainer" parent="Margin/Tabs"]
+[node name="기록" type="VBoxContainer" parent="ContentCard/Box/Tabs"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="BadgesLabel" type="Label" parent="Margin/Tabs/기록"]
+[node name="BadgesLabel" type="Label" parent="ContentCard/Box/Tabs/기록"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
 text = ""
 
-[node name="EventScroll" type="ScrollContainer" parent="Margin/Tabs/기록"]
+[node name="EventScroll" type="ScrollContainer" parent="ContentCard/Box/Tabs/기록"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 520)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="EventRows" type="VBoxContainer" parent="Margin/Tabs/기록/EventScroll"]
+[node name="EventRows" type="VBoxContainer" parent="ContentCard/Box/Tabs/기록/EventScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 size_flags_horizontal = 3
 
-[node name="설정" type="VBoxContainer" parent="Margin/Tabs"]
+[node name="설정" type="VBoxContainer" parent="ContentCard/Box/Tabs"]
 layout_mode = 2
 
-[node name="SettingsPanel" parent="Margin/Tabs/설정" instance=ExtResource("3")]
+[node name="SettingsPanel" parent="ContentCard/Box/Tabs/설정" instance=ExtResource("3")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="RunSetup" type="PanelContainer" parent="."]
+[node name="RunSetup" type="Control" parent="."]
 unique_name_in_owner = true
 visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Dim" type="ColorRect" parent="RunSetup"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.03, 0.02, 0.6)
+
+[node name="Card" type="PanelContainer" parent="RunSetup"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -264,61 +400,67 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -560.0
-offset_top = -360.0
+offset_top = -380.0
 offset_right = 560.0
-offset_bottom = 360.0
+offset_bottom = 380.0
 
-[node name="Box" type="VBoxContainer" parent="RunSetup"]
+[node name="Box" type="VBoxContainer" parent="RunSetup/Card"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
-[node name="SetupTitle" type="Label" parent="RunSetup/Box"]
+[node name="SetupTitle" type="Label" parent="RunSetup/Card/Box"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"HeadingLabel"
 horizontal_alignment = 1
 text = "RUN 시작 구성"
 
-[node name="DeckRows" type="VBoxContainer" parent="RunSetup/Box"]
+[node name="DeckRows" type="VBoxContainer" parent="RunSetup/Card/Box"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PinRow" type="HBoxContainer" parent="RunSetup/Box"]
+[node name="PinRow" type="HBoxContainer" parent="RunSetup/Card/Box"]
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="PinCaption" type="Label" parent="RunSetup/Box/PinRow"]
+[node name="PinCaption" type="Label" parent="RunSetup/Card/Box/PinRow"]
 layout_mode = 2
 text = "목표 핀"
 
-[node name="SetupPinOption" type="OptionButton" parent="RunSetup/Box/PinRow"]
+[node name="SetupPinOption" type="OptionButton" parent="RunSetup/Card/Box/PinRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
+custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 
-[node name="SetupInfo" type="Label" parent="RunSetup/Box"]
+[node name="SetupInfo" type="Label" parent="RunSetup/Card/Box"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"MutedLabel"
 autowrap_mode = 3
 horizontal_alignment = 1
 text = ""
 
-[node name="SetupButtons" type="HBoxContainer" parent="RunSetup/Box"]
+[node name="SetupGap" type="Control" parent="RunSetup/Card/Box"]
 layout_mode = 2
-theme_override_constants/separation = 12
+size_flags_vertical = 3
+
+[node name="SetupButtons" type="HBoxContainer" parent="RunSetup/Card/Box"]
+layout_mode = 2
+theme_override_constants/separation = 16
 alignment = 1
 
-[node name="SetupBackButton" type="Button" parent="RunSetup/Box/SetupButtons"]
+[node name="SetupBackButton" type="Button" parent="RunSetup/Card/Box/SetupButtons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
+custom_minimum_size = Vector2(280, 80)
 layout_mode = 2
 text = "돌아가기"
 
-[node name="SetupStartButton" type="Button" parent="RunSetup/Box/SetupButtons"]
+[node name="SetupStartButton" type="Button" parent="RunSetup/Card/Box/SetupButtons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 text = "시작"
 
 [node name="Title" type="Control" parent="."]
@@ -342,33 +484,35 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -300.0
-offset_top = 180.0
-offset_right = 300.0
-offset_bottom = 380.0
+offset_left = -600.0
+offset_top = 110.0
+offset_right = 600.0
+offset_bottom = 530.0
 mouse_filter = 2
+expand_mode = 1
 stretch_mode = 5
 
 [node name="TitleHint" type="Label" parent="Title"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -300.0
-offset_top = -160.0
-offset_right = 300.0
+offset_left = -400.0
+offset_top = -170.0
+offset_right = 400.0
 offset_bottom = -100.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.16, 0.13, 0.11, 1)
-theme_override_colors/font_outline_color = Color(0.96, 0.94, 0.88, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.12, 0.1, 0.09, 1)
+theme_override_colors/font_outline_color = Color(0.97, 0.94, 0.86, 0.9)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 34
 text = "아무 키나 눌러 시작"
 horizontal_alignment = 1
 
-[node name="Opening" type="PanelContainer" parent="."]
+[node name="Opening" type="Control" parent="."]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -376,38 +520,57 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="Box" type="VBoxContainer" parent="Opening"]
+[node name="Dim" type="ColorRect" parent="Opening"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.03, 0.02, 0.72)
+
+[node name="Card" type="PanelContainer" parent="Opening"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = -220.0
+offset_right = 520.0
+offset_bottom = 220.0
+
+[node name="Box" type="VBoxContainer" parent="Opening/Card"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 18
 alignment = 1
 
-[node name="OpeningLine1" type="Label" parent="Opening/Box"]
+[node name="OpeningLine1" type="Label" parent="Opening/Card/Box"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
+theme_type_variation = &"HeadingLabel"
 horizontal_alignment = 1
 text = ""
 
-[node name="OpeningLine2" type="Label" parent="Opening/Box"]
+[node name="OpeningLine2" type="Label" parent="Opening/Card/Box"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 34
 horizontal_alignment = 1
 text = ""
 
-[node name="OpeningHint" type="Label" parent="Opening/Box"]
+[node name="OpeningHint" type="Label" parent="Opening/Card/Box"]
 layout_mode = 2
+theme_type_variation = &"MutedLabel"
 horizontal_alignment = 1
 text = "아무 키나 눌러 시작"
 
-[node name="OpeningButtons" type="HBoxContainer" parent="Opening/Box"]
+[node name="OpeningButtons" type="HBoxContainer" parent="Opening/Card/Box"]
 layout_mode = 2
-theme_override_constants/separation = 12
 alignment = 1
 
-[node name="OpeningStartButton" type="Button" parent="Opening/Box/OpeningButtons"]
+[node name="OpeningStartButton" type="Button" parent="Opening/Card/Box/OpeningButtons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 64)
+custom_minimum_size = Vector2(320, 84)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 text = "시작"
-
