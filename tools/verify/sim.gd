@@ -85,9 +85,15 @@ static func wave_jamo(db: ContentDB, run: RunController, wave: int, seed: int) -
 	d.rng_spawn.seed = hash("spawn:%d:%d" % [seed, wave])
 	var out: Array[String] = []
 	var data: WaveData = db.waves[wave]
-	var count := data.enemy_count if not data.is_boss else 0
-	for i in count:
-		out.append(d._draw_jamo())
+	if data.is_boss:
+		# B9: minions with a fixed jamo keep it; the rest draw from the B5 weights like normal spawns.
+		for entry in db.bosses[data.boss_id].minion_schedule:
+			for k in int(entry["count"]):
+				var fixed := String(entry.get("jamo", ""))
+				out.append(fixed if fixed != "" else d._draw_jamo())
+	else:
+		for i in data.enemy_count:
+			out.append(d._draw_jamo())
 	d.free()
 	return out
 
@@ -114,13 +120,16 @@ static func late_loop(db: ContentDB, runs: int, purify_rate: float, direction: S
 			reward_policy(db, run, run.build_reward(), direction)
 			run.finish_clear()
 			var forge := run.start_forge()
+			b6_reroll(forge)
+			# 최종 후보 = candidates on the hand the player stops at, counted before the restore (B6 종료 시 평균 후보).
+			var final := forge.candidates().size()
+			var rerolls_used := db.balance.reroll_base + run.forge_fail_bonus - forge.rerolls_left
 			var picked := forge_policy(db, forge, direction)
-			var final := forge.candidates().size() + (1 if picked != &"" else 0)  # the restored word counts as a candidate
 			out["forges"] += 1
 			out["final_candidates"] += final
 			out["candidates_by_wave"][wave] = out["candidates_by_wave"].get(wave, 0) + final
-			if picked != &"" and forge.rerolls_left > 0:
-				out["stopped_with_rerolls"] += 1
+			if rerolls_used >= 1 and forge.rerolls_left > 0:
+				out["stopped_with_rerolls"] += 1  # used some Rerolls and stopped with one left
 			if picked == &"" and forge.candidates().is_empty():
 				out["zero_by_wave"][wave] = out["zero_by_wave"].get(wave, 0) + 1
 			run.finish_forge()
@@ -134,13 +143,8 @@ static func late_loop(db: ContentDB, runs: int, purify_rate: float, direction: S
 static func _play_wave_drops(db: ContentDB, run: RunController, wave: int, seed: int, rate: float, rng: RandomNumberGenerator, lacking: Array[String]) -> bool:
 	var delivered := false
 	var data: WaveData = db.waves[wave]
-	var stream := wave_jamo(db, run, wave, seed)
-	if data.is_boss:
-		for entry in db.bosses[data.boss_id].minion_schedule:
-			for k in int(entry["count"]):
-				stream.append(String(entry.get("jamo", "")))
-	for j in stream:
-		if j != "" and rng.randf() < rate and run.on_purified(j) and j in lacking:
+	for j in wave_jamo(db, run, wave, seed):
+		if rng.randf() < rate and run.on_purified(j) and j in lacking:
 			delivered = true
 	if data.is_boss:
 		for j in db.bosses[data.boss_id].body_drop:
@@ -150,14 +154,17 @@ static func _play_wave_drops(db: ContentDB, run: RunController, wave: int, seed:
 	return delivered
 
 
-## Keeps a goal pinned like a player would: the pool word with the fewest missing jamo (>0).
+## Keeps a goal pinned like a player would: the pool word with the fewest missing tokens (>0),
+## counted with multiplicity like _fewest_lacking.
 static func _repin(db: ContentDB, run: RunController) -> void:
 	if not run.pin_lacking().is_empty():
 		return
 	var best: StringName = &""
 	var best_missing := 99
 	for w in run.word_pool():
-		var missing := run.deck.missing_for(w).size()
+		var missing := 0
+		for n in run.deck.missing_for(w).values():
+			missing += n
 		if missing > 0 and missing < best_missing:
 			best = w.id
 			best_missing = missing

@@ -89,6 +89,7 @@ func _check_choice() -> void:
 	var forges: int = late["forges"]
 	var mean: float = float(late["final_candidates"]) / maxi(forges, 1)
 	var stopped: float = float(late["stopped_with_rerolls"]) / maxi(forges, 1)
+	details.append("선택: 최종 후보 = B6 정책으로 멈춘 손패의 후보 수(복원 직전에 셈, 복원 단어 포함·중복 없음). 'Reroll 남기고 종료' = Reroll을 1회 이상 쓰고도 남긴 채 멈춘 Forge 비율.")
 	_row("선택", forges, "최종 후보 평균 %.2f · Reroll 남기고 종료 %.1f%%" % [mean, stopped * 100], "1.5~3 · 존재", mean >= 1.5 and mean <= 3.0 and stopped > 0.0)
 
 
@@ -98,7 +99,7 @@ func _check_supply() -> void:
 	var parts: Array[String] = []
 	var total_waves := 0
 	for rate in [0.5, 0.75, 1.0]:
-		var r: Dictionary = late if is_equal_approx(rate, 0.75) else B12Sim.late_loop(db, maxi(runs / 5, 100), rate)
+		var r: Dictionary = late if is_equal_approx(rate, 0.75) else B12Sim.late_loop(db, runs, rate)
 		total_waves += r["supply_waves"]
 		parts.append("%.0f%% → %.1f%% (Wave %d)" % [rate * 100, 100.0 * r["supply_delivered"] / maxi(r["supply_waves"], 1), r["supply_waves"]])
 	details.append("공급: RUN 진행 중 실제 덱에서 목표(부족 자모가 가장 적은 단어)를 핀하고, 그 Wave의 회수에 부족 자모가 하나라도 들어온 비율.")
@@ -127,7 +128,7 @@ func _check_build_directions() -> void:
 			reach10 += 1
 		if best >= 20:
 			reach20 += 1
-	details.append("빌드 방향 (봇은 0.1초마다 최적 대상을 누르는 실력 상한이므로 도달 Wave는 상한값): " + " / ".join(lines))
+	details.append("빌드 방향 (봇은 B1 입력 간격마다 빠짐없이 최적 대상을 누르는 실력 상한이므로 도달 Wave는 상한값; 사람은 더 낮게 나온다): " + " / ".join(lines))
 	_row("빌드", DIRECTIONS.size() * BUILD_SEEDS.size(), "W10 도달 %d/4 · W20 %d/4" % [reach10, reach20], "4/4 · ≥3/4", reach10 == 4 and reach20 >= 3)
 
 
