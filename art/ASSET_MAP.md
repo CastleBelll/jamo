@@ -360,3 +360,35 @@ Blender MCP connection unavailable; authorized bpy fallback in Blender 5.2.1 LTS
 | `art/models/boss_ieung.glb` | 2 | 1392 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
 | `art/models/boss_mieum.glb` | 2 | 816 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
 | `art/models/boss_silence.glb` | 2 | 612 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+
+
+## P6 B — word icons
+
+Built-in ImageGen + alpha-preserving canvas normalization. No baked words or lettering, no third-party stock assets. Source/prompt set, hashes and visual contact sheet: `art/_source_p6/words/`; semantic notes and distribution provenance: `art/words/README.md`. All 22 basic + 2 compound data IDs match; all 24 outputs pass size/RGBA-alpha validation.
+
+| ID | Word | Path | Size | Method / accent |
+|---|---|---|---|---|
+| W01 | 검 | `art/words/word_W01.png` | 256×256 | ImageGen / muted gold |
+| W02 | 불 | `art/words/word_W02.png` | 256×256 | ImageGen / vermilion |
+| W03 | 독 | `art/words/word_W03.png` | 256×256 | ImageGen / moss green |
+| W04 | 벽 | `art/words/word_W04.png` | 256×256 | ImageGen / muted gold |
+| W05 | 돌 | `art/words/word_W05.png` | 256×256 | ImageGen / muted gold |
+| W06 | 활 | `art/words/word_W06.png` | 256×256 | ImageGen / muted gold |
+| W07 | 창 | `art/words/word_W07.png` | 256×256 | ImageGen / muted gold |
+| W08 | 칼 | `art/words/word_W08.png` | 256×256 | ImageGen / muted gold |
+| W09 | 눈 | `art/words/word_W09.png` | 256×256 | ImageGen / icy blue |
+| W10 | 물 | `art/words/word_W10.png` | 256×256 | ImageGen / icy blue |
+| W11 | 실 | `art/words/word_W11.png` | 256×256 | ImageGen / muted gold |
+| W12 | 숨 | `art/words/word_W12.png` | 256×256 | ImageGen / muted gold |
+| W13 | 돈 | `art/words/word_W13.png` | 256×256 | ImageGen / muted gold |
+| W14 | 운 | `art/words/word_W14.png` | 256×256 | ImageGen / moss green |
+| W15 | 복 | `art/words/word_W15.png` | 256×256 | ImageGen / muted gold |
+| W16 | 길 | `art/words/word_W16.png` | 256×256 | ImageGen / muted gold |
+| W17 | 비 | `art/words/word_W17.png` | 256×256 | ImageGen / icy blue |
+| W18 | 봄 | `art/words/word_W18.png` | 256×256 | ImageGen / soft coral |
+| W19 | 밤 | `art/words/word_W19.png` | 256×256 | ImageGen / muted gold |
+| W20 | 욕심 | `art/words/word_W20.png` | 256×256 | ImageGen / muted gold |
+| W21 | 광기 | `art/words/word_W21.png` | 256×256 | ImageGen / vermilion |
+| W22 | 폭주 | `art/words/word_W22.png` | 256×256 | ImageGen / vermilion |
+| C01 | 불길 | `art/words/word_C01.png` | 256×256 | ImageGen / vermilion |
+| C02 | 눈물 | `art/words/word_C02.png` | 256×256 | ImageGen / icy blue |
