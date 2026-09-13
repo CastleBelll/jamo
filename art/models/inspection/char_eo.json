@@ -1,0 +1,21 @@
+{
+  "asset": "char_eo",
+  "jamo": "ㅓ",
+  "profile": "GLIDE",
+  "triangles": 820,
+  "bones": 4,
+  "bone_names": [
+    "root",
+    "body",
+    "leg.L",
+    "leg.R"
+  ],
+  "clips": {
+    "idle": 1.0,
+    "walk": 1.0,
+    "hit": 0.16,
+    "purify": 0.45
+  },
+  "height": 1,
+  "sha256": "11e9cf92a3f7f1f2dc1b97baec1de84093bd61d311224ac86be1f45586463c75"
+}

@@ -1,0 +1,21 @@
+{
+  "asset": "char_jieut",
+  "jamo": "ㅈ",
+  "profile": "LIGHT_STEP",
+  "triangles": 1282,
+  "bones": 4,
+  "bone_names": [
+    "root",
+    "body",
+    "leg.L",
+    "leg.R"
+  ],
+  "clips": {
+    "idle": 1.0,
+    "walk": 0.3,
+    "hit": 0.16,
+    "purify": 0.45
+  },
+  "height": 1,
+  "sha256": "d323eacb70fa9ad45e1bcfa29306dad8fe8f4f6988ca6e74c3982abb97c613c8"
+}

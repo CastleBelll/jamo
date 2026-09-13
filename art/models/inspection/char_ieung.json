@@ -1,0 +1,21 @@
+{
+  "asset": "char_ieung",
+  "jamo": "ㅇ",
+  "profile": "ROLL",
+  "triangles": 1392,
+  "bones": 4,
+  "bone_names": [
+    "root",
+    "body",
+    "leg.L",
+    "leg.R"
+  ],
+  "clips": {
+    "idle": 1.0,
+    "walk": 0.6,
+    "hit": 0.16,
+    "purify": 0.45
+  },
+  "height": 1,
+  "sha256": "9677632565a4ac4d5acb5ee9cedd6a60b7c385c910fb65b7a41e9fe29fe5e2ee"
+}
