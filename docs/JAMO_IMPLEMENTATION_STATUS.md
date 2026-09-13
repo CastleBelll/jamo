@@ -48,7 +48,8 @@
 
 - 사용자 결정: 캐릭터는 2D 스프라이트 대신 Blender 리깅 3D. codex가 `art/models/char_*.glb` 20종 + `boss_*.glb` 4종(본 4개, 클립 idle/walk/hit/purify, 걸음은 G11 그룹별)을 제작(Blender MCP 애드온 미연결로 `blender --background` 사용, `art/models/MODELS.md`).
 - 엔진: `scenes/run/battle3d.tscn`(SubViewport, 40° 직교 카메라, 태양광+그림자 받이) 위에 `CharacterProxy`가 2D 개체 위치를 지면 광선 교차로 따라간다. 게임플레이(경로·클릭 원·HUD)는 2D 그대로. 모델이 없는 자모/보스는 2D 스프라이트 경로 유지. 옛 `art/monsters/characters/*.glb`(다리 파츠만)에는 절차 걸음을 적용.
-- UI: 스크롤 컨테이너 제거(Forge 후보 2열 그리드, 사전 2열 그리드, 기록은 최신 10줄), HUD 띠는 평면 반투명.
+- UI: 스크롤 컨테이너 제거(Forge 후보 2열 그리드·최대 3행, 사전 2열 그리드, 기록은 최신 10줄), HUD는 codex 참고(`art/_reference/hud_concept.png`)대로 얇은 반투명 띠 + 먹 선. 전투 배경은 `combat_desk_v2`(넓은 두루마리). 단어 아이콘(`art/words/word_<id>.png`)은 Forge 후보·HUD 슬롯·사전에 표시.
+- **예정(사용자 지시)**: codex 사용량 리셋(2026-09-13 저녁) 후 Blender MCP 실연결로 자모/보스 24종을 다시 생성해 현재 bpy 모델을 교체. 파일명·클립명(idle/walk/hit/purify)·규격은 `art/models/MODELS.md` 그대로 유지하면 코드 변경 없이 교체됨.
 
 ## 6. 남은 일 (사람·검증)
 

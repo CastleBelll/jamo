@@ -5,7 +5,7 @@ extends HFlowContainer
 ## 자모 정리 panel and the RUN setup rows so "what is in my deck" is always one glance away.
 
 const TILE := 64
-const TILE_COMPACT := 48
+const TILE_COMPACT := 44
 const FONT_BIG := 34
 const FONT_COMPACT := 26
 const FONT_BADGE := 16

@@ -5,6 +5,7 @@ extends PanelContainer
 signal finished
 signal state_changed
 
+const MAX_CANDIDATE_ROWS := 3
 var run: RunController
 var forge: ForgeService
 var db: ContentDB
@@ -14,16 +15,14 @@ var replace_target: StringName = &""
 @onready var hand_row: HBoxContainer = %HandRow
 @onready var lock_label: Label = %LockLabel
 @onready var reroll_button: Button = %RerollButton
-@onready var build_label: Label = %BuildLabel
-@onready var deck_label: Label = %DeckLabel
+@onready var title_label: Label = $Box/Title
 @onready var deck_view: DeckView = %DeckView
 @onready var candidates_box: GridContainer = %Candidates
 @onready var compare_label: Label = %CompareLabel
 @onready var replace_row: HBoxContainer = %ReplaceRow
 @onready var restore_button: Button = %RestoreButton
 @onready var pin_option: OptionButton = %PinOption
-@onready var pin_label: Label = %PinLabel
-@onready var status_label: Label = %StatusLabel
+@onready var pin_label: Label = %PinCaption
 @onready var compound_box: VBoxContainer = %CompoundBox
 @onready var compound_label: Label = %CompoundLabel
 @onready var compound_button: Button = %CompoundButton
@@ -72,12 +71,11 @@ func _refresh() -> void:
 	if forge == null:
 		return
 	_rebuild_hand()
-	deck_label.text = _deck_text()
-	deck_view.show_counts(DeckView.counts_of(forge.hand + forge.draw + forge.discard), DeckView.counts_of(forge.hand))
+	deck_view.show_counts(DeckView.counts_of(forge.hand + forge.draw + forge.discard), DeckView.counts_of(forge.hand), true)
 	lock_label.text = "잠금 %d/%d" % [forge.locked.size(), forge.lock_max]
 	reroll_button.text = "Reroll %d (바뀜 %d)" % [forge.rerolls_left, forge.reroll_slots()]
 	reroll_button.disabled = not forge.can_reroll()
-	build_label.text = "빌드 %d/%d · %s" % [forge.build.words.size(), forge.build.slots, _build_text()]
+	title_label.text = "단어 복원 · 빌드 %d/%d" % [forge.build.words.size(), forge.build.slots]
 	_rebuild_candidates()
 	_rebuild_replace_row()
 	var c := forge.candidate_for(selected) if selected != &"" else {}
@@ -86,17 +84,14 @@ func _refresh() -> void:
 	restore_button.text = "복원" if not needs_swap else "교체하고 복원"
 	# 복원 건너뛰기 only matters while a restore is still open and a 합성 is waiting (G6 order).
 	skip_restore_button.visible = not forge.restore_closed() and not forge.build.compound_options(db).is_empty()
-	compare_label.text = _compare_text(c)
+	# One text block under the candidates: the selected candidate's comparison, else the status line.
+	compare_label.text = _compare_text(c) if not c.is_empty() else _status_text()
 	pin_label.text = _pin_text()
-	status_label.text = _status_text()
+	compound_label.visible = compound_label.text != ""
 	_rebuild_compounds()
 
 
 ## "덱 20장 중 7장" plus what is still in the pile, so the hand reads as the player's own deck (B3).
-func _deck_text() -> String:
-	return "내 덱 %d장 · 금색 = 지금 손패에 뽑힌 활자 · 나머지 %d장은 덱에" % [forge.token_total(), forge.token_total() - forge.hand.size()]
-
-
 func _rebuild_hand() -> void:
 	for ch in hand_row.get_children():
 		hand_row.remove_child(ch)
@@ -104,9 +99,9 @@ func _rebuild_hand() -> void:
 	for t in forge.hand:
 		var b := Button.new()
 		b.text = t["jamo"]
-		b.custom_minimum_size = Vector2(120, 120)
+		b.custom_minimum_size = Vector2(96, 96)
 		b.theme_type_variation = &"GhostButton"
-		b.add_theme_font_size_override("font_size", 52)
+		b.add_theme_font_size_override("font_size", 48)
 		b.toggle_mode = true
 		b.button_pressed = forge.is_locked(t["id"])
 		b.disabled = forge.restored_word != &""
@@ -127,7 +122,9 @@ func _rebuild_candidates() -> void:
 	list.sort_custom(func(a, b): return String(a["word"].id) < String(b["word"].id))
 	if selected != &"" and forge.candidate_for(selected).is_empty():
 		selected = &""
-	for c in list:
+	# No scrolling (G10): at most MAX_CANDIDATE_ROWS rows; the rest is counted, not hidden silently.
+	var overflow := maxi(list.size() - MAX_CANDIDATE_ROWS * 2, 0)
+	for c in list.slice(0, MAX_CANDIDATE_ROWS * 2):
 		var w: WordData = c["word"]
 		var tag := "R%d→%d" % [forge.build.rank_of(w.id), forge.build.rank_of(w.id) + 1] if c["kind"] == ForgeService.KIND_RANK_UP else "신규"
 		if c["needs_replace"] or c["replace_risk"]:
@@ -140,7 +137,7 @@ func _rebuild_candidates() -> void:
 			b.expand_icon = true
 		else:
 			AssetLib.apply(b, "cand_rankup" if c["kind"] == ForgeService.KIND_RANK_UP else ("cand_replace" if c["needs_replace"] or c["replace_risk"] else "cand_new"))
-		b.custom_minimum_size = Vector2(0, 64)
+		b.custom_minimum_size = Vector2(0, 52)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.theme_type_variation = &"GhostButton"
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -150,6 +147,11 @@ func _rebuild_candidates() -> void:
 		var id := w.id
 		b.pressed.connect(func(): _select(id))
 		candidates_box.add_child(b)
+	if overflow > 0:
+		var more := Label.new()
+		more.text = "…후보 %d개 더 (Reroll로 확인)" % overflow
+		more.theme_type_variation = &"MutedLabel"
+		candidates_box.add_child(more)
 	if list.is_empty():
 		var l := Label.new()
 		l.text = "복원: %s" % db.words[forge.restored_word].name if forge.restored_word != &"" else "만들 수 있는 단어 없음"
@@ -187,13 +189,6 @@ func _rebuild_replace_row() -> void:
 		replace_row.add_child(b)
 
 
-func _build_text() -> String:
-	var parts: Array[String] = []
-	for held in forge.build.words:
-		parts.append("%s R%d" % [db.words[held["id"]].name, held["rank"]])
-	return ", ".join(parts) if not parts.is_empty() else "없음"
-
-
 ## 효과 비교 (G10): current Rank line vs the Rank this restore would give, plus what a swap loses.
 func _compare_text(c: Dictionary) -> String:
 	if c.is_empty():
@@ -213,7 +208,7 @@ func _compare_text(c: Dictionary) -> String:
 
 func _pin_text() -> String:
 	if run.pinned_word == &"":
-		return ""
+		return "목표 핀"
 	var st := forge.pin_status(run.pinned_word)
 	var w: WordData = st["word"]
 	var parts: Array[String] = []
@@ -239,7 +234,7 @@ func _status_text() -> String:
 
 func _on_token(token_id: int) -> void:
 	if not forge.toggle_lock(token_id):
-		status_label.text = "잠금 최대 %d" % forge.lock_max
+		compare_label.text = "잠금 최대 %d" % forge.lock_max
 		_rebuild_hand()
 		return
 	_refresh()

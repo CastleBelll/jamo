@@ -268,7 +268,8 @@ func _save_run() -> void:
 ## dimmed, under a paper sheet clipped to the play area (B11 sheet rect).
 func _dress_page() -> void:
 	var art: Sprite2D = page.get_node("Paper/PaperArt")
-	if AssetLib.apply(art, "combat_desk"):
+	# P6 C: the cleaner wide scroll wins over the first desk painting.
+	if AssetLib.apply(art, "combat_desk_v2") or AssetLib.apply(art, "combat_desk"):
 		page.get_node("Paper/Sheet").visible = false
 		return
 	var desk: Sprite2D = page.get_node("Paper/DeskArt")
