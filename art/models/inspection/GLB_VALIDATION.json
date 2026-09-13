@@ -18,7 +18,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "1c7afe1af8bd135e16e5f0e5c56e18b29176f569c5be3d40459a259ae0b9ac74",
+    "sha256": "48251a337e9d094c4a299f9666cfd985245b9e1c1f5e150299588f955e7f5aa7",
     "glb_triangles": 820,
     "glb_bones": [
       "root",
@@ -43,7 +43,7 @@
       1.0,
       0.05061386525630951
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_bieup",
@@ -64,7 +64,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "4fb73ec3ba06333f5627b2dbaa42f62af61580e12f133e614c132d0a9285ce25",
+    "sha256": "6e82cf7effa7f6d08ce2aca472616cd605da277db42996c71297b14700675a2d",
     "glb_triangles": 864,
     "glb_bones": [
       "root",
@@ -82,14 +82,14 @@
     "rest_min": [
       -0.46437981724739075,
       -5.551115123125783e-17,
-      -0.11804178357124329
+      -0.11804154515266418
     ],
     "rest_max": [
       0.46437981724739075,
       1.0,
       0.08804171532392502
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_chieut",
@@ -110,7 +110,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "fd2bcd7ec0ab97022c77d642bc4d10b10e245e77f23daf46e15149fcaf05e9dc",
+    "sha256": "146f51f8be421844dc3790b322bb0527b5bf970a9e9da64830ef975d9887ac9a",
     "glb_triangles": 1322,
     "glb_bones": [
       "root",
@@ -135,7 +135,7 @@
       1.0,
       0.07715587317943573
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_digeut",
@@ -156,7 +156,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "40a4888f073b517cbaf486fbe2abf4670e5aa71c36e4adbf48db3d2fc110b89d",
+    "sha256": "864d7da2acb180676e03a4657c85162e4b62d27b718639e3bf8cedb3616c475b",
     "glb_triangles": 840,
     "glb_bones": [
       "root",
@@ -181,7 +181,7 @@
       1.0,
       0.08967094123363495
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_eo",
@@ -202,7 +202,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "11e9cf92a3f7f1f2dc1b97baec1de84093bd61d311224ac86be1f45586463c75",
+    "sha256": "690e0978d78c6c70d8f3ac362c39abf5977bf02731f39a049e5f87f9ff4d5e9c",
     "glb_triangles": 820,
     "glb_bones": [
       "root",
@@ -227,7 +227,7 @@
       1.0,
       0.05061386525630951
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_giyeok",
@@ -248,7 +248,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "53966100917c54185387018da1c527782e06013f3f4e5b39fbf749e63c5bc8bc",
+    "sha256": "b173823ff63221684d2e5efdc3120866a7507c64cfe69c03228d4366164ec10b",
     "glb_triangles": 788,
     "glb_bones": [
       "root",
@@ -266,14 +266,14 @@
     "rest_min": [
       -0.47637662291526794,
       -5.551115123125783e-17,
-      -0.12017133831977844
+      -0.12017109990119934
     ],
     "rest_max": [
       0.47637662291526794,
       1.0,
       0.09017153829336166
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_hieut",
@@ -294,7 +294,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "a92743b70de0916c208d0b6d93558d021d45b76b0bc861e671fe46819b964bf3",
+    "sha256": "b87de83a7ba3466446512cff6b821a93998f74d0753764acb4f413ed1a48a9f6",
     "glb_triangles": 1396,
     "glb_bones": [
       "root",
@@ -312,14 +312,14 @@
     "rest_min": [
       -0.39296242594718933,
       -5.551115123125783e-17,
-      -0.10229828953742981
+      -0.10229805111885071
     ],
     "rest_max": [
       0.39296242594718933,
       1.0,
       0.07229816168546677
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_i",
@@ -340,7 +340,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "46ebb8c440e659b30f177cad5b468361a045aa3e722e3a10e63530eb2b4b3558",
+    "sha256": "ec46261dea1b7830204be6a7fec5faaf0e2ac1bed8308b1eea5df8f09dc4a688",
     "glb_triangles": 764,
     "glb_bones": [
       "root",
@@ -365,7 +365,7 @@
       1.0,
       0.05061386525630951
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_ieung",
@@ -386,7 +386,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "9677632565a4ac4d5acb5ee9cedd6a60b7c385c910fb65b7a41e9fe29fe5e2ee",
+    "sha256": "3bffac758a4a25f0cd4f5c59e98a1be519132b748bfc74e3b6828c5fab155480",
     "glb_triangles": 1392,
     "glb_bones": [
       "root",
@@ -411,7 +411,7 @@
       1.0,
       0.0858449786901474
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_jieut",
@@ -432,7 +432,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "d323eacb70fa9ad45e1bcfa29306dad8fe8f4f6988ca6e74c3982abb97c613c8",
+    "sha256": "cc8eb30ab771a1c4c99104b48912986fccd83278f60685d26a6e2ad887bfe15d",
     "glb_triangles": 1282,
     "glb_bones": [
       "root",
@@ -450,14 +450,14 @@
     "rest_min": [
       -0.498141348361969,
       -5.551115123125783e-17,
-      -0.11548712849617004
+      -0.11548736691474915
     ],
     "rest_max": [
       0.498141348361969,
       1.0,
       0.08548726886510849
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_kieuk",
@@ -478,7 +478,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "6113205d351ae57737cba5a15688699c7c05b09363b36c0474844914afcadf95",
+    "sha256": "084924b32d7415312bf198c784c499c08c4e1e396eab3635d3c4093dcd786852",
     "glb_triangles": 844,
     "glb_bones": [
       "root",
@@ -496,14 +496,14 @@
     "rest_min": [
       -0.47520723938941956,
       -5.551115123125783e-17,
-      -0.11693623661994934
+      -0.11693599820137024
     ],
     "rest_max": [
       0.47520723938941956,
       1.0,
       0.08693603426218033
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_mieum",
@@ -524,7 +524,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "db30b857dce5d369effa138ea600d96feefd9f4bd4507ec3a02414b75efb0076",
+    "sha256": "d546c1e47a49abbcc6c4e89189a05960389e330474fc5d6c4eb41dcda0852056",
     "glb_triangles": 816,
     "glb_bones": [
       "root",
@@ -542,14 +542,14 @@
     "rest_min": [
       -0.48911914229393005,
       -5.551115123125783e-17,
-      -0.12258365750312805
+      -0.12258341908454895
     ],
     "rest_max": [
       0.48911914229393005,
       1.0,
       0.09258352220058441
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_nieun",
@@ -570,7 +570,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "3d8fe0fda5fd8c0f6ac6e7248f477ee271ec7be67a1566ae82b4498b7c373edc",
+    "sha256": "0887efe6dd40d9e3c244e8eeee2aeca18e0d7065b7ecf9432c75190a13187693",
     "glb_triangles": 816,
     "glb_bones": [
       "root",
@@ -595,7 +595,7 @@
       1.0,
       0.09329654276371002
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_o",
@@ -616,7 +616,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "37395336820d8aeba3120d550b3e25cb8dbf96cee71efa6211cab7d79cf0ddc9",
+    "sha256": "5a8a5ceb926f6f4daf95c417f13e0706a92b873f4412d092bd95937b3b044354",
     "glb_triangles": 820,
     "glb_bones": [
       "root",
@@ -641,7 +641,7 @@
       1.0,
       0.10007787495851517
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_pieup",
@@ -662,7 +662,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "19a1cb3a02a4fb4ba397c8b0ed42d8a902648fb568a406e93949d1ed8d886648",
+    "sha256": "1bea1797a4735ddd7265739a38b6754e898c8a8879fb10c167f77b83705f4786",
     "glb_triangles": 944,
     "glb_bones": [
       "root",
@@ -687,7 +687,7 @@
       1.0,
       0.08756442368030548
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_rieul",
@@ -708,7 +708,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "174899cc42c756a115a21e11248044729be86052f0f0ede0bb2d2d0a4f21d299",
+    "sha256": "00b2d71cb2ee5f861f764e691f8ff991e9d7cf85b9c5376da7d4a9cdbc41b463",
     "glb_triangles": 888,
     "glb_bones": [
       "root",
@@ -726,14 +726,14 @@
     "rest_min": [
       -0.47991353273391724,
       -5.551115123125783e-17,
-      -0.11884883046150208
+      -0.11884906888008118
     ],
     "rest_max": [
       0.47991353273391724,
       1.0,
       0.08884885907173157
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_siot",
@@ -754,7 +754,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "f07882e937b8b5a0a4b58bba51de5fdbb6b75271b1589bebf0e6219bb2b56858",
+    "sha256": "559952f50e81ae8270909ee6d21c205e810fc339298a10b66d04d28a231fe5ea",
     "glb_triangles": 1214,
     "glb_bones": [
       "root",
@@ -779,7 +779,7 @@
       1.0,
       0.08462056517601013
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_u",
@@ -800,7 +800,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "2db99513251a735b7724e25f00d69def2e6abf8304b22907baf1ee752dc14111",
+    "sha256": "1d27a04eda3f9a7f0f4c96517306217d79a9af45dbad2bb86a80b3e7c1aa9abd",
     "glb_triangles": 820,
     "glb_bones": [
       "root",
@@ -825,7 +825,7 @@
       1.0,
       0.09240694344043732
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_yeo",
@@ -846,7 +846,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "1a66b6ea30dc39a84b1c93f663a78148d06dca5c7c6dab0550595f8a4453a6e1",
+    "sha256": "eac9d7d3554c170d6d6e4bef1e14a3f9852a19421e94566abc8b6bc3cffeb869",
     "glb_triangles": 876,
     "glb_bones": [
       "root",
@@ -871,7 +871,7 @@
       1.0,
       0.05061386525630951
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "char_yo",
@@ -892,7 +892,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "d7062af4b31ff18ccce19d6bae90cfb839f93cfe904bff2a57bcef6fbe7d4de7",
+    "sha256": "f94dd0988f1ea7243a4d3788017c9d6b1e345dbcf6dffe579df88d8a9bce4da5",
     "glb_triangles": 876,
     "glb_bones": [
       "root",
@@ -910,14 +910,14 @@
     "rest_min": [
       -0.7130492925643921,
       -5.551115123125783e-17,
-      -0.12649062275886536
+      -0.12649086117744446
     ],
     "rest_max": [
       0.7130492925643921,
       1.0,
       0.09649080038070679
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "boss_greed",
@@ -938,7 +938,7 @@
       "purify": 0.45
     },
     "height": 2,
-    "sha256": "6c6602ed40549e512e8468a2a5d5d15e88eef51a21e0988d7ac40d0f622f1de7",
+    "sha256": "567195a67b7c2a50f93db64c66ad200a14360b72931d3c204bbf1bfe206e0993",
     "glb_triangles": 864,
     "glb_bones": [
       "root",
@@ -956,14 +956,14 @@
     "rest_min": [
       -0.9287596344947815,
       -1.1102230246251565e-16,
-      -0.23608356714248657
+      -0.23608309030532837
     ],
     "rest_max": [
       0.9287596344947815,
       2.0,
       0.17608343064785004
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "boss_ieung",
@@ -984,7 +984,7 @@
       "purify": 0.45
     },
     "height": 2,
-    "sha256": "df933bfd1dcd3e2e7d1dd437ab5c6b9dc03a08bd28a75fa97452a67efc883c0a",
+    "sha256": "5a2c6ee4a7a09569ac270d04e2204c98ed1bc1647b94864fef83d96970facc7f",
     "glb_triangles": 1392,
     "glb_bones": [
       "root",
@@ -1009,7 +1009,7 @@
       2.0,
       0.1716899573802948
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "boss_mieum",
@@ -1030,7 +1030,7 @@
       "purify": 0.45
     },
     "height": 2,
-    "sha256": "70aa2f22f4005fc89c3225398c8015de441c58b9b4c5135fbb0819f612d72a52",
+    "sha256": "5bb4b03876d2d172dd303070a28550c174ea32d6dfb53b101c5a5f31f6ff2b6f",
     "glb_triangles": 816,
     "glb_bones": [
       "root",
@@ -1048,14 +1048,14 @@
     "rest_min": [
       -0.9782382845878601,
       -1.1102230246251565e-16,
-      -0.2451673150062561
+      -0.2451668381690979
     ],
     "rest_max": [
       0.9782382845878601,
       2.0,
       0.18516704440116882
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   },
   {
     "asset": "boss_silence",
@@ -1076,7 +1076,7 @@
       "purify": 0.45
     },
     "height": 2,
-    "sha256": "2364f2981afb87232d7f45877b990ea48aad73478f8f5e8ce24eb6a65698663a",
+    "sha256": "18928c4811bd58200e582bd351d0500a73eedda9efa82e42599fef71067944d1",
     "glb_triangles": 612,
     "glb_bones": [
       "root",
@@ -1101,6 +1101,6 @@
       2.0,
       0.18516704440116882
     ],
-    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+    "checks": "PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
   }
 ]

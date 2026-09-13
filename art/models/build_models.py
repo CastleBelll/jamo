@@ -41,12 +41,12 @@ def texture(kind):
 def materials():
     mats={}
     for kind in ('cream','black','gray','gold'):
-        m=bpy.data.materials.new('Porcelain_'+kind);m.use_nodes=True;p=m.node_tree.nodes.get('Principled BSDF')
+        m=bpy.data.materials.new('Porcelain_'+kind);m.use_nodes=True;m.use_backface_culling=True;p=m.node_tree.nodes.get('Principled BSDF')
         p.inputs['Roughness'].default_value=.26 if kind!='gray' else .48
         p.inputs['Metallic'].default_value=.78 if kind=='gold' else (.10 if kind=='black' else 0)
         tex=m.node_tree.nodes.new('ShaderNodeTexImage');tex.image=texture(kind)
         m.node_tree.links.new(tex.outputs['Color'],p.inputs['Base Color']);mats[kind]=m
-    m=bpy.data.materials.new('Eyes_Feet_Ink');m.diffuse_color=(.009,.008,.006,1);m.use_nodes=True
+    m=bpy.data.materials.new('Eyes_Feet_Ink');m.diffuse_color=(.009,.008,.006,1);m.use_nodes=True;m.use_backface_culling=True
     p=m.node_tree.nodes.get('Principled BSDF');p.inputs['Base Color'].default_value=m.diffuse_color;p.inputs['Roughness'].default_value=.24
     mats['ink']=m;return mats
 
@@ -61,6 +61,7 @@ def glyph(ch,mat):
     # Viewed from +Y (glTF -Z), camera screen-right is -X: reflect the outline
     # so asymmetric jamo read correctly from the declared front, never mirrored.
     for v in obj.data.vertices:v.co=Vector((-(v.co.x-cx)*scale,v.co.y*scale,(v.co.z-minz)*scale+.18))
+    obj.data.flip_normals() # reflection changes handedness: restore outward winding
     obj.data.materials.append(mat)
     # Planar x/z UVs preserve the generated glaze texture in GLB (no shader baking dependency).
     uv=obj.data.uv_layers.new(name='GlazeUV')

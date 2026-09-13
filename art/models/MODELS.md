@@ -17,7 +17,7 @@ Gait assignments follow `resources/motion_profiles/*.tres`, which differ from th
 ## Inspection
 
 All files were exported/triangulated and rendered in Blender. `validate_models.py` independently parses GLB binary accessors, skin/inverse-bind matrices, sampled clip channels and embedded PNGs. It checks ≤3000 triangles, four expected joints, exact names/durations, rest height/floor, mid-hit height reduction, terminal purify shrink, and idle/walk loop seams. BOUNCE lift and dot-eye counts are also checked.
-Results and hashes: `inspection/GLB_VALIDATION.json`. Visual overview: `previews/MODELS_CONTACT.jpg` (24 Blender renders); individual PNG previews are transparent. Asymmetric forms ㄱ/ㄴ/ㄷ/ㄹ/ㅋ and vowel orientation were visually inspected. No Godot gameplay/import test was run: scene connections and importer options belong to the coordinator.
+Reflection winding is corrected before export; positive signed volume is checked per GLB primitive, with backface culling enabled on the opaque materials. Results and hashes: `inspection/GLB_VALIDATION.json`. Visual overview: `previews/MODELS_CONTACT.jpg` (24 Blender renders); individual PNG previews are transparent. Asymmetric forms ㄱ/ㄴ/ㄷ/ㄹ/ㅋ and vowel orientation were visually inspected. No Godot gameplay/import test was run: scene connections and importer options belong to the coordinator.
 
 | GLB file | Jamo | Triangles (Blender = GLB) | Bones | Motion | Walk seconds | Animation names | Height | Result |
 |---|---|---:|---:|---|---:|---|---:|---|
@@ -53,4 +53,3 @@ python art/models/prepare_font.py
 & 'C:/Program Files/Blender Foundation/Blender 5.2/blender.exe' --background --python-exit-code 1 --python art/models/build_models.py
 python art/models/validate_models.py
 ```
-

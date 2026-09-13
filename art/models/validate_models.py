@@ -61,6 +61,11 @@ def inspect(path):
     g,blob,acc=load(path);r=json.loads((OUT/'inspection'/f'{path.stem}.json').read_text(encoding='utf-8'))
     triangles=sum(acc(p['indices']).size//3 for m in g['meshes'] for p in m['primitives'])
     assert triangles==r['triangles'] and triangles<=3000
+    for mesh in g['meshes']:
+        for p in mesh['primitives']:
+            v=acc(p['attributes']['POSITION']);ids=acc(p['indices']).ravel().reshape(-1,3)
+            volume=np.einsum('ij,ij->i',v[ids[:,0]],np.cross(v[ids[:,1]],v[ids[:,2]])).sum()/6
+            assert volume>0,(path.stem,mesh['name'],'inward winding')
     assert len(g['skins'])==1
     bones=[g['nodes'][j]['name'] for j in g['skins'][0]['joints']]
     assert set(bones)=={'root','body','leg.L','leg.R'}
@@ -87,7 +92,7 @@ def inspect(path):
     assert len(eye_names)==(0 if path.stem=='boss_silence' else 2)
     r.update({'glb_triangles':triangles,'glb_bones':bones,'glb_durations':durations,
               'embedded_images':len(g['images']),'rest_min':lo.tolist(),'rest_max':hi.tolist(),
-              'checks':'PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam',
+              'checks':'PASS: outward winding, skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam',
               'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
     return r
 
