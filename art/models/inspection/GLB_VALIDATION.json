@@ -18,7 +18,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "48251a337e9d094c4a299f9666cfd985245b9e1c1f5e150299588f955e7f5aa7",
+    "sha256": "84b4c10355d4f7430b2fef2b37599e4aff2c1da68a0a11046c751817b193d841",
     "glb_triangles": 820,
     "glb_bones": [
       "root",
@@ -64,7 +64,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "6e82cf7effa7f6d08ce2aca472616cd605da277db42996c71297b14700675a2d",
+    "sha256": "ca779a98cb242dda052303c01e57ca976eb5ad3bf014ec7568eccec3b6e36291",
     "glb_triangles": 864,
     "glb_bones": [
       "root",
@@ -110,7 +110,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "146f51f8be421844dc3790b322bb0527b5bf970a9e9da64830ef975d9887ac9a",
+    "sha256": "8820136e40f70ac6721a9cce621257e97a0eb6159a1771bed95dec8a75891da3",
     "glb_triangles": 1322,
     "glb_bones": [
       "root",
@@ -156,7 +156,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "864d7da2acb180676e03a4657c85162e4b62d27b718639e3bf8cedb3616c475b",
+    "sha256": "38194663c7c34c342f0f45073c51f5127994d816fc72565c2ce769809725f745",
     "glb_triangles": 840,
     "glb_bones": [
       "root",
@@ -202,7 +202,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "690e0978d78c6c70d8f3ac362c39abf5977bf02731f39a049e5f87f9ff4d5e9c",
+    "sha256": "87875b6b041f0f9b7c91fad9db6eca0231e8959a770a4ba7900f22eb61c976b4",
     "glb_triangles": 820,
     "glb_bones": [
       "root",
@@ -248,7 +248,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "b173823ff63221684d2e5efdc3120866a7507c64cfe69c03228d4366164ec10b",
+    "sha256": "ba5119010050b4989fc5591e1642e2853bd7a6dd5e793dda66daa444340c35ae",
     "glb_triangles": 788,
     "glb_bones": [
       "root",
@@ -294,7 +294,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "b87de83a7ba3466446512cff6b821a93998f74d0753764acb4f413ed1a48a9f6",
+    "sha256": "b46d38fe2cb15896b29aa9459ca9f8674995659cfd9091f1f72bfda2d3107635",
     "glb_triangles": 1396,
     "glb_bones": [
       "root",
@@ -340,7 +340,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "ec46261dea1b7830204be6a7fec5faaf0e2ac1bed8308b1eea5df8f09dc4a688",
+    "sha256": "759a5c2a5cb9c0e012b08225292d56ce7b411bc16223f564c0aca43b3d02a8d2",
     "glb_triangles": 764,
     "glb_bones": [
       "root",
@@ -386,7 +386,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "3bffac758a4a25f0cd4f5c59e98a1be519132b748bfc74e3b6828c5fab155480",
+    "sha256": "ba83d9a10f8f63c86d218f83a291803b4b6df5f32110a6b6f5a7febc9ca1589d",
     "glb_triangles": 1392,
     "glb_bones": [
       "root",
@@ -432,7 +432,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "cc8eb30ab771a1c4c99104b48912986fccd83278f60685d26a6e2ad887bfe15d",
+    "sha256": "a0825cbd359ab2d1d3dc0a823e5f77f39a94886a209ed982e7570f7e3d0d3235",
     "glb_triangles": 1282,
     "glb_bones": [
       "root",
@@ -478,7 +478,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "084924b32d7415312bf198c784c499c08c4e1e396eab3635d3c4093dcd786852",
+    "sha256": "d63af4b6b78fa3f0f45a6a19eb3984178d24296c49345c636451faba83c1cdf0",
     "glb_triangles": 844,
     "glb_bones": [
       "root",
@@ -524,7 +524,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "d546c1e47a49abbcc6c4e89189a05960389e330474fc5d6c4eb41dcda0852056",
+    "sha256": "cde5d60afd929f3b8ff8b67103c7665405333e3ec8aff8d58eb873820db53c1c",
     "glb_triangles": 816,
     "glb_bones": [
       "root",
@@ -570,7 +570,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "0887efe6dd40d9e3c244e8eeee2aeca18e0d7065b7ecf9432c75190a13187693",
+    "sha256": "b5b5f0a8d81cdf5fb88c1a0730cde74b949e1ac6ba4f3c5961d61f6ed45897d2",
     "glb_triangles": 816,
     "glb_bones": [
       "root",
@@ -616,7 +616,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "5a8a5ceb926f6f4daf95c417f13e0706a92b873f4412d092bd95937b3b044354",
+    "sha256": "7c4a74881231a2962e70d2135922267e22a7b21fd0ddb5fcfb19fe510841b3df",
     "glb_triangles": 820,
     "glb_bones": [
       "root",
@@ -662,7 +662,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "1bea1797a4735ddd7265739a38b6754e898c8a8879fb10c167f77b83705f4786",
+    "sha256": "8846fc8e727c95d493c2d2ac318cd641758ac8e79995167d2e64b841e76e70c3",
     "glb_triangles": 944,
     "glb_bones": [
       "root",
@@ -708,7 +708,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "00b2d71cb2ee5f861f764e691f8ff991e9d7cf85b9c5376da7d4a9cdbc41b463",
+    "sha256": "9be9e90ff1f19a19b322f46472b82be161c28830c5b3668600efdecc34dacaae",
     "glb_triangles": 888,
     "glb_bones": [
       "root",
@@ -754,7 +754,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "559952f50e81ae8270909ee6d21c205e810fc339298a10b66d04d28a231fe5ea",
+    "sha256": "aa086d4b20b30e980755c666d13f041f0a1bdf8fc0bbe3e80308b7fb22b93ca8",
     "glb_triangles": 1214,
     "glb_bones": [
       "root",
@@ -800,7 +800,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "1d27a04eda3f9a7f0f4c96517306217d79a9af45dbad2bb86a80b3e7c1aa9abd",
+    "sha256": "d87d2a741b6ad7c2bd76fe973755bf9696a96c27c9882faf7df7a15409f92ebf",
     "glb_triangles": 820,
     "glb_bones": [
       "root",
@@ -846,7 +846,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "eac9d7d3554c170d6d6e4bef1e14a3f9852a19421e94566abc8b6bc3cffeb869",
+    "sha256": "3b7a36588d9e1be9a4e5616fd26a15029a0eede53fd5aa68b538c5af349843ad",
     "glb_triangles": 876,
     "glb_bones": [
       "root",
@@ -892,7 +892,7 @@
       "purify": 0.45
     },
     "height": 1,
-    "sha256": "f94dd0988f1ea7243a4d3788017c9d6b1e345dbcf6dffe579df88d8a9bce4da5",
+    "sha256": "9d90a0d009a7b0070058d321d6889e8540727552e218ab3d67754ad29e3885ff",
     "glb_triangles": 876,
     "glb_bones": [
       "root",
@@ -938,7 +938,7 @@
       "purify": 0.45
     },
     "height": 2,
-    "sha256": "567195a67b7c2a50f93db64c66ad200a14360b72931d3c204bbf1bfe206e0993",
+    "sha256": "b426da1d1522571dce85b9abe14fbb0318b5ccc7a773c5c438414239a984e675",
     "glb_triangles": 864,
     "glb_bones": [
       "root",
@@ -984,7 +984,7 @@
       "purify": 0.45
     },
     "height": 2,
-    "sha256": "5a2c6ee4a7a09569ac270d04e2204c98ed1bc1647b94864fef83d96970facc7f",
+    "sha256": "7898c47c21f97e27d7fb881842adcfef2668a2008c42bf9f8b9172b988d28f4f",
     "glb_triangles": 1392,
     "glb_bones": [
       "root",
@@ -1030,7 +1030,7 @@
       "purify": 0.45
     },
     "height": 2,
-    "sha256": "5bb4b03876d2d172dd303070a28550c174ea32d6dfb53b101c5a5f31f6ff2b6f",
+    "sha256": "8bbcb6c09195c3ff52b75aff208c9925c2a6cba6bc74e82fa2f69420b4605953",
     "glb_triangles": 816,
     "glb_bones": [
       "root",
@@ -1076,7 +1076,7 @@
       "purify": 0.45
     },
     "height": 2,
-    "sha256": "18928c4811bd58200e582bd351d0500a73eedda9efa82e42599fef71067944d1",
+    "sha256": "80667b54c6cc18be0e3a05473baf5cf28dd67926f013ddcc745719c44b65be1b",
     "glb_triangles": 612,
     "glb_bones": [
       "root",

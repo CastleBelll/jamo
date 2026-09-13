@@ -88,6 +88,10 @@ def inspect(path):
         assert np.max(abs(start-end))<1e-5,(path.stem,name,'loop seam')
     if r['profile']=='BOUNCE':
         jump=pose(g,acc,anims['walk'],durations['walk']/2);assert jump[:,1].min()>r['height']*.1
+    if r['profile']=='ROLL':
+        for u in np.linspace(0,1,9):
+            rolling=pose(g,acc,anims['walk'],durations['walk']*u)
+            assert rolling[:,1].min()>-1e-5,(path.stem,'rolling below floor')
     eye_names=[n.get('name') for n in g['nodes'] if n.get('name','').startswith('Eye_')]
     assert len(eye_names)==(0 if path.stem=='boss_silence' else 2)
     r.update({'glb_triangles':triangles,'glb_bones':bones,'glb_durations':durations,

@@ -109,7 +109,7 @@ def rig(body,eye_fraction,silent=False):
     center=(low[0].x+low[-1].x)/2;span=min(.20,max(.045,(low[-1].x-low[0].x)*.28))
     positions=[center-span,center+span]
     activate(arm);bpy.ops.object.mode_set(mode='EDIT')
-    for name,head,tail,parent in [('root',(0,0,0),(0,0,.12),None),('body',(0,0,.18),(0,0,.9),'root'),
+    for name,head,tail,parent in [('root',(0,0,0),(0,0,.12),None),('body',(0,0,.59),(0,0,.99),'root'),
                                 ('leg.L',(positions[0],0,.19),(positions[0],0,.045),'root'),('leg.R',(positions[1],0,.19),(positions[1],0,.045),'root')]:
         b=data.edit_bones.new(name);b.head=head;b.tail=tail
         if parent:b.parent=data.edit_bones[parent]
