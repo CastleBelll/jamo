@@ -86,6 +86,7 @@ func _apply_glyph_texture() -> void:
 	var s := AssetLib.CHARACTER_SCALE if is_character else 1.7
 	sprite.scale = Vector2(s, s)
 	sprite.position = Vector2(0, -t.get_height() * s * 0.5 + 40.0) if is_character else Vector2.ZERO
+	Juice.pop(sprite, Vector2(s, s))
 
 
 func _process(delta: float) -> void:

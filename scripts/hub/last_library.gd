@@ -31,6 +31,9 @@ func _ready() -> void:
 	%HubTitle.visible = %Logo.texture == null
 	SettingsService.apply_all()
 	Sfx.play_bgm("library")
+	Juice.breathe(%Logo)
+	Juice.breathe(%Title/TitleLogo)
+	Juice.slide_in($Menu, [%ContinueButton, %RunButton, %ResearchButton, %CodexButton, %RecordsButton, %SettingsButton])
 	if AssetLib.apply($BackgroundArt, "lib_bg_dim"):
 		$MenuShade.visible = false
 	else:

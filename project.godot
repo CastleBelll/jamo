@@ -19,6 +19,7 @@ buses/default_bus_layout="res://resources/audio/default_bus_layout.tres"
 Meta="*res://scripts/persistence/meta_store.gd"
 Sfx="*res://scripts/audio/sfx_player.gd"
 RunLog="*res://scripts/log/run_logger.gd"
+Juice="*res://scripts/ui/ui_juice.gd"
 
 [gui]
 
