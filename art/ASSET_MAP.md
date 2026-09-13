@@ -392,3 +392,13 @@ Built-in ImageGen + alpha-preserving canvas normalization. No baked words or let
 | W22 | 폭주 | `art/words/word_W22.png` | 256×256 | ImageGen / vermilion |
 | C01 | 불길 | `art/words/word_C01.png` | 256×256 | ImageGen / vermilion |
 | C02 | 눈물 | `art/words/word_C02.png` | 256×256 | ImageGen / icy blue |
+
+
+## P6 C — minimal HUD reference and tidier combat desk
+
+Built-in ImageGen; original sources/full prompts/hashes at `art/_source_p6/references/`. Canvas-only fit to exact 1920×1080, opaque RGB PNGs. No third-party stock assets; generated artwork for JAMO, project distribution policy applies. Both images visually reviewed. HUD digits are illustrative reference values only, not gameplay data or an overlay intended for runtime use. The desk has a wider blank paper field with only inkstone/brush at its slim right margin; no baked text/monsters/UI. Existing desk/HUD assets are unchanged, and no click-coordinate or scene changes were made.
+
+| Path | Size | 9-slice margin | Method / intended use |
+|---|---|---|---|
+| `art/_reference/hud_concept.png` | 1920×1080 | none | ImageGen + canvas normalization / thin ink rule, icon+digit HUD concept |
+| `art/backgrounds/combat_desk_v2.png` | 1920×1080 | none | ImageGen + canvas normalization / tidier, wider paper battle field |
