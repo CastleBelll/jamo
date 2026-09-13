@@ -1,0 +1,21 @@
+{
+  "asset": "char_siot",
+  "jamo": "ㅅ",
+  "profile": "LIGHT_STEP",
+  "triangles": 1214,
+  "bones": 4,
+  "bone_names": [
+    "root",
+    "body",
+    "leg.L",
+    "leg.R"
+  ],
+  "clips": {
+    "idle": 1.0,
+    "walk": 0.3,
+    "hit": 0.16,
+    "purify": 0.45
+  },
+  "height": 1,
+  "sha256": "559952f50e81ae8270909ee6d21c205e810fc339298a10b66d04d28a231fe5ea"
+}

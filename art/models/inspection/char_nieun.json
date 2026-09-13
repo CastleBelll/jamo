@@ -1,0 +1,21 @@
+{
+  "asset": "char_nieun",
+  "jamo": "ㄴ",
+  "profile": "SWAY",
+  "triangles": 816,
+  "bones": 4,
+  "bone_names": [
+    "root",
+    "body",
+    "leg.L",
+    "leg.R"
+  ],
+  "clips": {
+    "idle": 1.0,
+    "walk": 0.8,
+    "hit": 0.16,
+    "purify": 0.45
+  },
+  "height": 1,
+  "sha256": "0887efe6dd40d9e3c244e8eeee2aeca18e0d7065b7ecf9432c75190a13187693"
+}

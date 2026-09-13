@@ -1,0 +1,21 @@
+{
+  "asset": "char_giyeok",
+  "jamo": "ㄱ",
+  "profile": "HEAVY_STEP",
+  "triangles": 788,
+  "bones": 4,
+  "bone_names": [
+    "root",
+    "body",
+    "leg.L",
+    "leg.R"
+  ],
+  "clips": {
+    "idle": 1.0,
+    "walk": 0.7,
+    "hit": 0.16,
+    "purify": 0.45
+  },
+  "height": 1,
+  "sha256": "b173823ff63221684d2e5efdc3120866a7507c64cfe69c03228d4366164ec10b"
+}

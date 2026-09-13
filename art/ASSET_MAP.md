@@ -328,3 +328,35 @@ Download URLs and intended uses are recorded in `art/fonts/README.txt`.
 | `art/glyphs/char_i.png` | 256×256 | none | ImageGen + canvas normalization |
 
 Prompt set: Exact attached Korean jamo silhouette, cream glazed ceramic miniature, fine glaze cracks, warm upper-left light, two black dot eyes and two short black feet, strict front view, no mouth/arms/props, genuine transparent alpha. Stroke topology named explicitly for each guide. Rieul and chieut regenerated to correct geometry/transparency. Variant/status overlays are included in v2 F.
+
+
+## P6 A — rigged 3D models
+
+Blender MCP connection unavailable; authorized bpy fallback in Blender 5.2.1 LTS. All 24 GLBs pass independent binary/skin-pose validation. Exact OFL font outlines, locally authored packed glaze textures and four bone rig. Sources, licensing, per-file triangle/clip inspection and importer handoff notes: `art/models/MODELS.md`.
+
+| Path | Rest height | Triangles | Bones | Clips | Method |
+|---|---:|---:|---:|---|---|
+| `art/models/char_a.glb` | 1 | 820 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_bieup.glb` | 1 | 864 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_chieut.glb` | 1 | 1322 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_digeut.glb` | 1 | 840 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_eo.glb` | 1 | 820 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_giyeok.glb` | 1 | 788 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_hieut.glb` | 1 | 1396 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_i.glb` | 1 | 764 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_ieung.glb` | 1 | 1392 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_jieut.glb` | 1 | 1282 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_kieuk.glb` | 1 | 844 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_mieum.glb` | 1 | 816 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_nieun.glb` | 1 | 816 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_o.glb` | 1 | 820 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_pieup.glb` | 1 | 944 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_rieul.glb` | 1 | 888 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_siot.glb` | 1 | 1214 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_u.glb` | 1 | 820 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_yeo.glb` | 1 | 876 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_yo.glb` | 1 | 876 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/boss_greed.glb` | 2 | 864 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/boss_ieung.glb` | 2 | 1392 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/boss_mieum.glb` | 2 | 816 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/boss_silence.glb` | 2 | 612 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
