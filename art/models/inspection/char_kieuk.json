@@ -1,0 +1,21 @@
+{
+  "asset": "char_kieuk",
+  "jamo": "ㅋ",
+  "profile": "HEAVY_STEP",
+  "triangles": 844,
+  "bones": 4,
+  "bone_names": [
+    "root",
+    "body",
+    "leg.L",
+    "leg.R"
+  ],
+  "clips": {
+    "idle": 1.0,
+    "walk": 0.7,
+    "hit": 0.16,
+    "purify": 0.45
+  },
+  "height": 1,
+  "sha256": "6113205d351ae57737cba5a15688699c7c05b09363b36c0474844914afcadf95"
+}

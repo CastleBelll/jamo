@@ -1,0 +1,1106 @@
+[
+  {
+    "asset": "char_a",
+    "jamo": "ㅏ",
+    "profile": "GLIDE",
+    "triangles": 820,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "1c7afe1af8bd135e16e5f0e5c56e18b29176f569c5be3d40459a259ae0b9ac74",
+    "glb_triangles": 820,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.1508265733718872,
+      -5.551115123125783e-17,
+      -0.08900000154972149
+    ],
+    "rest_max": [
+      0.15562540292739882,
+      1.0,
+      0.05061386525630951
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_bieup",
+    "jamo": "ㅂ",
+    "profile": "BOUNCE",
+    "triangles": 864,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.55,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "4fb73ec3ba06333f5627b2dbaa42f62af61580e12f133e614c132d0a9285ce25",
+    "glb_triangles": 864,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.550000011920929,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.46437981724739075,
+      -5.551115123125783e-17,
+      -0.11804178357124329
+    ],
+    "rest_max": [
+      0.46437981724739075,
+      1.0,
+      0.08804171532392502
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_chieut",
+    "jamo": "ㅊ",
+    "profile": "LIGHT_STEP",
+    "triangles": 1322,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.3,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "fd2bcd7ec0ab97022c77d642bc4d10b10e245e77f23daf46e15149fcaf05e9dc",
+    "glb_triangles": 1322,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.30000001192092896,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.4634523093700409,
+      -5.551115123125783e-17,
+      -0.10715582966804504
+    ],
+    "rest_max": [
+      0.4634523093700409,
+      1.0,
+      0.07715587317943573
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_digeut",
+    "jamo": "ㄷ",
+    "profile": "HEAVY_STEP",
+    "triangles": 840,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.7,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "40a4888f073b517cbaf486fbe2abf4670e5aa71c36e4adbf48db3d2fc110b89d",
+    "glb_triangles": 840,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.699999988079071,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.4729732275009155,
+      -5.551115123125783e-17,
+      -0.11967089772224426
+    ],
+    "rest_max": [
+      0.4729732275009155,
+      1.0,
+      0.08967094123363495
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_eo",
+    "jamo": "ㅓ",
+    "profile": "GLIDE",
+    "triangles": 820,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "11e9cf92a3f7f1f2dc1b97baec1de84093bd61d311224ac86be1f45586463c75",
+    "glb_triangles": 820,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.16252063214778914,
+      -5.551115123125783e-17,
+      -0.0890000015497215
+    ],
+    "rest_max": [
+      0.15776163339614868,
+      1.0,
+      0.05061386525630951
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_giyeok",
+    "jamo": "ㄱ",
+    "profile": "HEAVY_STEP",
+    "triangles": 788,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.7,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "53966100917c54185387018da1c527782e06013f3f4e5b39fbf749e63c5bc8bc",
+    "glb_triangles": 788,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.699999988079071,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.47637662291526794,
+      -5.551115123125783e-17,
+      -0.12017133831977844
+    ],
+    "rest_max": [
+      0.47637662291526794,
+      1.0,
+      0.09017153829336166
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_hieut",
+    "jamo": "ㅎ",
+    "profile": "SWAY",
+    "triangles": 1396,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.8,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "a92743b70de0916c208d0b6d93558d021d45b76b0bc861e671fe46819b964bf3",
+    "glb_triangles": 1396,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.800000011920929,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.39296242594718933,
+      -5.551115123125783e-17,
+      -0.10229828953742981
+    ],
+    "rest_max": [
+      0.39296242594718933,
+      1.0,
+      0.07229816168546677
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_i",
+    "jamo": "ㅣ",
+    "profile": "GLIDE",
+    "triangles": 764,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "46ebb8c440e659b30f177cad5b468361a045aa3e722e3a10e63530eb2b4b3558",
+    "glb_triangles": 764,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.08400000631809248,
+      -5.551115123125783e-17,
+      -0.08900000154972112
+    ],
+    "rest_max": [
+      0.08400000631809248,
+      1.0,
+      0.05061386525630951
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_ieung",
+    "jamo": "ㅇ",
+    "profile": "ROLL",
+    "triangles": 1392,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.6,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "9677632565a4ac4d5acb5ee9cedd6a60b7c385c910fb65b7a41e9fe29fe5e2ee",
+    "glb_triangles": 1392,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.6000000238418579,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.4565226435661316,
+      -5.551115123125783e-17,
+      -0.11584523320198059
+    ],
+    "rest_max": [
+      0.4565226435661316,
+      1.0,
+      0.0858449786901474
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_jieut",
+    "jamo": "ㅈ",
+    "profile": "LIGHT_STEP",
+    "triangles": 1282,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.3,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "d323eacb70fa9ad45e1bcfa29306dad8fe8f4f6988ca6e74c3982abb97c613c8",
+    "glb_triangles": 1282,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.30000001192092896,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.498141348361969,
+      -5.551115123125783e-17,
+      -0.11548712849617004
+    ],
+    "rest_max": [
+      0.498141348361969,
+      1.0,
+      0.08548726886510849
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_kieuk",
+    "jamo": "ㅋ",
+    "profile": "HEAVY_STEP",
+    "triangles": 844,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.7,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "6113205d351ae57737cba5a15688699c7c05b09363b36c0474844914afcadf95",
+    "glb_triangles": 844,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.699999988079071,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.47520723938941956,
+      -5.551115123125783e-17,
+      -0.11693623661994934
+    ],
+    "rest_max": [
+      0.47520723938941956,
+      1.0,
+      0.08693603426218033
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_mieum",
+    "jamo": "ㅁ",
+    "profile": "BOUNCE",
+    "triangles": 816,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.55,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "db30b857dce5d369effa138ea600d96feefd9f4bd4507ec3a02414b75efb0076",
+    "glb_triangles": 816,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.550000011920929,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.48911914229393005,
+      -5.551115123125783e-17,
+      -0.12258365750312805
+    ],
+    "rest_max": [
+      0.48911914229393005,
+      1.0,
+      0.09258352220058441
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_nieun",
+    "jamo": "ㄴ",
+    "profile": "SWAY",
+    "triangles": 816,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.8,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "3d8fe0fda5fd8c0f6ac6e7248f477ee271ec7be67a1566ae82b4498b7c373edc",
+    "glb_triangles": 816,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.800000011920929,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.4992011487483978,
+      -5.551115123125783e-17,
+      -0.12329676747322083
+    ],
+    "rest_max": [
+      0.4992011487483978,
+      1.0,
+      0.09329654276371002
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_o",
+    "jamo": "ㅗ",
+    "profile": "GLIDE",
+    "triangles": 820,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "37395336820d8aeba3120d550b3e25cb8dbf96cee71efa6211cab7d79cf0ddc9",
+    "glb_triangles": 820,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.7395570874214172,
+      -5.551115123125783e-17,
+      -0.13007763028144836
+    ],
+    "rest_max": [
+      0.7395570874214172,
+      1.0,
+      0.10007787495851517
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_pieup",
+    "jamo": "ㅍ",
+    "profile": "HEAVY_STEP",
+    "triangles": 944,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.7,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "19a1cb3a02a4fb4ba397c8b0ed42d8a902648fb568a406e93949d1ed8d886648",
+    "glb_triangles": 944,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.699999988079071,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.4914979934692383,
+      -5.551115123125783e-17,
+      -0.11756446957588196
+    ],
+    "rest_max": [
+      0.4914979934692383,
+      1.0,
+      0.08756442368030548
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_rieul",
+    "jamo": "ㄹ",
+    "profile": "SWAY",
+    "triangles": 888,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.8,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "174899cc42c756a115a21e11248044729be86052f0f0ede0bb2d2d0a4f21d299",
+    "glb_triangles": 888,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.800000011920929,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.47991353273391724,
+      -5.551115123125783e-17,
+      -0.11884883046150208
+    ],
+    "rest_max": [
+      0.47991353273391724,
+      1.0,
+      0.08884885907173157
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_siot",
+    "jamo": "ㅅ",
+    "profile": "LIGHT_STEP",
+    "triangles": 1214,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.3,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "f07882e937b8b5a0a4b58bba51de5fdbb6b75271b1589bebf0e6219bb2b56858",
+    "glb_triangles": 1214,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.30000001192092896,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.5096002817153931,
+      -5.551115123125783e-17,
+      -0.11462071537971497
+    ],
+    "rest_max": [
+      0.5096002817153931,
+      1.0,
+      0.08462056517601013
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_u",
+    "jamo": "ㅜ",
+    "profile": "GLIDE",
+    "triangles": 820,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "2db99513251a735b7724e25f00d69def2e6abf8304b22907baf1ee752dc14111",
+    "glb_triangles": 820,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.6828704476356506,
+      -5.551115123125783e-17,
+      -0.1224069893360138
+    ],
+    "rest_max": [
+      0.6828704476356506,
+      1.0,
+      0.09240694344043732
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_yeo",
+    "jamo": "ㅕ",
+    "profile": "GLIDE",
+    "triangles": 876,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "1a66b6ea30dc39a84b1c93f663a78148d06dca5c7c6dab0550595f8a4453a6e1",
+    "glb_triangles": 876,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.16548077762126936,
+      -5.551115123125783e-17,
+      -0.08900000154972153
+    ],
+    "rest_max": [
+      0.16075937449932098,
+      1.0,
+      0.05061386525630951
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "char_yo",
+    "jamo": "ㅛ",
+    "profile": "GLIDE",
+    "triangles": 876,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 1,
+    "sha256": "d7062af4b31ff18ccce19d6bae90cfb839f93cfe904bff2a57bcef6fbe7d4de7",
+    "glb_triangles": 876,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 1.0,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.7130492925643921,
+      -5.551115123125783e-17,
+      -0.12649062275886536
+    ],
+    "rest_max": [
+      0.7130492925643921,
+      1.0,
+      0.09649080038070679
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "boss_greed",
+    "jamo": "ㅂ",
+    "profile": "BOUNCE",
+    "triangles": 864,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.55,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 2,
+    "sha256": "6c6602ed40549e512e8468a2a5d5d15e88eef51a21e0988d7ac40d0f622f1de7",
+    "glb_triangles": 864,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.550000011920929,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.9287596344947815,
+      -1.1102230246251565e-16,
+      -0.23608356714248657
+    ],
+    "rest_max": [
+      0.9287596344947815,
+      2.0,
+      0.17608343064785004
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "boss_ieung",
+    "jamo": "ㅇ",
+    "profile": "ROLL",
+    "triangles": 1392,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.6,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 2,
+    "sha256": "df933bfd1dcd3e2e7d1dd437ab5c6b9dc03a08bd28a75fa97452a67efc883c0a",
+    "glb_triangles": 1392,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.6000000238418579,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.9103580713272095,
+      -1.1102230246251565e-16,
+      -0.23168998956680298
+    ],
+    "rest_max": [
+      0.9112275242805481,
+      2.0,
+      0.1716899573802948
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "boss_mieum",
+    "jamo": "ㅁ",
+    "profile": "BOUNCE",
+    "triangles": 816,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.55,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 2,
+    "sha256": "70aa2f22f4005fc89c3225398c8015de441c58b9b4c5135fbb0819f612d72a52",
+    "glb_triangles": 816,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.550000011920929,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.9782382845878601,
+      -1.1102230246251565e-16,
+      -0.2451673150062561
+    ],
+    "rest_max": [
+      0.9782382845878601,
+      2.0,
+      0.18516704440116882
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  },
+  {
+    "asset": "boss_silence",
+    "jamo": "ㅁ",
+    "profile": "BOUNCE",
+    "triangles": 612,
+    "bones": 4,
+    "bone_names": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "clips": {
+      "idle": 1.0,
+      "walk": 0.55,
+      "hit": 0.16,
+      "purify": 0.45
+    },
+    "height": 2,
+    "sha256": "2364f2981afb87232d7f45877b990ea48aad73478f8f5e8ce24eb6a65698663a",
+    "glb_triangles": 612,
+    "glb_bones": [
+      "root",
+      "body",
+      "leg.L",
+      "leg.R"
+    ],
+    "glb_durations": {
+      "idle": 1.0,
+      "walk": 0.550000011920929,
+      "hit": 0.1599999964237213,
+      "purify": 0.44999998807907104
+    },
+    "embedded_images": 1,
+    "rest_min": [
+      -0.9980000257492065,
+      -1.1102230246251565e-16,
+      -0.18516694009304047
+    ],
+    "rest_max": [
+      0.9980000257492065,
+      2.0,
+      0.18516704440116882
+    ],
+    "checks": "PASS: skin, clips, durations, Y-up height/foot, embedded PBR, squash, disappearance, loop seam"
+  }
+]

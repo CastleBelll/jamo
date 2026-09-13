@@ -1,0 +1,21 @@
+{
+  "asset": "char_mieum",
+  "jamo": "ㅁ",
+  "profile": "BOUNCE",
+  "triangles": 816,
+  "bones": 4,
+  "bone_names": [
+    "root",
+    "body",
+    "leg.L",
+    "leg.R"
+  ],
+  "clips": {
+    "idle": 1.0,
+    "walk": 0.55,
+    "hit": 0.16,
+    "purify": 0.45
+  },
+  "height": 1,
+  "sha256": "db30b857dce5d369effa138ea600d96feefd9f4bd4507ec3a02414b75efb0076"
+}
