@@ -6,7 +6,7 @@ extends Node3D
 
 const MODEL_DIRS := ["res://art/models/char_%s.glb", "res://art/monsters/characters/%s.glb"]
 const BOSS_MODEL := "res://art/models/%s.glb"   # boss_mieum / boss_silence / boss_ieung / boss_greed
-const TARGET_HEIGHT := 1.9        # units; reads as ~92px at the 60-degree camera tilt (B11 visual size)
+const TARGET_HEIGHT := 1.8        # units; ~92px on screen at the 40-degree camera pitch (B11 visual size)
 const TURN_SPEED := 10.0
 const HIT_SECONDS := 0.16
 const PURIFY_SECONDS := 0.45
