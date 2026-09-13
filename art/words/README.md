@@ -34,4 +34,3 @@ Validation: all resource IDs match exactly, 24 RGBA outputs are 256×256 with ac
 | C02 | 눈물 | `word_C02.png` | a single large falling teardrop beneath a subtle eye arc | icy blue |
 
 Rebuild/validate: `python art/words/normalize_words.py` (Pillow required).
-

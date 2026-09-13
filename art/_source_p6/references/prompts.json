@@ -1,0 +1,22 @@
+[
+  {
+    "id": "hud_concept",
+    "path": "art/_reference/hud_concept.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "prompt": "Use case: ui-mockup. Asset type: JAMO minimalist combat HUD reference image, full 1920x1080 landscape canvas, 16:9. High fidelity game UI design, crisp and understated. Background: almost blank warm ivory hanji paper, subtle low-contrast fiber grain. HUD occupies ONLY a thin 64-pixel strip along the top, with no solid filled bar. One hairline charcoal ink rule beneath it, a tiny restrained gold tick. Exactly five compact icon-and-number pairs, aligned to one baseline with generous whitespace: an unfurled scroll and \"2/5\", an open brush-circle shield and \"86\", a small abstract ink enemy blob and \"7\", a coin with square hole and \"125\", a tied drop pouch and \"3\". Numbers are clean readable charcoal serif digits, not handwritten illegibility. Icons are minimal charcoal ink strokes, a small gold accent on the coin only. The rest of the canvas is empty unobstructed paper. NO WORDS, no letters, no Korean text, no logos, no captions, no cards, no boxed stat widgets, no decorative wooden bar, no ornamental borders, no characters, no buttons, no watermark. This is a minimal icon+number HUD layout reference, not concept art with busy props.",
+    "method": "built-in ImageGen, canvas-only normalization"
+  },
+  {
+    "id": "combat_desk_v2",
+    "path": "art/backgrounds/combat_desk_v2.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: JAMO combat desk background, exact 1920x1080 landscape 16:9. Strict directly overhead orthographic top-down view. A tidy dark warm walnut writing desk with a single huge horizontal unrolled hanji scroll occupying about 90% of the canvas width and 86% of the height; warm ivory, nearly blank paper is the dominant play surface. Flat rectangular paper field with subtle natural fibers and barely visible folds, straight unobstructed edges, thin narrow rolled edges at left and right. Paper extends roughly x=100..1820, y=65..1015, much wider than a desk full of decorative props. ONLY two modest props tucked wholly into the slim outside right margin: a plain inkstone and one slender ink brush. No books, cups, lamps in frame, coins, blossoms, ornaments, plants, seals, no scattered props. Warm lamp illumination comes softly from off-frame upper left; paper stays neutral cream, not orange. Restrained low-contrast desk grain, no dramatic harsh vignette or heavy shadows. Premium softly painted game environment with believable hanji and wood materials, quiet usable negative space, clear readable silhouettes will be added by the game later. NO TEXT, no writing, no calligraphy, no characters, no monsters, no HUD, no UI, no logo, no watermark. Favor clarity and a large clean play area over set dressing.",
+    "method": "built-in ImageGen, canvas-only normalization"
+  }
+]
