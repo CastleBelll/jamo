@@ -1,0 +1,21 @@
+{
+  "asset": "boss_ieung",
+  "jamo": "ㅇ",
+  "profile": "ROLL",
+  "triangles": 1392,
+  "bones": 4,
+  "bone_names": [
+    "root",
+    "body",
+    "leg.L",
+    "leg.R"
+  ],
+  "clips": {
+    "idle": 1.0,
+    "walk": 0.6,
+    "hit": 0.16,
+    "purify": 0.45
+  },
+  "height": 2,
+  "sha256": "7898c47c21f97e27d7fb881842adcfef2668a2008c42bf9f8b9172b988d28f4f"
+}

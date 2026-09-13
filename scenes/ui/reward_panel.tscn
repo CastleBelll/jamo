@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/reward_panel.gd" id="1"]
 [ext_resource type="Theme" path="res://resources/ui/theme.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/ui/deck_view.gd" id="3"]
 
 [node name="RewardPanel" type="PanelContainer"]
 custom_minimum_size = Vector2(1100, 0)
@@ -30,6 +31,14 @@ unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 text = ""
+
+[node name="DeckView" type="HFlowContainer" parent="Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+alignment = 1
+script = ExtResource("3")
 
 [node name="Candidates" type="HBoxContainer" parent="Box"]
 unique_name_in_owner = true

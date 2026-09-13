@@ -328,3 +328,77 @@ Download URLs and intended uses are recorded in `art/fonts/README.txt`.
 | `art/glyphs/char_i.png` | 256×256 | none | ImageGen + canvas normalization |
 
 Prompt set: Exact attached Korean jamo silhouette, cream glazed ceramic miniature, fine glaze cracks, warm upper-left light, two black dot eyes and two short black feet, strict front view, no mouth/arms/props, genuine transparent alpha. Stroke topology named explicitly for each guide. Rieul and chieut regenerated to correct geometry/transparency. Variant/status overlays are included in v2 F.
+
+
+## P6 A — rigged 3D models
+
+Blender MCP connection unavailable; authorized bpy fallback in Blender 5.2.1 LTS. All 24 GLBs pass independent binary/skin-pose validation. Exact OFL font outlines, locally authored packed glaze textures and four bone rig. Sources, licensing, per-file triangle/clip inspection and importer handoff notes: `art/models/MODELS.md`.
+
+| Path | Rest height | Triangles | Bones | Clips | Method |
+|---|---:|---:|---:|---|---|
+| `art/models/char_a.glb` | 1 | 820 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_bieup.glb` | 1 | 864 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_chieut.glb` | 1 | 1322 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_digeut.glb` | 1 | 840 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_eo.glb` | 1 | 820 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_giyeok.glb` | 1 | 788 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_hieut.glb` | 1 | 1396 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_i.glb` | 1 | 764 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_ieung.glb` | 1 | 1392 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_jieut.glb` | 1 | 1282 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_kieuk.glb` | 1 | 844 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_mieum.glb` | 1 | 816 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_nieun.glb` | 1 | 816 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_o.glb` | 1 | 820 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_pieup.glb` | 1 | 944 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_rieul.glb` | 1 | 888 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_siot.glb` | 1 | 1214 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_u.glb` | 1 | 820 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_yeo.glb` | 1 | 876 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/char_yo.glb` | 1 | 876 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/boss_greed.glb` | 2 | 864 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/boss_ieung.glb` | 2 | 1392 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/boss_mieum.glb` | 2 | 816 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+| `art/models/boss_silence.glb` | 2 | 612 | 4 | idle / walk / hit / purify | bpy + OFL outline / embedded PBR |
+
+
+## P6 B — word icons
+
+Built-in ImageGen + alpha-preserving canvas normalization. No baked words or lettering, no third-party stock assets. Source/prompt set, hashes and visual contact sheet: `art/_source_p6/words/`; semantic notes and distribution provenance: `art/words/README.md`. All 22 basic + 2 compound data IDs match; all 24 outputs pass size/RGBA-alpha validation.
+
+| ID | Word | Path | Size | Method / accent |
+|---|---|---|---|---|
+| W01 | 검 | `art/words/word_W01.png` | 256×256 | ImageGen / muted gold |
+| W02 | 불 | `art/words/word_W02.png` | 256×256 | ImageGen / vermilion |
+| W03 | 독 | `art/words/word_W03.png` | 256×256 | ImageGen / moss green |
+| W04 | 벽 | `art/words/word_W04.png` | 256×256 | ImageGen / muted gold |
+| W05 | 돌 | `art/words/word_W05.png` | 256×256 | ImageGen / muted gold |
+| W06 | 활 | `art/words/word_W06.png` | 256×256 | ImageGen / muted gold |
+| W07 | 창 | `art/words/word_W07.png` | 256×256 | ImageGen / muted gold |
+| W08 | 칼 | `art/words/word_W08.png` | 256×256 | ImageGen / muted gold |
+| W09 | 눈 | `art/words/word_W09.png` | 256×256 | ImageGen / icy blue |
+| W10 | 물 | `art/words/word_W10.png` | 256×256 | ImageGen / icy blue |
+| W11 | 실 | `art/words/word_W11.png` | 256×256 | ImageGen / muted gold |
+| W12 | 숨 | `art/words/word_W12.png` | 256×256 | ImageGen / muted gold |
+| W13 | 돈 | `art/words/word_W13.png` | 256×256 | ImageGen / muted gold |
+| W14 | 운 | `art/words/word_W14.png` | 256×256 | ImageGen / moss green |
+| W15 | 복 | `art/words/word_W15.png` | 256×256 | ImageGen / muted gold |
+| W16 | 길 | `art/words/word_W16.png` | 256×256 | ImageGen / muted gold |
+| W17 | 비 | `art/words/word_W17.png` | 256×256 | ImageGen / icy blue |
+| W18 | 봄 | `art/words/word_W18.png` | 256×256 | ImageGen / soft coral |
+| W19 | 밤 | `art/words/word_W19.png` | 256×256 | ImageGen / muted gold |
+| W20 | 욕심 | `art/words/word_W20.png` | 256×256 | ImageGen / muted gold |
+| W21 | 광기 | `art/words/word_W21.png` | 256×256 | ImageGen / vermilion |
+| W22 | 폭주 | `art/words/word_W22.png` | 256×256 | ImageGen / vermilion |
+| C01 | 불길 | `art/words/word_C01.png` | 256×256 | ImageGen / vermilion |
+| C02 | 눈물 | `art/words/word_C02.png` | 256×256 | ImageGen / icy blue |
+
+
+## P6 C — minimal HUD reference and tidier combat desk
+
+Built-in ImageGen; original sources/full prompts/hashes at `art/_source_p6/references/`. Canvas-only fit to exact 1920×1080, opaque RGB PNGs. No third-party stock assets; generated artwork for JAMO, project distribution policy applies. Both images visually reviewed. HUD digits are illustrative reference values only, not gameplay data or an overlay intended for runtime use. The desk has a wider blank paper field with only inkstone/brush at its slim right margin; no baked text/monsters/UI. Existing desk/HUD assets are unchanged, and no click-coordinate or scene changes were made.
+
+| Path | Size | 9-slice margin | Method / intended use |
+|---|---|---|---|
+| `art/_reference/hud_concept.png` | 1920×1080 | none | ImageGen + canvas normalization / thin ink rule, icon+digit HUD concept |
+| `art/backgrounds/combat_desk_v2.png` | 1920×1080 | none | ImageGen + canvas normalization / tidier, wider paper battle field |

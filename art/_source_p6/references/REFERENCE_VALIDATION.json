@@ -1,0 +1,24 @@
+[
+  {
+    "id": "hud_concept",
+    "file": "art/_reference/hud_concept.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "mode": "RGB",
+    "source_sha256": "44a82d27c7b3f080fc3f9e5fb5ecc3c22f05b011a4bc31f14d475fd43cfa9110",
+    "sha256": "287be74e718b8178821459031b39ea1428bfd499bc9c3ca000812c1d8e2568e0"
+  },
+  {
+    "id": "combat_desk_v2",
+    "file": "art/backgrounds/combat_desk_v2.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "mode": "RGB",
+    "source_sha256": "fea5624c01a0d830329031ac7a33dea8269d7dbdea08874d72b18ad4304d2a75",
+    "sha256": "986237af3671f2b02db85d6e696ea5573d55e22a042924cc0867c28e19526788"
+  }
+]

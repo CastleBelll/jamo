@@ -174,8 +174,9 @@ func _check_screen() -> void:
 	lib._set_codex_tab("boss")
 	_expect(lib.get_node("%CodexRows").get_child_count() == 4 and lib.get_node("%CodexDetail").text.begins_with("거대한 ㅁ (W5)"), "4 bosses, first detail")
 	lib._open_setup()
-	_expect(lib.get_node("%RunSetup").visible and lib.get_node("%DeckRows").get_child_count() == 2, "setup lists both starters")
-	_expect(lib.get_node("%DeckRows").get_child(1).disabled, "Starter B disabled until researched")
+	_expect(lib.get_node("%RunSetup").visible and lib.get_node("%DeckRows").get_child_count() == 4, "setup lists both starters (button + deck tiles each)")
+	_expect(lib.get_node("%DeckRows").get_child(2).disabled, "Starter B disabled until researched")
+	_expect(lib.get_node("%DeckRows").get_child(1) is DeckView and lib.get_node("%DeckRows").get_child(1).get_child_count() > 0, "deck tiles drawn under each starter")
 	lib.free()
 	# S_RETURN: first library visit after 침묵, recorded and shown once.
 	Meta.events = ["S_SILENCE"]

@@ -52,13 +52,25 @@ func set_build(build: BuildState, db: ContentDB, sealed: Dictionary = {}) -> voi
 			ch.queue_free()
 		if i < build.words.size():
 			var word: WordData = db.words[build.words[i]["id"]]
+			var icon := AssetLib.word_icon(word.id)
+			if icon != null:
+				var pic := TextureRect.new()
+				pic.texture = icon
+				pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				pic.set_anchors_preset(Control.PRESET_TOP_WIDE)
+				pic.offset_top = 6
+				pic.offset_bottom = 54
+				slot.add_child(pic)
 			var l := Label.new()
 			# Two fixed lines (name / rank pips) so a 108px slot never wraps mid-token (G10).
 			l.text = "%s\n%s%s" % [word.name, "●".repeat(build.words[i]["rank"]) + "○".repeat(3 - build.words[i]["rank"]), ("\n봉인 %.1f초" % sealed[word.id]) if sealed.has(word.id) else ""]
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-			l.add_theme_font_size_override("font_size", 20)
+			l.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM if icon != null else VERTICAL_ALIGNMENT_CENTER
+			l.add_theme_font_size_override("font_size", 18 if icon != null else 20)
 			l.set_anchors_preset(Control.PRESET_FULL_RECT)
+			l.offset_bottom = -4
 			slot.add_child(l)
 			var frame := slot.get_node_or_null("Frame")
 			if frame != null:

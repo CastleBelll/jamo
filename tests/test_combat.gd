@@ -100,6 +100,13 @@ func _check_targeting_and_cooldown() -> void:
 	director.tick(0.0)
 	var e1: JamoMonster = director.enemies[0]
 	var p := e1.global_position
+	var layer := game.get_node_or_null("BattleClip/Battle3D")
+	_expect(layer != null and layer.is_in_group("battle3d"), "Battle3D layer instanced under run_game")
+	for e in director.enemies:
+		var has_model := CharacterProxy.model_for(e.jamo) != null
+		_expect((e.proxy != null) == has_model, "3D proxy iff a model exists (%s)" % e.jamo)
+		if e.proxy != null:
+			_expect(not e.visual_pivot.visible and e.proxy.is_inside_tree(), "2D visual hidden behind the 3D figure (%s)" % e.jamo)
 	_expect(director.pick_target(p + Vector2(45, 0)) == e1, "click inside the 92px circle hits")
 	_expect(director.pick_target(p + Vector2(47, 0)) == null, "click outside the 92px circle misses")
 	director.request_click(Vector2(100, 100))

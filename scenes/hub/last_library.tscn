@@ -281,17 +281,10 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ResearchScroll" type="ScrollContainer" parent="ContentCard/Box/Tabs/연구"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 520)
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="ResearchRows" type="VBoxContainer" parent="ContentCard/Box/Tabs/연구/ResearchScroll"]
+[node name="ResearchRows" type="VBoxContainer" parent="ContentCard/Box/Tabs/연구"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
-size_flags_horizontal = 3
 
 [node name="사전" type="VBoxContainer" parent="ContentCard/Box/Tabs"]
 layout_mode = 2
@@ -328,17 +321,13 @@ layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 0
 
-[node name="CodexScroll" type="ScrollContainer" parent="ContentCard/Box/Tabs/사전/CodexBody"]
+[node name="CodexRows" type="GridContainer" parent="ContentCard/Box/Tabs/사전/CodexBody"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(440, 520)
+custom_minimum_size = Vector2(640, 0)
 layout_mode = 2
-size_flags_vertical = 3
-
-[node name="CodexRows" type="VBoxContainer" parent="ContentCard/Box/Tabs/사전/CodexBody/CodexScroll"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 12
-custom_minimum_size = Vector2(420, 0)
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 6
+columns = 2
 
 [node name="CodexDetail" type="Label" parent="ContentCard/Box/Tabs/사전/CodexBody"]
 unique_name_in_owner = true
@@ -358,17 +347,10 @@ layout_mode = 2
 autowrap_mode = 3
 text = ""
 
-[node name="EventScroll" type="ScrollContainer" parent="ContentCard/Box/Tabs/기록"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 520)
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="EventRows" type="VBoxContainer" parent="ContentCard/Box/Tabs/기록/EventScroll"]
+[node name="EventRows" type="VBoxContainer" parent="ContentCard/Box/Tabs/기록"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 12
-size_flags_horizontal = 3
+theme_override_constants/separation = 10
 
 [node name="설정" type="VBoxContainer" parent="ContentCard/Box/Tabs"]
 layout_mode = 2

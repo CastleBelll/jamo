@@ -3,6 +3,7 @@ extends Control
 ## the first-RUN opening (S5). Logic lives in LibraryService; this file only draws and routes.
 
 const RUN_SCENE := "res://scenes/run/run_game.tscn"
+const RECORD_ROWS := 10
 
 var db: ContentDB
 var codex_tab: String = "base"
@@ -209,9 +210,13 @@ func _refresh_codex() -> void:
 func _add_codex_button(text: String, id: String) -> void:
 	var b := Button.new()
 	b.text = text
+	if db.words.has(StringName(id)) and AssetLib.word_icon(StringName(id)) != null:
+		b.icon = AssetLib.word_icon(StringName(id))
+		b.expand_icon = true
 	b.theme_type_variation = &"GhostButton"
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	b.custom_minimum_size = Vector2(0, 60)
+	b.custom_minimum_size = Vector2(316, 52)
+	b.add_theme_font_size_override("font_size", 24)
 	b.toggle_mode = true
 	b.button_pressed = id == codex_selected
 	b.pressed.connect(func(): codex_selected = id; _refresh_codex())
@@ -260,11 +265,18 @@ func _refresh_records() -> void:
 		var l := Label.new()
 		l.text = "아직 기록이 없다."
 		%EventRows.add_child(l)
-	for line in lines:
+	# No scrolling (G10): the newest RECORD_ROWS lines, older ones summarised.
+	var shown: Array[String] = lines.slice(maxi(lines.size() - RECORD_ROWS, 0))
+	for line in shown:
 		var l := Label.new()
 		l.text = line
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		%EventRows.add_child(l)
+	if lines.size() > shown.size():
+		var more := Label.new()
+		more.text = "…이전 기록 %d개" % (lines.size() - shown.size())
+		more.theme_type_variation = &"MutedLabel"
+		%EventRows.add_child(more)
 
 
 func _mark(on: bool) -> String:
@@ -304,13 +316,16 @@ func _refresh_setup() -> void:
 		b.theme_type_variation = &"GhostButton"
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.custom_minimum_size = Vector2(0, 84)
-		var counts: Array[String] = []
-		for j in row["counts"]:
-			counts.append("%s%d" % [j, row["counts"][j]])
-		b.text = "%s · %d장 · 제작 %d%s\n%s" % [row["deck"].name, row["size"], row["craftable"].size(), "" if row["unlocked"] else " · 잠김", " ".join(counts)]
+		b.text = "%s · %d장 · 제작 가능 %d단어%s" % [row["deck"].name, row["size"], row["craftable"].size(), "" if row["unlocked"] else " · 잠김"]
 		var deck_id: StringName = id
 		b.pressed.connect(func(): setup_deck = deck_id; _refresh_setup())
 		%DeckRows.add_child(b)
+		var view := DeckView.new()
+		view.alignment = FlowContainer.ALIGNMENT_CENTER
+		view.add_theme_constant_override("h_separation", 4)
+		view.modulate.a = 1.0 if row["unlocked"] else 0.5
+		view.show_counts(row["counts"], {}, true)
+		%DeckRows.add_child(view)
 	var chosen := LibraryService.deck_row(db, db.decks[setup_deck])
 	var pin_text := ""
 	if Meta.pinned_word != "" and db.words.has(StringName(Meta.pinned_word)):

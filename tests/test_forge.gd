@@ -22,7 +22,7 @@ func _ready() -> void:
 		_check_restore_transaction()
 		_check_failure_pity()
 		_check_tutorial_and_pin()
-		_check_scene_flow()
+		await _check_scene_flow()
 		_check_small_deck_reroll()
 	for f in failures:
 		printerr("FAIL: " + f)
@@ -297,6 +297,35 @@ func _check_scene_flow() -> void:
 	_expect(run.phase == RunController.Phase.FORGE and panel.visible and run.forge != null, "FORGE opens the panel with a live Forge")
 	_expect(panel.get_node("%HandRow").get_child_count() == 7, "seven hand buttons")
 	_expect(panel.get_node("%Candidates").get_child_count() >= 2, "tutorial hand lists candidates")
+	# G10 no-scroll: even the worst Forge state (6 candidates, replace row, two compound rows,
+	# every action button) must fit the 1080 logical height.
+	var grid: GridContainer = panel.get_node("%Candidates")
+	for i in 6 - grid.get_child_count():
+		var b := Button.new()
+		b.custom_minimum_size = Vector2(0, 52)
+		grid.add_child(b)
+	var replace_row: HBoxContainer = panel.get_node("%ReplaceRow")
+	replace_row.visible = true
+	for i in 2:
+		var b := Button.new()
+		b.custom_minimum_size = Vector2(140, 60)
+		replace_row.add_child(b)
+	var compound_box: VBoxContainer = panel.get_node("%CompoundBox")
+	compound_box.visible = true
+	for i in 2:
+		var b := Button.new()
+		b.custom_minimum_size = Vector2(0, 60)
+		compound_box.add_child(b)
+	panel.get_node("%CompoundLabel").text = "합성 미리보기"
+	panel.get_node("%CompoundLabel").visible = true
+	panel.get_node("%SkipRestoreButton").visible = true
+	panel.get_node("%CompoundButton").visible = true
+	panel.get_node("%CompareLabel").text = "검 R1→2" + char(10) + "수동 +30% → 수동 +45%" + char(10) + "잃음 불 R1: 화상 3초"
+	# The deck tiles wrap by width, so measure after a layout pass at the real panel width.
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var height: float = panel.size.y
+	_expect(height <= 1080.0, "worst-case Forge fits 1080 (laid-out height %.0f)" % height)
 	panel._select(&"W01")
 	panel.get_node("%RestoreButton").pressed.emit()
 	_expect(run.build.has(&"W01"), "restore button adds 검 to the build")

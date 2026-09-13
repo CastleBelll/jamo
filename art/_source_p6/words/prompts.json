@@ -1,0 +1,194 @@
+[
+  {
+    "id": "W01",
+    "name": "검",
+    "subject": "a sword with a long straight blade and small crossguard",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, later normalized to 256x256. Subject: a sword with a long straight blade and small crossguard. Style: premium Korean ink brush painting, confident expressive dry-brush silhouette, fine feathered brush edges, a few controlled ink flecks. Colors: dark warm charcoal ink plus muted gold as the ONLY chromatic accent. Centered isolated single subject, large readable silhouette, 12% empty margin. Genuinely transparent alpha background, no paper, no frame, no cast shadow, no checkerboard baked into pixels. NO TEXT, no glyphs, no letters, no numbers, no seals, no watermark. Not a flat outline web icon; painterly game asset with restrained handmade brush texture.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W02",
+    "name": "불",
+    "subject": "one clear curling flame",
+    "accent": "vermilion",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: one clear curling flame. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus vermilion as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W03",
+    "name": "독",
+    "subject": "a poison droplet above a small unmarked vial",
+    "accent": "moss green",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a poison droplet above a small unmarked vial. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus moss green as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W04",
+    "name": "벽",
+    "subject": "a compact protective brick wall",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a compact protective brick wall. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W05",
+    "name": "돌",
+    "subject": "a rugged heavy rock",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a rugged heavy rock. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W06",
+    "name": "활",
+    "subject": "a curved bow with taut string and one arrow",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a curved bow with taut string and one arrow. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W07",
+    "name": "창",
+    "subject": "a long spear with pointed head",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a long spear with pointed head. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W08",
+    "name": "칼",
+    "subject": "a short single-edged knife",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a short single-edged knife. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W09",
+    "name": "눈",
+    "subject": "a six-armed snow crystal",
+    "accent": "icy blue",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a six-armed snow crystal. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus icy blue as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W10",
+    "name": "물",
+    "subject": "one water drop above gentle concentric ripples",
+    "accent": "icy blue",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: one water drop above gentle concentric ripples. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus icy blue as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W11",
+    "name": "실",
+    "subject": "a rounded spool of thread with a trailing strand",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a rounded spool of thread with a trailing strand. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W12",
+    "name": "숨",
+    "subject": "three airy flowing breath strokes emerging from a small soft puff",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: three airy flowing breath strokes emerging from a small soft puff. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W13",
+    "name": "돈",
+    "subject": "three old round coins with square holes",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: three old round coins with square holes. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W14",
+    "name": "운",
+    "subject": "one four-leaf clover with a tiny lucky sparkle",
+    "accent": "moss green",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: one four-leaf clover with a tiny lucky sparkle. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus moss green as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W15",
+    "name": "복",
+    "subject": "a tied blessing pouch with a small tassel, no inscription",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a tied blessing pouch with a small tassel, no inscription. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W16",
+    "name": "길",
+    "subject": "a winding path receding between two simple edges",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a winding path receding between two simple edges. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W17",
+    "name": "비",
+    "subject": "one small ink cloud with distinct falling raindrops",
+    "accent": "icy blue",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: one small ink cloud with distinct falling raindrops. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus icy blue as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W18",
+    "name": "봄",
+    "subject": "a flowering branch with two open blossoms",
+    "accent": "soft coral",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a flowering branch with two open blossoms. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus soft coral as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W19",
+    "name": "밤",
+    "subject": "a crescent moon above a quiet dark hill and two stars",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a crescent moon above a quiet dark hill and two stars. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W20",
+    "name": "욕심",
+    "subject": "an overfilled hoard of coins grasped by a curling claw",
+    "accent": "muted gold",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: an overfilled hoard of coins grasped by a curling claw. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus muted gold as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W21",
+    "name": "광기",
+    "subject": "a fractured circular eye-like spiral with jagged radiating cracks",
+    "accent": "vermilion",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a fractured circular eye-like spiral with jagged radiating cracks. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus vermilion as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "W22",
+    "name": "폭주",
+    "subject": "a wild rushing streak of ink with a broken restraint chain",
+    "accent": "vermilion",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a wild rushing streak of ink with a broken restraint chain. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus vermilion as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "C01",
+    "name": "불길",
+    "subject": "a flame flowing along a curling trail of fire",
+    "accent": "vermilion",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a flame flowing along a curling trail of fire. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus vermilion as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  },
+  {
+    "id": "C02",
+    "name": "눈물",
+    "subject": "a single large falling teardrop beneath a subtle eye arc",
+    "accent": "icy blue",
+    "prompt": "Use case: stylized-concept. Asset type: JAMO word game UI icon, square transparent PNG, normalized to 256x256. Subject: a single large falling teardrop beneath a subtle eye arc. Premium Korean ink brush painting; strong expressive charcoal silhouette with subtle dry-brush edges, controlled flecks, clear at small scale. Palette: dark warm charcoal and neutral light ink highlights plus icy blue as ONLY chromatic accent. Centered isolated subject, generous 12% empty margin, whole subject visible. Genuinely transparent alpha, no paper backdrop, no frame, no cast shadow, NO TEXT, no characters, letters, numbers, seals, logos or watermark. Not a flat web outline icon; restrained painterly game art.",
+    "method": "built-in ImageGen; alpha-preserving canvas normalization"
+  }
+]
