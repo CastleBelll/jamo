@@ -120,7 +120,9 @@ func take_damage(amount: float) -> float:
 		amount -= absorbed
 		hp_changed.emit(hp, hp_max)
 		if amount <= 0.0:
-			if anim.has_animation("hit"):
+			if proxy != null:
+				proxy.hit()
+			elif anim.has_animation("hit"):
 				anim.stop()
 				anim.play("hit")
 			return absorbed

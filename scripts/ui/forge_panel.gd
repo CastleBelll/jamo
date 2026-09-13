@@ -88,6 +88,7 @@ func _refresh() -> void:
 	compare_label.text = _compare_text(c) if not c.is_empty() else _status_text()
 	pin_label.text = _pin_text()
 	_rebuild_compounds()
+	compound_label.visible = compound_label.text != ""  # after every early return inside the rebuild
 
 
 ## "덱 20장 중 7장" plus what is still in the pile, so the hand reads as the player's own deck (B3).
@@ -301,7 +302,6 @@ func _rebuild_compounds() -> void:
 		compound_box.add_child(b)
 	compound_label.text = _compound_preview_text(selected_compound)
 	compound_button.disabled = not forge.can_compound()
-	compound_label.visible = compound_label.text != ""
 
 
 func _compound_preview_text(id: StringName) -> String:

@@ -29,9 +29,10 @@ func spawn_proxy(jamo: String, motion_id: StringName) -> CharacterProxy:
 	return spawn_scene(CharacterProxy.model_for(jamo), motion_id, CharacterProxy.TARGET_HEIGHT)
 
 
-## Boss figures: their own model file, twice the height, no gait.
+## Boss figures: their own model file, 1.5x the enemy height (fits between the HUD band and the
+## B11 anchor at y=260 without clipping), no gait.
 func spawn_boss_proxy(boss_id: StringName) -> CharacterProxy:
-	return spawn_scene(CharacterProxy.model_for_boss(boss_id), &"GLIDE", CharacterProxy.TARGET_HEIGHT * 2.0)
+	return spawn_scene(CharacterProxy.model_for_boss(boss_id), &"GLIDE", CharacterProxy.TARGET_HEIGHT * 1.5)
 
 
 func spawn_scene(scene: PackedScene, motion_id: StringName, height: float) -> CharacterProxy:
