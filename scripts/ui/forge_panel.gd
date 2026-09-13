@@ -15,6 +15,7 @@ var replace_target: StringName = &""
 @onready var lock_label: Label = %LockLabel
 @onready var reroll_button: Button = %RerollButton
 @onready var build_label: Label = %BuildLabel
+@onready var deck_label: Label = %DeckLabel
 @onready var candidates_box: VBoxContainer = %Candidates
 @onready var compare_label: Label = %CompareLabel
 @onready var replace_row: HBoxContainer = %ReplaceRow
@@ -70,6 +71,7 @@ func _refresh() -> void:
 	if forge == null:
 		return
 	_rebuild_hand()
+	deck_label.text = _deck_text()
 	lock_label.text = "잠금 %d/%d" % [forge.locked.size(), forge.lock_max]
 	reroll_button.text = "Reroll %d (바뀜 %d)" % [forge.rerolls_left, forge.reroll_slots()]
 	reroll_button.disabled = not forge.can_reroll()
@@ -86,6 +88,19 @@ func _refresh() -> void:
 	pin_label.text = _pin_text()
 	status_label.text = _status_text()
 	_rebuild_compounds()
+
+
+## "덱 20장 중 7장" plus what is still in the pile, so the hand reads as the player's own deck (B3).
+func _deck_text() -> String:
+	var counts := {}
+	for t in forge.draw + forge.discard:
+		counts[t["jamo"]] = counts.get(t["jamo"], 0) + 1
+	var keys := counts.keys()
+	keys.sort()
+	var rest: Array[String] = []
+	for k in keys:
+		rest.append("%s%d" % [k, counts[k]] if counts[k] > 1 else String(k))
+	return "내 덱 %d장을 섞어 %d장을 뽑음 · 남은 활자 %s" % [forge.token_total(), forge.hand.size(), " ".join(rest) if not rest.is_empty() else "없음"]
 
 
 func _rebuild_hand() -> void:

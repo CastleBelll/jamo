@@ -62,8 +62,7 @@ func _ready() -> void:
 	run.stability_changed.connect(_on_stability_changed)
 	page.get_node("LastSentence/Text").text = LibraryService.sentence_text(db)
 	_dress_page()
-	if not AssetLib.apply(page.get_node("Overlays/InkOverlay"), "ink_vignette"):
-		AssetLib.apply(page.get_node("Overlays/InkOverlay"), "ink_overlay")
+	page.get_node("Overlays/InkOverlay").visible = false  # edge smears read as stray lines
 	page.get_node("LastSentence/Row").visible = not AssetLib.apply(page.get_node("LastSentence/RowArt"), "sentence_row")
 	Sfx.play_bgm("combat")
 	clear_panel.state_changed.connect(_save_run)
