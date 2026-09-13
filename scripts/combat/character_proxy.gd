@@ -6,7 +6,7 @@ extends Node3D
 
 const MODEL_DIRS := ["res://art/models/char_%s.glb", "res://art/monsters/characters/%s.glb"]
 const BOSS_MODEL := "res://art/models/%s.glb"   # boss_mieum / boss_silence / boss_ieung / boss_greed
-const TARGET_HEIGHT := 1.8        # units; ~92px on screen at the 40-degree camera pitch (B11 visual size)
+const TARGET_HEIGHT := 1.12       # units; measured ~92px on the 1080 canvas at the 40-degree pitch (B11 visual size)
 const TURN_SPEED := 10.0
 const HIT_SECONDS := 0.16
 const PURIFY_SECONDS := 0.45
@@ -85,12 +85,15 @@ func update_from(layer: Node, pos2d: Vector2, velocity2d: Vector2, delta: float)
 		var ahead: Vector3 = layer.ground_point(pos2d + velocity2d.normalized() * 10.0)
 		var dir := ahead - target
 		if dir.length() > 0.001:
-			heading = lerp_angle(heading, atan2(dir.x, dir.z), minf(1.0, TURN_SPEED * delta))
+			# Models face -Z (MODELS.md), so aim -Z along the travel direction.
+			heading = lerp_angle(heading, atan2(-dir.x, -dir.z), minf(1.0, TURN_SPEED * delta))
 	position = target
 	rotation.y = heading
 	if dying:
 		return
 	if anim != null and anim.has_animation("walk"):
+		if anim.is_playing() and anim.current_animation == "hit":
+			return  # let the squash finish before walk/idle takes the player back
 		var want := "walk" if moving else "idle"
 		if anim.current_animation != want and anim.has_animation(want):
 			anim.play(want)
@@ -131,6 +134,7 @@ func hit() -> void:
 	if dying:
 		return
 	if anim != null and anim.has_animation("hit"):
+		anim.stop()
 		anim.play("hit")
 		return
 	var t := create_tween()
@@ -140,6 +144,8 @@ func hit() -> void:
 
 ## Purify: play the track or crumble (scale down + sink), then free.
 func purify() -> void:
+	if dying:
+		return
 	dying = true
 	if anim != null and anim.has_animation("purify"):
 		anim.play("purify")

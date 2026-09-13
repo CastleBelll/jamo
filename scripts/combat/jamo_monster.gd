@@ -81,7 +81,7 @@ func _ready() -> void:
 ## P6: when the Battle3D layer is present and a model exists for this jamo, the figure is
 ## drawn in 3D and the 2D sprite/shadow hide. Gameplay nodes (click circle, paths) unchanged.
 func _attach_proxy() -> void:
-	if proxy != null or not is_inside_tree():
+	if proxy != null or not alive or not is_inside_tree():
 		return
 	battle3d = get_tree().get_first_node_in_group("battle3d")
 	if battle3d == null:

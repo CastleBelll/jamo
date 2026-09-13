@@ -21,8 +21,20 @@ script = ExtResource("2")
 [node name="CorruptedPage" parent="." instance=ExtResource("3")]
 process_mode = 1
 
-[node name="Battle3D" parent="." instance=ExtResource("10")]
+[node name="BattleClip" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 96.0
+offset_bottom = -124.0
+mouse_filter = 2
+clip_contents = true
+
+[node name="Battle3D" parent="BattleClip" instance=ExtResource("10")]
 process_mode = 1
+offset_top = -96.0
+offset_bottom = 124.0
 
 [node name="CombatDirector" type="Node" parent="."]
 process_mode = 1

@@ -87,7 +87,6 @@ func _refresh() -> void:
 	# One text block under the candidates: the selected candidate's comparison, else the status line.
 	compare_label.text = _compare_text(c) if not c.is_empty() else _status_text()
 	pin_label.text = _pin_text()
-	compound_label.visible = compound_label.text != ""
 	_rebuild_compounds()
 
 
@@ -302,6 +301,7 @@ func _rebuild_compounds() -> void:
 		compound_box.add_child(b)
 	compound_label.text = _compound_preview_text(selected_compound)
 	compound_button.disabled = not forge.can_compound()
+	compound_label.visible = compound_label.text != ""
 
 
 func _compound_preview_text(id: StringName) -> String:

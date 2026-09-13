@@ -100,7 +100,7 @@ func _check_targeting_and_cooldown() -> void:
 	director.tick(0.0)
 	var e1: JamoMonster = director.enemies[0]
 	var p := e1.global_position
-	var layer := game.get_node_or_null("Battle3D")
+	var layer := game.get_node_or_null("BattleClip/Battle3D")
 	_expect(layer != null and layer.is_in_group("battle3d"), "Battle3D layer instanced under run_game")
 	for e in director.enemies:
 		var has_model := CharacterProxy.model_for(e.jamo) != null

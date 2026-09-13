@@ -176,7 +176,8 @@ func poll_pattern(clock: float) -> Dictionary:
 
 ## P6: boss figure in the Battle3D layer when its model exists; the 2D art hides.
 func _attach_boss_proxy() -> void:
-	if proxy != null or data == null or not is_inside_tree():
+	# Refreshes after the purify (hp_changed, shield) must not respawn a figure for a dead boss.
+	if proxy != null or data == null or not alive or hp <= 0.0 or not is_inside_tree():
 		return
 	battle3d = get_tree().get_first_node_in_group("battle3d")
 	if battle3d == null:
