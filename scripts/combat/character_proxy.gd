@@ -5,6 +5,7 @@ extends Node3D
 ## (art/monsters/characters, Leg_L/Leg_R parts) get a procedural gait per G11 motion group.
 
 const MODEL_DIRS := ["res://art/models/char_%s.glb", "res://art/monsters/characters/%s.glb"]
+const BOSS_MODEL := "res://art/models/%s.glb"   # boss_mieum / boss_silence / boss_ieung / boss_greed
 const TARGET_HEIGHT := 1.9        # units; reads as ~92px at the 60-degree camera tilt (B11 visual size)
 const TURN_SPEED := 10.0
 const HIT_SECONDS := 0.16
@@ -42,7 +43,15 @@ static func model_for(jamo: String) -> PackedScene:
 	return null
 
 
-func setup(scene: PackedScene, motion_id: StringName) -> void:
+static func model_for_boss(boss_id: StringName) -> PackedScene:
+	var name: String = AssetLib.BOSS_NAMES.get(String(boss_id), "")
+	if name == "":
+		return null
+	var path := BOSS_MODEL % name
+	return load(path) if ResourceLoader.exists(path) else null
+
+
+func setup(scene: PackedScene, motion_id: StringName, height: float = TARGET_HEIGHT) -> void:
 	model = scene.instantiate()
 	add_child(model)
 	anim = model.find_child("AnimationPlayer", true, false)
@@ -51,7 +60,7 @@ func setup(scene: PackedScene, motion_id: StringName) -> void:
 	body = model.find_child("Glyph", true, false)
 	gait = GAITS.get(motion_id, GAITS[&"GLIDE"])
 	var aabb := _bounds()
-	base_scale = TARGET_HEIGHT / maxf(aabb.size.y, 0.01)
+	base_scale = height / maxf(aabb.size.y, 0.01)
 	model.scale = Vector3.ONE * base_scale
 	if anim != null and anim.has_animation("idle"):
 		anim.play("idle")

@@ -26,10 +26,18 @@ func ground_point(screen: Vector2) -> Vector3:
 
 ## Returns a proxy when a model exists for the jamo, else null (the 2D sprite stays).
 func spawn_proxy(jamo: String, motion_id: StringName) -> CharacterProxy:
-	var scene := CharacterProxy.model_for(jamo)
+	return spawn_scene(CharacterProxy.model_for(jamo), motion_id, CharacterProxy.TARGET_HEIGHT)
+
+
+## Boss figures: their own model file, twice the height, no gait.
+func spawn_boss_proxy(boss_id: StringName) -> CharacterProxy:
+	return spawn_scene(CharacterProxy.model_for_boss(boss_id), &"GLIDE", CharacterProxy.TARGET_HEIGHT * 2.0)
+
+
+func spawn_scene(scene: PackedScene, motion_id: StringName, height: float) -> CharacterProxy:
 	if scene == null:
 		return null
 	var proxy := CharacterProxy.new()
 	proxies.add_child(proxy)
-	proxy.setup(scene, motion_id)
+	proxy.setup(scene, motion_id, height)
 	return proxy

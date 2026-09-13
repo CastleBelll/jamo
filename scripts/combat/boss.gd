@@ -56,6 +56,7 @@ func _refresh_visual() -> void:
 	var sprite := $VisualPivot/Sprite2D as Sprite2D
 	sprite.texture = AssetLib.boss_glyph(data.id)
 	glyph.visible = sprite.texture == null
+	_attach_boss_proxy()
 	if sprite.texture != null:
 		# 512px porcelain art shown at BOSS_ART_HEIGHT so it stays in the B11 zone above the
 		# lanes; the click capsule (segment +-30, radius 95) covers that body.
@@ -171,3 +172,19 @@ func poll_pattern(clock: float) -> Dictionary:
 		marker_index = (marker_index + 1) % data.marker_positions.size()
 	next_pattern_at += period()
 	return spec
+
+
+## P6: boss figure in the Battle3D layer when its model exists; the 2D art hides.
+func _attach_boss_proxy() -> void:
+	if proxy != null or data == null or not is_inside_tree():
+		return
+	battle3d = get_tree().get_first_node_in_group("battle3d")
+	if battle3d == null:
+		return
+	proxy = battle3d.spawn_boss_proxy(data.id)
+	if proxy == null:
+		return
+	visual_pivot.visible = false
+	$Shadow.visible = false
+	last_pos = global_position
+	proxy.update_from(battle3d, global_position, Vector2.ZERO, 0.0)
