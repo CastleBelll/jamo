@@ -1,0 +1,362 @@
+[
+  {
+    "id": "W01",
+    "file": "art/words/word_W01.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "ad665d4c5cb9e9149f9f51b6b3ff0cb1ec949e75b16c6612d108e07adbc519b8",
+    "sha256": "d70107ea1fc243447eb75a4eb26f737094d97d82f05b4ca15b0cd652dfe2fed0"
+  },
+  {
+    "id": "W02",
+    "file": "art/words/word_W02.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "81d1a349849d471beac35da636915698d4aa4243cb9898f875bcd0f3d74ac827",
+    "sha256": "6649f9d68f98ecb3e0694ba92714b4f32b1d48a22f09804a97d50e6a0b3e402d"
+  },
+  {
+    "id": "W03",
+    "file": "art/words/word_W03.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "082e81b41e3eeb924075bb5da652ec92e4e6245a9dfce031621db846ab4ea52a",
+    "sha256": "e0e6e136ce78c91d33895d53f43f369b6ae99117ee79710b86da9497211daf3f"
+  },
+  {
+    "id": "W04",
+    "file": "art/words/word_W04.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "28bfc5734aa075e10a23e1fdaea71c5d0d02cf7adff5c1d6cba5616d6c925dc9",
+    "sha256": "5e9abb53793923647d96ea7255854f27328d8ca193cc089f2c0df2485c73906c"
+  },
+  {
+    "id": "W05",
+    "file": "art/words/word_W05.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "662e6f0fb0f2253f1dae599d47e08b732f2269241a32b16a2048f2b75daa6764",
+    "sha256": "df536f9b374a9c1a9f036bc5516aaf5f23b607ead170c0215b7c8b0569e19a9b"
+  },
+  {
+    "id": "W06",
+    "file": "art/words/word_W06.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "ca70b18ff2e59a513e9c3e3c7dceebd98a67b085b997f625f9668e83fd8acb98",
+    "sha256": "e94bc99d74eb21d5a19bd9169c66d2ecf626d090b1384cbad98bee407cd3ca20"
+  },
+  {
+    "id": "W07",
+    "file": "art/words/word_W07.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "e35bd7c4fe510dc9b4457156b4796038373fc15a85e9657c05203b3e622aad68",
+    "sha256": "57505e074ede12add88f19577514e522fe4135c85508feac7e457a8b3fe418aa"
+  },
+  {
+    "id": "W08",
+    "file": "art/words/word_W08.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "1b002f1cc7e716d962c2afce797a6809ff374343f3a67c59bc6e0efde5b3255e",
+    "sha256": "c338cc7598729095e16ffd718c0da7025de2b2236d706c8cc85c1fb89732c128"
+  },
+  {
+    "id": "W09",
+    "file": "art/words/word_W09.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "e02edd64df77ac54ba172be2bf6cdd46d7fae5aeee93af1949e56b5fe3d412cf",
+    "sha256": "fcfdf3de785f84891be34eabed6253d4d05f9ce03334021bec36ed88f00e030b"
+  },
+  {
+    "id": "W10",
+    "file": "art/words/word_W10.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "6dd439ecec1351f3e280808fb1238e48ab003b9d9c4f0c2a523cbe488fb93ee0",
+    "sha256": "81e020b797124a1fff9eeadffe7b1b5d606afd6840041e8e66a8ffa896ba2b38"
+  },
+  {
+    "id": "W11",
+    "file": "art/words/word_W11.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "e6b09ac2728683f9cadf67244af711f5d76c622ac5131afddcb34c2e3f481a9c",
+    "sha256": "043108dcc5ba4045aaf88e13959d82ec0cc920b580450f1e53d8b27927a60533"
+  },
+  {
+    "id": "W12",
+    "file": "art/words/word_W12.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "9620ef8f00611ef745f54cef3cb98ad5ae1703632f383a68ac269e095f4baddd",
+    "sha256": "2dc877d735b1003d0532f2a1526c4b1c745200dc19239a56641299e3954d5a85"
+  },
+  {
+    "id": "W13",
+    "file": "art/words/word_W13.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "d193f7e441a396ecc6b934145c394b5134cac729e2fed5ca924abdf766914b35",
+    "sha256": "a2126641bbf0392dd7b99820b611fa8eb5297bc6e8ad1f7d66c83084cd98b053"
+  },
+  {
+    "id": "W14",
+    "file": "art/words/word_W14.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "15ecdb93793d4451f8c1ecf0afe1b53b852dfac0a7f73be4a775864c0c244a0f",
+    "sha256": "5e1a2ef283cc7b6bfc95534d77cfe1b007045388cda395bddd62a1ebd7a45b18"
+  },
+  {
+    "id": "W15",
+    "file": "art/words/word_W15.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "5defff9ce9e563fce6d244f2023f22701d2ebd6e2eb269fbf2787176b53dbd93",
+    "sha256": "0288487610e2beead165ba3d5fd4adfe451d33f90b16f3c3f8b7bf8167552d14"
+  },
+  {
+    "id": "W16",
+    "file": "art/words/word_W16.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "406f5776fa3968e9603e0c242e5619bffba5559daf4ee717bdeaef55485c54ed",
+    "sha256": "b2e4f906c23f5e904d13ecfa7e383029d49d5efbf56202670257f2a7d2e0634e"
+  },
+  {
+    "id": "W17",
+    "file": "art/words/word_W17.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "538feda08f68a8ffe27f9496f3cc3e62d5637c130304375f113b0f3fc56df620",
+    "sha256": "4f659e0ba14eab9d12a931862f8b8ec15e8469ec5cbd523e54672d66ef64ea59"
+  },
+  {
+    "id": "W18",
+    "file": "art/words/word_W18.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "b8c8d1d993041908c07dc2b2468dfefe60f1e70732ad84e8fddb14ffd02e42f0",
+    "sha256": "d9928185c3e8796f4aae007978d858189924c91c6839678733c9f3cd8160da8d"
+  },
+  {
+    "id": "W19",
+    "file": "art/words/word_W19.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "2c59a7ee90c8f88aeb6e7d60382743a5137e7ee9bb25c533f811108889d2cdb7",
+    "sha256": "2432e223077dcefdba42581de4b40ccd74c5817e2fc0819473af1ff9eee84e98"
+  },
+  {
+    "id": "W20",
+    "file": "art/words/word_W20.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "7ad409f539b4ff8db2cb2d5a2550019b90c4a8a8eda970d38f2fc82e6083a68f",
+    "sha256": "9a75f346e4bd251e72f6337c3bb206fc82cf21c936f4ba5341174432576a6379"
+  },
+  {
+    "id": "W21",
+    "file": "art/words/word_W21.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "c474aa7f88b868ff0b8fc4ad8fb8e003d8b7e39c381ce607a19a7455a19175be",
+    "sha256": "10b7fc6e74396dde3d9ae61d3fe2092af1057ac5508440a27f24f032583dc0e7"
+  },
+  {
+    "id": "W22",
+    "file": "art/words/word_W22.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "2c135ad6c128134bf2085c982e957b25d5d164d9deabc543cbb05364a2f2bca8",
+    "sha256": "1c1d0b8f16f0db4cdf736b2e994da6136e462e49e29d83939a13fd538a46b463"
+  },
+  {
+    "id": "C01",
+    "file": "art/words/word_C01.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "051e180223b38620f9da8fe89bfc35aae0c7b832670d905e0359da95ed1e468c",
+    "sha256": "f17a5f8ffb562ad349000090209e04b085383393ded5df49c9cb9f04c83e342a"
+  },
+  {
+    "id": "C02",
+    "file": "art/words/word_C02.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "source_sha256": "997cd6ba3f40dc2926bbe11f7e225dccb2f36ee5a5741e96c325855467fb16f8",
+    "sha256": "14828153434e158ac1e7ec541efb2e25bea4c76a3816deec7dc95f78f3c465bb"
+  }
+]
