@@ -48,18 +48,21 @@ func breathe(c: Control) -> void:
 	t.tween_property(c, "scale", Vector2.ONE, BREATHE_TIME)
 
 
-## Staggered slide-in from the left with a fade, for a column of menu controls.
-func slide_in(controls: Array) -> void:
+## Menu entrance: the column itself slides in from the left (containers own their children's
+## positions, so only the column's own position is animated) while its rows fade in staggered.
+func slide_in(column: Control, rows: Array) -> void:
+	var rest := column.position.x
+	column.position.x = rest - SLIDE_PX
+	var slide := column.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	slide.tween_property(column, "position:x", rest, SLIDE_TIME)
 	var delay := 0.0
-	for item in controls:
+	for item in rows:
 		if not (item is Control):
 			continue
 		var c: Control = item
 		c.modulate.a = 0.0
-		c.position.x -= SLIDE_PX
-		var t := c.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		var t := c.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		t.tween_property(c, "modulate:a", 1.0, SLIDE_TIME).set_delay(delay)
-		t.tween_property(c, "position:x", c.position.x + SLIDE_PX, SLIDE_TIME).set_delay(delay)
 		delay += SLIDE_STAGGER
 
 
