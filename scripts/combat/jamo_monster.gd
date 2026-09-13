@@ -41,6 +41,10 @@ var focused: bool = false:
 var motion: MotionProfile
 var motion_time: float = 0.0
 var motion_scale: float = 1.0
+## P6: porcelain 3D figure in the Battle3D layer (null = 2D sprite path).
+var proxy: CharacterProxy
+var battle3d: Node
+var last_pos: Vector2 = Vector2.INF
 @onready var glyph: Label = $VisualPivot/Glyph
 @onready var anim: AnimationPlayer = $AnimationPlayer
 
@@ -66,11 +70,35 @@ func _ready() -> void:
 	glyph.text = jamo
 	$FocusRing.visible = focused
 	_apply_glyph_texture()
+	_attach_proxy()  # set_motion() runs before add_child, so the layer lookup happens here
 	_refresh_variant_mark()
 	for key in ["burn", "poison", "slow"]:
 		var icon := get_node_or_null("StatusAnchor/Icon_%s" % key) as Sprite2D
 		if icon != null:
 			icon.texture = AssetLib.tex("status_%s" % key)
+
+
+## P6: when the Battle3D layer is present and a model exists for this jamo, the figure is
+## drawn in 3D and the 2D sprite/shadow hide. Gameplay nodes (click circle, paths) unchanged.
+func _attach_proxy() -> void:
+	if proxy != null or not is_inside_tree():
+		return
+	battle3d = get_tree().get_first_node_in_group("battle3d")
+	if battle3d == null:
+		return
+	proxy = battle3d.spawn_proxy(jamo, motion.id if motion != null else &"GLIDE")
+	if proxy == null:
+		return
+	visual_pivot.visible = false
+	$Shadow.visible = false
+	last_pos = global_position
+	proxy.update_from(battle3d, global_position, Vector2.ZERO, 0.0)
+
+
+func _exit_tree() -> void:
+	if proxy != null and is_instance_valid(proxy):
+		proxy.queue_free()
+		proxy = null
 
 
 ## Real glyph sprite when the art exists; the Label stays as fallback (G11).
@@ -90,6 +118,11 @@ func _apply_glyph_texture() -> void:
 
 
 func _process(delta: float) -> void:
+	if proxy != null:
+		var velocity := (global_position - last_pos) / maxf(delta, 0.0001) if last_pos != Vector2.INF else Vector2.ZERO
+		last_pos = global_position
+		proxy.update_from(battle3d, global_position, velocity, delta)
+		return
 	if motion == null or not alive:
 		return
 	motion_time += delta
@@ -101,6 +134,7 @@ func _process(delta: float) -> void:
 func set_motion(profile: MotionProfile, scale: float) -> void:
 	motion = profile
 	motion_scale = scale
+	_attach_proxy()
 	if profile == null or scale <= 0.0:
 		visual_pivot.rotation = 0.0
 		visual_pivot.position = Vector2.ZERO
@@ -211,7 +245,9 @@ func take_damage(amount: float) -> float:
 	var dealt := minf(amount, hp)
 	hp -= dealt
 	hp_changed.emit(hp, hp_max)
-	if anim.has_animation("hit"):
+	if proxy != null:
+		proxy.hit()
+	elif anim.has_animation("hit"):
 		anim.stop()
 		anim.play("hit")
 	return dealt
@@ -222,6 +258,9 @@ func is_hit_by(world_pos: Vector2, radius: float) -> bool:
 
 
 func play_purify() -> void:
+	if proxy != null:
+		proxy.purify()
+		proxy = null  # frees itself after the crumble; the 2D node's own timer follows
 	if anim.has_animation("purify"):
 		anim.play("purify")
 

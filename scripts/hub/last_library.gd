@@ -3,6 +3,7 @@ extends Control
 ## the first-RUN opening (S5). Logic lives in LibraryService; this file only draws and routes.
 
 const RUN_SCENE := "res://scenes/run/run_game.tscn"
+const RECORD_ROWS := 10
 
 var db: ContentDB
 var codex_tab: String = "base"
@@ -211,7 +212,8 @@ func _add_codex_button(text: String, id: String) -> void:
 	b.text = text
 	b.theme_type_variation = &"GhostButton"
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	b.custom_minimum_size = Vector2(0, 60)
+	b.custom_minimum_size = Vector2(316, 52)
+	b.add_theme_font_size_override("font_size", 24)
 	b.toggle_mode = true
 	b.button_pressed = id == codex_selected
 	b.pressed.connect(func(): codex_selected = id; _refresh_codex())
@@ -260,11 +262,18 @@ func _refresh_records() -> void:
 		var l := Label.new()
 		l.text = "아직 기록이 없다."
 		%EventRows.add_child(l)
-	for line in lines:
+	# No scrolling (G10): the newest RECORD_ROWS lines, older ones summarised.
+	var shown: Array[String] = lines.slice(maxi(lines.size() - RECORD_ROWS, 0))
+	for line in shown:
 		var l := Label.new()
 		l.text = line
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		%EventRows.add_child(l)
+	if lines.size() > shown.size():
+		var more := Label.new()
+		more.text = "…이전 기록 %d개" % (lines.size() - shown.size())
+		more.theme_type_variation = &"MutedLabel"
+		%EventRows.add_child(more)
 
 
 func _mark(on: bool) -> String:

@@ -68,17 +68,12 @@ autowrap_mode = 3
 horizontal_alignment = 1
 text = "보유 0 / 6"
 
-[node name="CandidateScroll" type="ScrollContainer" parent="Box"]
-custom_minimum_size = Vector2(0, 170)
-layout_mode = 2
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
-
-[node name="Candidates" type="VBoxContainer" parent="Box/CandidateScroll"]
+[node name="Candidates" type="GridContainer" parent="Box"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 8
+columns = 2
 
 [node name="CompareLabel" type="Label" parent="Box"]
 unique_name_in_owner = true

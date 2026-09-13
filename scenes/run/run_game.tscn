@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/run_game.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/run/run_controller.gd" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/reward_panel.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://scenes/ui/forge_panel.tscn" id="8"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_panel.tscn" id="9"]
+[ext_resource type="PackedScene" path="res://scenes/run/battle3d.tscn" id="10"]
 
 [node name="RunGame" type="Node"]
 process_mode = 3
@@ -18,6 +19,9 @@ script = ExtResource("1")
 script = ExtResource("2")
 
 [node name="CorruptedPage" parent="." instance=ExtResource("3")]
+process_mode = 1
+
+[node name="Battle3D" parent="." instance=ExtResource("10")]
 process_mode = 1
 
 [node name="CombatDirector" type="Node" parent="."]

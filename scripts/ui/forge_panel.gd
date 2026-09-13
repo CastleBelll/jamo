@@ -17,7 +17,7 @@ var replace_target: StringName = &""
 @onready var build_label: Label = %BuildLabel
 @onready var deck_label: Label = %DeckLabel
 @onready var deck_view: DeckView = %DeckView
-@onready var candidates_box: VBoxContainer = %Candidates
+@onready var candidates_box: GridContainer = %Candidates
 @onready var compare_label: Label = %CompareLabel
 @onready var replace_row: HBoxContainer = %ReplaceRow
 @onready var restore_button: Button = %RestoreButton
@@ -135,7 +135,8 @@ func _rebuild_candidates() -> void:
 		var b := Button.new()
 		b.text = "%s  %s   %s" % [w.name, tag, EffectText.describe_rank(w, forge.build.rank_of(w.id) + 1)]
 		AssetLib.apply(b, "cand_rankup" if c["kind"] == ForgeService.KIND_RANK_UP else ("cand_replace" if c["needs_replace"] or c["replace_risk"] else "cand_new"))
-		b.custom_minimum_size = Vector2(0, 72)
+		b.custom_minimum_size = Vector2(0, 64)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.theme_type_variation = &"GhostButton"
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.toggle_mode = true

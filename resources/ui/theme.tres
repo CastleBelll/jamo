@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=54 format=3]
+[gd_resource type="Theme" load_steps=55 format=3]
 
 [ext_resource type="FontFile" path="res://art/fonts/NanumMyeongjo-Regular.ttf" id="font"]
 [ext_resource type="FontFile" path="res://art/fonts/NanumMyeongjo-Bold.ttf" id="font_bold"]
@@ -103,6 +103,17 @@ corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="hud_flat"]
+content_margin_left = 28.0
+content_margin_top = 10.0
+content_margin_right = 28.0
+content_margin_bottom = 10.0
+bg_color = Color(0.08, 0.06, 0.05, 0.62)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 
 [sub_resource type="StyleBoxFlat" id="btn_ink"]
 content_margin_left = 28.0
@@ -500,7 +511,7 @@ HeadingLabel/colors/font_color = Color(0.12, 0.1, 0.09, 1)
 HeadingLabel/font_sizes/font_size = 48
 HeadingLabel/fonts/font = ExtResource("font_bold")
 HudBar/base_type = &"PanelContainer"
-HudBar/styles/panel = SubResource("tx_hud_bar")
+HudBar/styles/panel = SubResource("hud_flat")
 InkPanel/base_type = &"PanelContainer"
 InkPanel/styles/panel = SubResource("tx_panel_ink")
 Label/colors/font_color = Color(0.12, 0.1, 0.09, 1)
