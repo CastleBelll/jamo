@@ -134,7 +134,12 @@ func _rebuild_candidates() -> void:
 			tag += " · 교체"
 		var b := Button.new()
 		b.text = "%s  %s   %s" % [w.name, tag, EffectText.describe_rank(w, forge.build.rank_of(w.id) + 1)]
-		AssetLib.apply(b, "cand_rankup" if c["kind"] == ForgeService.KIND_RANK_UP else ("cand_replace" if c["needs_replace"] or c["replace_risk"] else "cand_new"))
+		# The word's own picture leads the row; the candidate-kind glyph is the fallback.
+		if AssetLib.word_icon(w.id) != null:
+			b.icon = AssetLib.word_icon(w.id)
+			b.expand_icon = true
+		else:
+			AssetLib.apply(b, "cand_rankup" if c["kind"] == ForgeService.KIND_RANK_UP else ("cand_replace" if c["needs_replace"] or c["replace_risk"] else "cand_new"))
 		b.custom_minimum_size = Vector2(0, 64)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.theme_type_variation = &"GhostButton"

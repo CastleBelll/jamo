@@ -210,6 +210,9 @@ func _refresh_codex() -> void:
 func _add_codex_button(text: String, id: String) -> void:
 	var b := Button.new()
 	b.text = text
+	if db.words.has(StringName(id)) and AssetLib.word_icon(StringName(id)) != null:
+		b.icon = AssetLib.word_icon(StringName(id))
+		b.expand_icon = true
 	b.theme_type_variation = &"GhostButton"
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.custom_minimum_size = Vector2(316, 52)

@@ -6,7 +6,7 @@ extends RefCounted
 const GLYPH_NAMES := {"ㄱ": "giyeok", "ㄴ": "nieun", "ㄷ": "digeut", "ㄹ": "rieul", "ㅁ": "mieum", "ㅂ": "bieup",
 	"ㅅ": "siot", "ㅇ": "ieung", "ㅈ": "jieut", "ㅊ": "chieut", "ㅋ": "kieuk", "ㅍ": "pieup", "ㅎ": "hieut",
 	"ㅏ": "a", "ㅓ": "eo", "ㅕ": "yeo", "ㅗ": "o", "ㅛ": "yo", "ㅜ": "u", "ㅣ": "i"}
-const DIRS := {"glyph": "art/glyphs", "char": "art/glyphs", "boss": "art/bosses", "combat": "art/backgrounds", "hud": "art/hud", "lib": "art/library",
+const DIRS := {"glyph": "art/glyphs", "char": "art/glyphs", "boss": "art/bosses", "combat": "art/backgrounds", "word": "art/words", "hud": "art/hud", "lib": "art/library",
 	"title": "art/title", "paper": "art/backgrounds", "ink": "art/backgrounds", "sentence": "art/backgrounds"}
 const TAG_NAMES := {"무기": "weapon", "화염": "fire", "지속": "dot", "방어": "guard", "자동": "auto",
 	"냉기": "cold", "경제": "econ", "행운": "luck", "위험": "risk"}
@@ -68,6 +68,11 @@ static func tag_icon(tag: StringName) -> Texture2D:
 
 static func category_icon(category: StringName) -> Texture2D:
 	return tex("cat_%s" % CATEGORY_NAMES.get(String(category), "")) if CATEGORY_NAMES.has(String(category)) else null
+
+
+## Word illustration (P6 codex B): art/words/word_<id>.png, null until it exists.
+static func word_icon(word_id: StringName) -> Texture2D:
+	return tex("word_%s" % String(word_id))
 
 
 static func boss_glyph(boss_id: StringName) -> Texture2D:
