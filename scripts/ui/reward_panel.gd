@@ -22,6 +22,7 @@ var had_drops: bool = false
 @onready var skip_button: Button = %SkipButton
 @onready var remove_button: Button = %RemoveButton
 @onready var deck_grid: GridContainer = %DeckGrid
+@onready var deck_view: DeckView = %DeckView
 @onready var finish_button: Button = %FinishButton
 
 
@@ -64,6 +65,8 @@ func _refresh() -> void:
 	info_label.text = "덱 %d/%d · 선택 %d · 제거 %d" % [reward.deck.size(), reward.deck.deck_max, reward.picks_left, reward.removes_left]
 	_rebuild_candidates()
 	_rebuild_deck()
+	deck_view.visible = mode == &""
+	deck_view.show_counts(DeckView.counts_of(reward.deck.tokens))
 	var has_pick := selected_candidate >= 0 and reward.can_pick()
 	add_button.disabled = not (has_pick and reward.deck.can_add())
 	add_button.text = "추가" if reward.deck.can_add() else "덱 최대"

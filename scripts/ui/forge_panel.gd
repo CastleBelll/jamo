@@ -16,6 +16,7 @@ var replace_target: StringName = &""
 @onready var reroll_button: Button = %RerollButton
 @onready var build_label: Label = %BuildLabel
 @onready var deck_label: Label = %DeckLabel
+@onready var deck_view: DeckView = %DeckView
 @onready var candidates_box: VBoxContainer = %Candidates
 @onready var compare_label: Label = %CompareLabel
 @onready var replace_row: HBoxContainer = %ReplaceRow
@@ -72,6 +73,7 @@ func _refresh() -> void:
 		return
 	_rebuild_hand()
 	deck_label.text = _deck_text()
+	deck_view.show_counts(DeckView.counts_of(forge.hand + forge.draw + forge.discard), DeckView.counts_of(forge.hand))
 	lock_label.text = "잠금 %d/%d" % [forge.locked.size(), forge.lock_max]
 	reroll_button.text = "Reroll %d (바뀜 %d)" % [forge.rerolls_left, forge.reroll_slots()]
 	reroll_button.disabled = not forge.can_reroll()
@@ -92,15 +94,7 @@ func _refresh() -> void:
 
 ## "덱 20장 중 7장" plus what is still in the pile, so the hand reads as the player's own deck (B3).
 func _deck_text() -> String:
-	var counts := {}
-	for t in forge.draw + forge.discard:
-		counts[t["jamo"]] = counts.get(t["jamo"], 0) + 1
-	var keys := counts.keys()
-	keys.sort()
-	var rest: Array[String] = []
-	for k in keys:
-		rest.append("%s%d" % [k, counts[k]] if counts[k] > 1 else String(k))
-	return "내 덱 %d장을 섞어 %d장을 뽑음 · 남은 활자 %s" % [forge.token_total(), forge.hand.size(), " ".join(rest) if not rest.is_empty() else "없음"]
+	return "내 덱 %d장 · 금색 = 지금 손패에 뽑힌 활자 · 나머지 %d장은 덱에" % [forge.token_total(), forge.token_total() - forge.hand.size()]
 
 
 func _rebuild_hand() -> void:
@@ -197,7 +191,7 @@ func _build_text() -> String:
 ## 효과 비교 (G10): current Rank line vs the Rank this restore would give, plus what a swap loses.
 func _compare_text(c: Dictionary) -> String:
 	if c.is_empty():
-		return "후보 선택 → 효과 비교"
+		return ""
 	var w: WordData = c["word"]
 	var cur := forge.build.rank_of(w.id)
 	var text := "%s: %s" % [w.name, EffectText.describe_rank(w, cur + 1)]
@@ -213,7 +207,7 @@ func _compare_text(c: Dictionary) -> String:
 
 func _pin_text() -> String:
 	if run.pinned_word == &"":
-		return "목표 핀 → 부족 자모 표시"
+		return ""
 	var st := forge.pin_status(run.pinned_word)
 	var w: WordData = st["word"]
 	var parts: Array[String] = []

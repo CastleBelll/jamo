@@ -304,13 +304,16 @@ func _refresh_setup() -> void:
 		b.theme_type_variation = &"GhostButton"
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.custom_minimum_size = Vector2(0, 84)
-		var counts: Array[String] = []
-		for j in row["counts"]:
-			counts.append("%s%d" % [j, row["counts"][j]])
-		b.text = "%s · %d장 · 제작 %d%s\n%s" % [row["deck"].name, row["size"], row["craftable"].size(), "" if row["unlocked"] else " · 잠김", " ".join(counts)]
+		b.text = "%s · %d장 · 제작 가능 %d단어%s" % [row["deck"].name, row["size"], row["craftable"].size(), "" if row["unlocked"] else " · 잠김"]
 		var deck_id: StringName = id
 		b.pressed.connect(func(): setup_deck = deck_id; _refresh_setup())
 		%DeckRows.add_child(b)
+		var view := DeckView.new()
+		view.alignment = FlowContainer.ALIGNMENT_CENTER
+		view.add_theme_constant_override("h_separation", 4)
+		view.modulate.a = 1.0 if row["unlocked"] else 0.5
+		view.show_counts(row["counts"], {}, true)
+		%DeckRows.add_child(view)
 	var chosen := LibraryService.deck_row(db, db.decks[setup_deck])
 	var pin_text := ""
 	if Meta.pinned_word != "" and db.words.has(StringName(Meta.pinned_word)):
