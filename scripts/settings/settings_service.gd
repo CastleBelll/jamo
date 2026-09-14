@@ -6,7 +6,7 @@ extends RefCounted
 const BUSES := {"master": "Master", "bgm": "BGM", "sfx": "SFX", "ui": "UI"}
 const TEXT_SCALES := [100, 125, 150]
 const SHAKE_LEVELS := [0, 50, 100]
-const BASE_FONT_SIZE := 28
+const BASE_SIZES_META := &"base_font_sizes"
 
 
 ## Volume 0..100 -> dB (0 = silent). Returns the dB actually set.
@@ -37,10 +37,28 @@ static func apply_fullscreen(on: bool) -> void:
 
 
 ## Text scale applies as a theme font size on a root Control (Anchor/Container UI reflows).
+## Scales every font size the theme pins (Label 30, Button 32, ...) plus the default, so the
+## setting reaches real labels, not only controls without a type entry. Base sizes are cached on
+## the theme itself, so repeated calls scale from the original values, never from each other.
 static func apply_text_scale(root: Control, percent: int) -> void:
-	if root.theme == null:
+	var theme: Theme = root.theme if root.theme != null else ThemeDB.get_project_theme()
+	if theme == null:
 		return
-	root.theme.default_font_size = int(round(BASE_FONT_SIZE * percent / 100.0))
+	if not theme.has_meta(BASE_SIZES_META):
+		var base := {"": theme.default_font_size}
+		for type in theme.get_font_size_type_list():
+			for name in theme.get_font_size_list(type):
+				base["%s/%s" % [type, name]] = theme.get_font_size(name, type)
+		theme.set_meta(BASE_SIZES_META, base)
+	var factor := percent / 100.0
+	var base_sizes: Dictionary = theme.get_meta(BASE_SIZES_META)
+	for key in base_sizes:
+		var px := int(round(base_sizes[key] * factor))
+		if key == "":
+			theme.default_font_size = px
+		else:
+			var parts: PackedStringArray = key.split("/")
+			theme.set_font_size(parts[1], parts[0], px)
 
 
 static func shake_factor() -> float:
