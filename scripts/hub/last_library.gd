@@ -339,7 +339,7 @@ func _refresh_codex_detail() -> void:
 	meta.add_theme_constant_override("separation", 6)
 	if row["discovered"] and w.is_compound:
 		meta.add_child(_label("첫 합성 %s" % row["first_at"], &"MutedLabel"))  # B10: 합성은 복원도 없이 발견 기록만
-	else:
+	elif not w.is_compound:
 		# Pips carry the state: all empty = not restored yet, filled = best rank reached.
 		for i in RANK_PIPS:
 			meta.add_child(_pip(i < int(row["best_rank"])))
