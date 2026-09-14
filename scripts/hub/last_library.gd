@@ -193,7 +193,7 @@ func _research_card(row: Dictionary) -> Control:
 		var why := Label.new()
 		why.text = row["reason"]
 		why.theme_type_variation = &"MutedLabel"
-		why.add_theme_color_override("font_color", Color(0.72, 0.26, 0.18, 1))
+		why.add_theme_color_override("font_color", Color(0.58, 0.18, 0.12, 1))
 		text.add_child(why)
 	box.add_child(text)
 	var price := Label.new()
@@ -218,7 +218,11 @@ func _research_card(row: Dictionary) -> Control:
 ## "안정도 100 → 105" / "Starter B 잠김 → 선택 가능": numbers and states, no sentences.
 func _research_change(r: ResearchData) -> String:
 	if r.effect.has("max_stability"):
-		return "안정도 %.0f → %d" % [Meta.stability_max(db), int(r.effect["max_stability"])]
+		var target := int(r.effect["max_stability"])
+		# Purchased: stability_max already includes the bonus, so a "105 -> 105" line is noise.
+		if Meta.has_research(r.id):
+			return "안정도 %d" % target
+		return "안정도 %.0f → %d" % [Meta.stability_max(db), target]
 	if r.effect.has("unlock_deck"):
 		return "Starter B 잠김 → 선택 가능" if not Meta.has_research(r.id) else "Starter B 선택 가능"
 	return ""
