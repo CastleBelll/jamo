@@ -76,6 +76,7 @@ func _ready() -> void:
 		embedded_title.visible = false  # the card header names the tab
 	%SettingsPanel.open(self, true)  # lives inside the 설정 tab: never hidden, 서고로 returns to the hub tab
 	%SettingsPanel.closed.connect(func(): _show_tab(0))
+	%SettingsPanel.text_scale_changed.connect(_refresh)  # cards built in code take their size from SettingsService.px
 	var returned := LibraryService.record_return(db)
 	_refresh()
 	%NoticeLabel.text = returned
@@ -201,7 +202,7 @@ func _research_card(row: Dictionary) -> Control:
 	text.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var name := Label.new()
 	name.text = r.name
-	name.add_theme_font_size_override("font_size", 32)
+	name.add_theme_font_size_override("font_size", SettingsService.px(32))
 	text.add_child(name)
 	var change := Label.new()
 	change.text = _research_change(r)
@@ -216,7 +217,7 @@ func _research_card(row: Dictionary) -> Control:
 	box.add_child(text)
 	var price := Label.new()
 	price.text = "%dG" % r.price
-	price.add_theme_font_size_override("font_size", 30)
+	price.add_theme_font_size_override("font_size", SettingsService.px(30))
 	price.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	box.add_child(price)
 	var b := Button.new()
@@ -291,7 +292,7 @@ func _add_codex_button(text: String, id: String, icon: Texture2D, known: bool) -
 	b.theme_type_variation = &"GhostButton"
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.custom_minimum_size = Vector2(316, 52)
-	b.add_theme_font_size_override("font_size", 24)
+	b.add_theme_font_size_override("font_size", SettingsService.px(24))
 	b.toggle_mode = true
 	b.button_pressed = id == codex_selected
 	b.pressed.connect(func(): codex_selected = id; _refresh_codex())
@@ -377,7 +378,7 @@ func _detail_head(title: String, icon: Texture2D) -> HBoxContainer:
 	var name_label := Label.new()
 	name_label.name = "Title"
 	name_label.text = title
-	name_label.add_theme_font_size_override("font_size", 32)
+	name_label.add_theme_font_size_override("font_size", SettingsService.px(32))
 	text.add_child(name_label)
 	head.add_child(text)
 	%CodexDetail.add_child(head)
