@@ -74,7 +74,7 @@ func _refresh() -> void:
 	deck_view.show_counts(DeckView.counts_of(forge.hand + forge.draw + forge.discard), DeckView.counts_of(forge.hand), true)
 	lock_label.text = "잠금 %d/%d" % [forge.locked.size(), forge.lock_max]
 	reroll_button.text = "Reroll ×%d" % forge.rerolls_left
-	reroll_button.tooltip_text = "바뀜 %d장" % forge.reroll_slots()
+	reroll_button.tooltip_text = ("바뀜 %d장" % forge.reroll_slots()) if forge.rerolls_left > 0 else ""
 	reroll_button.disabled = not forge.can_reroll()
 	title_label.text = "단어 복원 · 빌드 %d/%d" % [forge.build.words.size(), forge.build.slots]
 	_rebuild_candidates()
@@ -153,7 +153,7 @@ func _rebuild_candidates() -> void:
 		candidates_box.add_child(b)
 	if overflow > 0:
 		var more := Label.new()
-		more.text = "…+%d" % overflow
+		more.text = "…+%d 단어" % overflow
 		more.theme_type_variation = &"MutedLabel"
 		candidates_box.add_child(more)
 	if list.is_empty():

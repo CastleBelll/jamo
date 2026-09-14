@@ -161,7 +161,11 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 				"drops": run.drops.drops.duplicate(), "gold": run.gold_run, "wave_gold": director.wave_gold, "damage_taken": run.wave_damage_taken,
 				"hold_time": director.stats["hold_time"], "damage_by_source": director.stats["damage_by_source"].duplicate(), "causes": run.damage_causes.duplicate()})
 			var line := run.take_pending_line()
-			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text() + ("\n" + line if line != "" else ""))
+			var stats_lines: Array[String] = []
+			for part in [_clear_stats_text(), line]:
+				if part != "":
+					stats_lines.append(part)
+			clear_panel.open(run.build_reward(), db_ref, "\n".join(stats_lines))
 			_save_run()
 		RunController.Phase.FORGE:
 			forge_panel.open(run, db_ref)
