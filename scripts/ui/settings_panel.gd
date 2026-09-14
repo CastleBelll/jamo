@@ -48,8 +48,10 @@ func open(root_for_text: Control = null, embed: bool = false) -> void:
 	%CloseButton.grab_focus()
 
 
+## One number beside each slider; no summary sentence (G10: 딱 봐도 이해).
 func _refresh_labels() -> void:
-	%VolumeLabel.text = "마스터 %d · BGM %d · SFX %d · UI %d" % [int(Meta.setting("master")), int(Meta.setting("bgm")), int(Meta.setting("sfx")), int(Meta.setting("ui"))]
+	for key in ["master", "bgm", "sfx", "ui"]:
+		get_node("%%%sValue" % key.capitalize()).text = str(int(Meta.setting(key)))
 
 
 func _apply_text_scale() -> void:

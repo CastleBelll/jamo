@@ -180,26 +180,59 @@ theme_type_variation = &"InkPanel"
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="GoldLabel" type="Label" parent="StatsCard/Box"]
+[node name="GoldRow" type="HBoxContainer" parent="StatsCard/Box"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="GoldIcon" type="TextureRect" parent="StatsCard/Box/GoldRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GoldLabel" type="Label" parent="StatsCard/Box/GoldRow"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CreamLabel"
 theme_override_font_sizes/font_size = 30
-text = "Gold 0"
+text = ""
 
-[node name="DiscoveredLabel" type="Label" parent="StatsCard/Box"]
+[node name="DiscoveredRow" type="HBoxContainer" parent="StatsCard/Box"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DiscoveredIcon" type="TextureRect" parent="StatsCard/Box/DiscoveredRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DiscoveredLabel" type="Label" parent="StatsCard/Box/DiscoveredRow"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CreamLabel"
 theme_override_font_sizes/font_size = 22
-text = "발견 0"
+text = ""
 
-[node name="BestLabel" type="Label" parent="StatsCard/Box"]
+[node name="BestRow" type="HBoxContainer" parent="StatsCard/Box"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BestIcon" type="TextureRect" parent="StatsCard/Box/BestRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BestLabel" type="Label" parent="StatsCard/Box/BestRow"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CreamLabel"
 theme_override_font_sizes/font_size = 22
-text = "최고 기록 -"
+text = ""
 
 [node name="SentenceLabel" type="Label" parent="StatsCard/Box"]
 unique_name_in_owner = true
@@ -329,23 +362,21 @@ theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 6
 columns = 2
 
-[node name="CodexDetail" type="Label" parent="ContentCard/Box/Tabs/사전/CodexBody"]
+[node name="CodexDetail" type="VBoxContainer" parent="ContentCard/Box/Tabs/사전/CodexBody"]
 unique_name_in_owner = true
 layout_mode = 2
-autowrap_mode = 3
 size_flags_horizontal = 3
-vertical_alignment = 0
-text = ""
+theme_override_constants/separation = 8
 
 [node name="기록" type="VBoxContainer" parent="ContentCard/Box/Tabs"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="BadgesLabel" type="Label" parent="ContentCard/Box/Tabs/기록"]
+[node name="BadgeRow" type="HBoxContainer" parent="ContentCard/Box/Tabs/기록"]
 unique_name_in_owner = true
 layout_mode = 2
-autowrap_mode = 3
-text = ""
+theme_override_constants/separation = 24
+alignment = 1
 
 [node name="EventRows" type="VBoxContainer" parent="ContentCard/Box/Tabs/기록"]
 unique_name_in_owner = true

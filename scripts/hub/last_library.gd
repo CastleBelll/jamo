@@ -6,6 +6,13 @@ const RUN_SCENE := "res://scenes/run/run_game.tscn"
 const RECORD_ROWS := 10
 const MENU_ICON_PX := 40
 const RESEARCH_ICONS := {"max_stability": "hud_stability", "unlock_deck": "hud_drop"}
+const CODEX_UNKNOWN_ALPHA := 0.55
+const CODEX_ICON_PX := 96
+const CODEX_GLYPH_PX := 40
+const RANK_PIPS := 3
+const LOCK_REASON_COLOR := Color(0.58, 0.18, 0.12, 1)
+const BADGE_OFF_ALPHA := 0.5
+const BADGES := [["first_compound", "badge_compound", "첫 합성"], ["first_clear", "badge_clear", "첫 완주"], ["twelve_words", "badge_twelve", "12종"]]
 
 var db: ContentDB
 var codex_tab: String = "base"
@@ -114,10 +121,13 @@ func _on_tab_changed(index: int) -> void:
 
 
 func _refresh() -> void:
-	%GoldLabel.text = "Gold %d" % Meta.gold
-	%DiscoveredLabel.text = "발견 %d" % LibraryService.base_discovered(db)
-	%BestLabel.text = "최고 기록 도달 W%d · 클리어 W%d" % [Meta.best_reached, Meta.best_cleared] if Meta.best_reached > 0 else "최고 기록 -"
-	%SentenceLabel.text = "원본: " + LibraryService.sentence_text(db)
+	%GoldIcon.texture = AssetLib.tex_light("hud_gold")
+	%DiscoveredIcon.texture = AssetLib.tex_light("tab_codex")
+	%BestIcon.texture = AssetLib.tex_light("hud_wave")
+	%GoldLabel.text = str(Meta.gold)
+	%DiscoveredLabel.text = "%d / %d" % [LibraryService.base_discovered(db), _base_word_count()]
+	%BestLabel.text = "W%d · 클리어 W%d" % [Meta.best_reached, Meta.best_cleared] if Meta.best_reached > 0 else "-"
+	%SentenceLabel.text = LibraryService.sentence_text(db)
 	%ContinueButton.visible = Meta.has_run()
 	%RunButton.text = "새 RUN" if Meta.has_run() else "RUN 시작"
 	%RunButton.theme_type_variation = &"" if Meta.has_run() else &"PrimaryButton"
@@ -144,6 +154,14 @@ func _refresh() -> void:
 		%ContinueButton.grab_focus()
 	else:
 		%RunButton.grab_focus()
+
+
+func _base_word_count() -> int:
+	var n := 0
+	for w in db.words.values():
+		if not w.is_compound:
+			n += 1
+	return n
 
 
 func _clear(container: Node) -> void:
@@ -193,7 +211,7 @@ func _research_card(row: Dictionary) -> Control:
 		var why := Label.new()
 		why.text = row["reason"]
 		why.theme_type_variation = &"MutedLabel"
-		why.add_theme_color_override("font_color", Color(0.58, 0.18, 0.12, 1))
+		why.add_theme_color_override("font_color", LOCK_REASON_COLOR)
 		text.add_child(why)
 	box.add_child(text)
 	var price := Label.new()
@@ -244,7 +262,7 @@ func _refresh_codex() -> void:
 		ids.sort_custom(func(a, b): return db.bosses[a].wave < db.bosses[b].wave)
 		for id in ids:
 			var row := LibraryService.boss_row(db, db.bosses[id])
-			_add_codex_button("%s · 정화 %d회" % [row["boss"].name, row["purified"]], String(id))
+			_add_codex_button(row["boss"].name, String(id), AssetLib.boss_glyph(id), row["purified"] > 0)
 			if first == "":
 				first = String(id)
 	else:
@@ -252,8 +270,9 @@ func _refresh_codex() -> void:
 			if w.is_compound != (codex_tab == "compound"):
 				continue
 			var row := LibraryService.codex_row(db, w)
-			var mark: String = ("발견 " + row["tier"]).strip_edges() if row["discovered"] else ("미발견" if row["unlocked"] else "잠김")
-			_add_codex_button("%s %s  %s" % [w.name, row["materials"], mark], String(w.id))
+			# Icon + name only: undiscovered words are dimmed, locked ones carry a lock (no status words).
+			var icon: Texture2D = AssetLib.word_icon(w.id) if row["unlocked"] else AssetLib.tex("lock_on")
+			_add_codex_button(w.name, String(w.id), icon, row["discovered"])
 			if first == "":
 				first = String(w.id)
 	if codex_selected == "":
@@ -261,12 +280,14 @@ func _refresh_codex() -> void:
 	_refresh_codex_detail()
 
 
-func _add_codex_button(text: String, id: String) -> void:
+func _add_codex_button(text: String, id: String, icon: Texture2D, known: bool) -> void:
 	var b := Button.new()
 	b.text = text
-	if db.words.has(StringName(id)) and AssetLib.word_icon(StringName(id)) != null:
-		b.icon = AssetLib.word_icon(StringName(id))
+	if icon != null:
+		b.icon = icon
 		b.expand_icon = true
+	if not known:
+		b.modulate.a = CODEX_UNKNOWN_ALPHA
 	b.theme_type_variation = &"GhostButton"
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.custom_minimum_size = Vector2(316, 52)
@@ -278,41 +299,150 @@ func _add_codex_button(text: String, id: String) -> void:
 
 
 func _refresh_codex_detail() -> void:
+	_clear(%CodexDetail)
 	if codex_selected == "":
-		%CodexDetail.text = ""
 		return
 	if codex_tab == "boss":
-		var row := LibraryService.boss_row(db, db.bosses[StringName(codex_selected)])
-		var lines: Array[String] = ["%s (W%d)" % [row["boss"].name, row["boss"].wave], "대응: %s" % row["hint"], "정화 %d회" % row["purified"]]
-		if row["intro"] != "":
-			lines.append("등장: %s" % row["intro"])
-		if row["after"] != "":
-			lines.append("기록: %s" % row["after"])
-		%CodexDetail.text = "\n".join(lines)
+		_boss_detail(LibraryService.boss_row(db, db.bosses[StringName(codex_selected)]))
 		return
 	var row := LibraryService.codex_row(db, db.words[StringName(codex_selected)])
 	var w: WordData = row["word"]
-	var lines: Array[String] = ["%s %s · %s" % [w.name, row["materials"], " ".join(w.tags)]]
+	var head := _detail_head(w.name, AssetLib.word_icon(w.id) if row["unlocked"] else AssetLib.tex("lock_on"))
+	if not row["discovered"]:
+		head.modulate.a = CODEX_UNKNOWN_ALPHA  # same dimming as the tile: not restored yet
+	head.get_node("Text").add_child(_glyph_row(w.required_jamo))
 	if not row["unlocked"]:
-		lines.append("잠김 · " + row["condition"])
-	if w.is_compound and row["condition"] != "":
-		lines.append("레시피: %s" % row["condition"])
-	lines.append_array(row["effects"])
+		_detail_line(row["condition"], &"MutedLabel", LOCK_REASON_COLOR)
+	elif w.is_compound and row["condition"] != "":
+		_detail_line(row["condition"], &"MutedLabel")
+	# One row per rank: "R1" tag + effect; ranks not reached yet are muted.
+	for i in row["effects"].size():
+		var parts: PackedStringArray = String(row["effects"][i]).split(": ", true, 1)
+		var line := HBoxContainer.new()
+		line.add_theme_constant_override("separation", 12)
+		var tag := Label.new()
+		tag.text = parts[0]
+		tag.custom_minimum_size = Vector2(44, 0)
+		tag.theme_type_variation = &"MutedLabel"
+		tag.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		line.add_child(tag)
+		var effect := Label.new()
+		effect.text = parts[1] if parts.size() > 1 else parts[0]
+		effect.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		effect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		if i + 1 > int(row["best_rank"]):
+			effect.theme_type_variation = &"MutedLabel"
+		line.add_child(effect)
+		%CodexDetail.add_child(line)
+	var meta := HBoxContainer.new()
+	meta.name = "Meta"
+	meta.add_theme_constant_override("separation", 6)
 	if row["discovered"] and w.is_compound:
-		lines.append("최초 발견 기록 · 첫 합성 %s" % row["first_at"])  # B10: 합성은 복원도 없이 발견 기록만
-	elif row["discovered"]:
-		lines.append("복원도 %s (%d회) · 최고 R%d" % [row["tier"], row["mastery"], row["best_rank"]])
-	else:
-		lines.append("미복원")
-	lines.append("보스 · %s" % row["boss"])
-	%CodexDetail.text = "\n".join(lines)
+		meta.add_child(_label("첫 합성 %s" % row["first_at"], &"MutedLabel"))  # B10: 합성은 복원도 없이 발견 기록만
+	elif not w.is_compound:
+		# Pips carry the state: all empty = not restored yet, filled = best rank reached.
+		for i in RANK_PIPS:
+			meta.add_child(_pip(i < int(row["best_rank"])))
+		if row["discovered"]:
+			meta.add_child(_label("×%d" % row["mastery"], &"MutedLabel"))
+	%CodexDetail.add_child(meta)
+	var boss := HBoxContainer.new()
+	boss.add_theme_constant_override("separation", 8)
+	if db.bosses.has(w.related_boss):
+		boss.add_child(_icon(AssetLib.boss_glyph(w.related_boss), CODEX_GLYPH_PX))
+	boss.add_child(_label(row["boss"], &"MutedLabel"))
+	%CodexDetail.add_child(boss)
+
+
+func _boss_detail(row: Dictionary) -> void:
+	var boss: BossData = row["boss"]
+	var head := _detail_head("%s (W%d)" % [boss.name, boss.wave], AssetLib.boss_glyph(boss.id))
+	head.get_node("Text").add_child(_label("정화 ×%d" % row["purified"], &"MutedLabel"))
+	_detail_line("대응 · " + row["hint"])
+	for key in ["intro", "after"]:
+		if row[key] != "":
+			_detail_line(row[key], &"MutedLabel")
+
+
+## Icon + title block shared by word and boss details; the title is `%CodexDetail/Head/Text/Title`.
+func _detail_head(title: String, icon: Texture2D) -> HBoxContainer:
+	var head := HBoxContainer.new()
+	head.name = "Head"
+	head.add_theme_constant_override("separation", 16)
+	head.add_child(_icon(icon, CODEX_ICON_PX))
+	var text := VBoxContainer.new()
+	text.name = "Text"
+	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var name_label := Label.new()
+	name_label.name = "Title"
+	name_label.text = title
+	name_label.add_theme_font_size_override("font_size", 32)
+	text.add_child(name_label)
+	head.add_child(text)
+	%CodexDetail.add_child(head)
+	return head
+
+
+func _detail_line(text: String, variation: StringName = &"", color: Color = Color.TRANSPARENT) -> void:
+	var l := _label(text, variation)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if color != Color.TRANSPARENT:
+		l.add_theme_color_override("font_color", color)
+	%CodexDetail.add_child(l)
+
+
+func _glyph_row(jamo: Array) -> HBoxContainer:
+	var box := HBoxContainer.new()
+	box.add_theme_constant_override("separation", 4)
+	for j in jamo:
+		# Flat glyph, not the 256px character sprite AssetLib.glyph() prefers.
+		var g := AssetLib.tex("glyph_%s" % AssetLib.GLYPH_NAMES[j]) if AssetLib.GLYPH_NAMES.has(j) else null
+		box.add_child(_icon(g, CODEX_GLYPH_PX) if g != null else _label(j))
+	return box
+
+
+func _icon(texture: Texture2D, px: int) -> TextureRect:
+	var pic := TextureRect.new()
+	pic.texture = texture
+	pic.custom_minimum_size = Vector2(px, px)
+	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	pic.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	return pic
+
+
+func _pip(on: bool) -> TextureRect:
+	var pip := _icon(AssetLib.tex("rank_pip_on" if on else "rank_pip_off"), 24)
+	pip.modulate.a = 1.0 if on else 0.6
+	return pip
+
+
+func _label(text: String, variation: StringName = &"") -> Label:
+	var l := Label.new()
+	l.text = text
+	if variation != &"":
+		l.theme_type_variation = variation
+	l.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	return l
 
 
 # --- 기록 (S5/B10) --------------------------------------------------------------------
 
+## Three badge icons, dimmed until earned; the narrative lines stay as they are.
 func _refresh_records() -> void:
 	var b := LibraryService.badges(db)
-	%BadgesLabel.text = "배지 · 첫 합성 %s · 첫 완주 %s · 12종 %s" % [_mark(b["first_compound"]), _mark(b["first_clear"]), _mark(b["twelve_words"])]
+	_clear(%BadgeRow)
+	for badge in BADGES:
+		var column := VBoxContainer.new()
+		column.alignment = BoxContainer.ALIGNMENT_CENTER
+		var pic := _icon(AssetLib.tex(badge[1]), 72)
+		pic.modulate.a = 1.0 if b[badge[0]] else BADGE_OFF_ALPHA
+		column.add_child(pic)
+		var caption := _label(badge[2], &"MutedLabel")
+		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		column.add_child(caption)
+		%BadgeRow.add_child(column)
 	_clear(%EventRows)
 	var lines := LibraryService.event_lines(db)
 	if lines.is_empty():
@@ -331,10 +461,6 @@ func _refresh_records() -> void:
 		more.text = "…이전 기록 %d개" % (lines.size() - shown.size())
 		more.theme_type_variation = &"MutedLabel"
 		%EventRows.add_child(more)
-
-
-func _mark(on: bool) -> String:
-	return "○" if on else "—"
 
 
 # --- RUN 시작 구성 (G10 row) ------------------------------------------------------------
@@ -370,7 +496,10 @@ func _refresh_setup() -> void:
 		b.theme_type_variation = &"GhostButton"
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.custom_minimum_size = Vector2(0, 84)
-		b.text = "%s · %d장 · 제작 가능 %d단어%s" % [row["deck"].name, row["size"], row["craftable"].size(), "" if row["unlocked"] else " · 잠김"]
+		b.text = "%s · %d장 · 단어 %d" % [row["deck"].name, row["size"], row["craftable"].size()]
+		if not row["unlocked"]:
+			b.icon = AssetLib.tex("lock_on")
+			b.expand_icon = true
 		var deck_id: StringName = id
 		b.pressed.connect(func(): setup_deck = deck_id; _refresh_setup())
 		%DeckRows.add_child(b)
@@ -390,7 +519,8 @@ func _refresh_setup() -> void:
 			if chosen["counts"].get(j, 0) < need[j]:
 				lacking.append(j)
 		pin_text = "목표 %s · %s" % [word.name, "가능" if lacking.is_empty() else "부족 %s" % " ".join(lacking)]
-	%SetupInfo.text = "못 만드는 단어 · %s\n%s" % [", ".join(chosen["blocked"]) if not chosen["blocked"].is_empty() else "없음", pin_text]
+	var blocked := "못 만듦 · %s" % ", ".join(chosen["blocked"]) if not chosen["blocked"].is_empty() else ""
+	%SetupInfo.text = "\n".join([blocked, pin_text]).strip_edges()
 
 
 func _start_run() -> void:
