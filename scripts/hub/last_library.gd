@@ -4,6 +4,8 @@ extends Control
 
 const RUN_SCENE := "res://scenes/run/run_game.tscn"
 const RECORD_ROWS := 10
+const MENU_ICON_PX := 40
+const RESEARCH_ICONS := {"max_stability": "hud_stability", "unlock_deck": "hud_drop"}
 
 var db: ContentDB
 var codex_tab: String = "base"
@@ -52,7 +54,10 @@ func _ready() -> void:
 	var tab_icons := ["", "tab_research", "tab_codex", "tab_records", "tab_settings"]
 	var menu_buttons := [null, %ResearchButton, %CodexButton, %RecordsButton, %SettingsButton]
 	for i in range(1, mini(tab_icons.size(), %Tabs.get_tab_count())):
-		AssetLib.apply(menu_buttons[i], tab_icons[i])
+		var b: Button = menu_buttons[i]
+		b.icon = AssetLib.tex_light(tab_icons[i])  # cream silhouette on the ink button
+		b.add_theme_constant_override("icon_max_width", MENU_ICON_PX)
+		b.expand_icon = true
 	%Tabs.tab_changed.connect(_on_tab_changed)
 	%Title.gui_input.connect(func(event): if event is InputEventMouseButton and event.is_pressed(): _dismiss_title())
 	AssetLib.apply(%Title/TitleArt, "title_screen")
@@ -152,26 +157,71 @@ func _clear(container: Node) -> void:
 func _refresh_research() -> void:
 	_clear(%ResearchRows)
 	for row in LibraryService.research_rows(db):
-		var r: ResearchData = row["research"]
-		var box := HBoxContainer.new()
-		box.add_theme_constant_override("separation", 16)
-		var text := Label.new()
-		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		var state: String = "구매 완료" if row["purchased"] else ("구매 가능" if row["allowed"] and row["affordable"] else row["reason"])
-		text.text = "%s  %dG\n%s → %s\n%s" % [r.name, r.price, row["current"], row["after"], state]
-		box.add_child(text)
-		var b := Button.new()
-		b.text = "구매" if not row["purchased"] else "완료"
-		b.custom_minimum_size = Vector2(160, 64)
-		b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		if not row["purchased"]:
-			b.theme_type_variation = &"PrimaryButton"
-		b.disabled = row["purchased"] or not row["allowed"] or not row["affordable"]
-		var id := r.id
-		b.pressed.connect(func(): if LibraryService.buy_research(db, id): _refresh())
-		box.add_child(b)
-		%ResearchRows.add_child(box)
+		%ResearchRows.add_child(_research_card(row))
+
+
+## G10 readability: icon + name + "before → after" + price + one button. Words only where a
+## picture cannot carry it (the lock reason), and only while it applies.
+func _research_card(row: Dictionary) -> Control:
+	var r: ResearchData = row["research"]
+	var card := PanelContainer.new()
+	card.theme_type_variation = &"Panel"
+	var box := HBoxContainer.new()
+	box.add_theme_constant_override("separation", 18)
+	card.add_child(box)
+	var pic := TextureRect.new()
+	pic.custom_minimum_size = Vector2(56, 56)
+	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	pic.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	for key in RESEARCH_ICONS:
+		if r.effect.has(key):
+			AssetLib.apply(pic, RESEARCH_ICONS[key])
+	box.add_child(pic)
+	var text := VBoxContainer.new()
+	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var name := Label.new()
+	name.text = r.name
+	name.add_theme_font_size_override("font_size", 32)
+	text.add_child(name)
+	var change := Label.new()
+	change.text = _research_change(r)
+	change.theme_type_variation = &"MutedLabel"
+	text.add_child(change)
+	if not row["purchased"] and not row["allowed"]:
+		var why := Label.new()
+		why.text = row["reason"]
+		why.theme_type_variation = &"MutedLabel"
+		why.add_theme_color_override("font_color", Color(0.72, 0.26, 0.18, 1))
+		text.add_child(why)
+	box.add_child(text)
+	var price := Label.new()
+	price.text = "%dG" % r.price
+	price.add_theme_font_size_override("font_size", 30)
+	price.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(price)
+	var b := Button.new()
+	b.text = "완료" if row["purchased"] else "구매"
+	b.custom_minimum_size = Vector2(150, 60)
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	if not row["purchased"]:
+		b.theme_type_variation = &"PrimaryButton"
+	b.disabled = row["purchased"] or not row["allowed"] or not row["affordable"]
+	b.tooltip_text = row["reason"] if b.disabled and not row["purchased"] else ""
+	var id := r.id
+	b.pressed.connect(func(): if LibraryService.buy_research(db, id): _refresh())
+	box.add_child(b)
+	return card
+
+
+## "안정도 100 → 105" / "Starter B 잠김 → 선택 가능": numbers and states, no sentences.
+func _research_change(r: ResearchData) -> String:
+	if r.effect.has("max_stability"):
+		return "안정도 %.0f → %d" % [Meta.stability_max(db), int(r.effect["max_stability"])]
+	if r.effect.has("unlock_deck"):
+		return "Starter B 잠김 → 선택 가능" if not Meta.has_research(r.id) else "Starter B 선택 가능"
+	return ""
 
 
 # --- 복원 사전 (G10 row) --------------------------------------------------------------
