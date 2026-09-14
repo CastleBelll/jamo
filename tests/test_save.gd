@@ -221,7 +221,7 @@ func _check_research_and_library() -> void:
 	Meta.gold = 40
 	lib = LIBRARY.instantiate()
 	add_child(lib)
-	_expect(lib.get_node("%ContinueButton").visible and lib.get_node("%RunButton").text.begins_with("새 RUN") and lib.get_node("%GoldLabel").text == "Gold 40", "suspended run: 이어하기 shown, Gold from Meta")
+	_expect(lib.get_node("%ContinueButton").visible and lib.get_node("%RunButton").text.begins_with("새 RUN") and lib.get_node("%GoldLabel").text == "40", "suspended run: 이어하기 shown, Gold from Meta")
 	lib.free()
 	Meta.corrupt = true
 	Meta.load_source = "none"
