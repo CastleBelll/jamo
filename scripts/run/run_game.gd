@@ -161,7 +161,11 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 				"drops": run.drops.drops.duplicate(), "gold": run.gold_run, "wave_gold": director.wave_gold, "damage_taken": run.wave_damage_taken,
 				"hold_time": director.stats["hold_time"], "damage_by_source": director.stats["damage_by_source"].duplicate(), "causes": run.damage_causes.duplicate()})
 			var line := run.take_pending_line()
-			clear_panel.open(run.build_reward(), db_ref, _clear_stats_text() + ("\n" + line if line != "" else ""))
+			var stats_lines: Array[String] = []
+			for part in [_clear_stats_text(), line]:
+				if part != "":
+					stats_lines.append(part)
+			clear_panel.open(run.build_reward(), db_ref, "\n".join(stats_lines))
 			_save_run()
 		RunController.Phase.FORGE:
 			forge_panel.open(run, db_ref)
@@ -179,8 +183,13 @@ func _on_phase_changed(_from: RunController.Phase, to: RunController.Phase) -> v
 
 
 ## G10 Wave Clear row: 정화/놓침, 안정도 손실, 회수 수.
+## Only the counters that moved this Wave; zeros are noise.
 func _clear_stats_text() -> String:
-	return "정화 %d · 놓침 %d · 손실 %.0f · 회수 %d" % [director.stats["purified"], director.stats["reached"], run.wave_damage_taken, run.drops.drops.size()]
+	var parts: Array[String] = []
+	for pair in [["정화", director.stats["purified"]], ["놓침", director.stats["reached"]], ["손실", int(run.wave_damage_taken)], ["회수", run.drops.drops.size()]]:
+		if int(pair[1]) > 0:
+			parts.append("%s %d" % [pair[0], int(pair[1])])
+	return " · ".join(parts)
 
 
 ## Data first, then the 회수 feedback (G12): the drop is counted before the glyph floats.
@@ -219,16 +228,20 @@ func _result_text(reason: RunController.EndReason) -> String:
 	keys.sort_custom(func(a, b): return run.damage_causes[a] > run.damage_causes[b])
 	for k in keys.slice(0, 2):
 		causes.append("%s %.0f" % [_cause_name(k), run.damage_causes[k]])
-	lines.append("손실 · %s" % (" · ".join(causes) if not causes.is_empty() else "없음"))
+	if not causes.is_empty():
+		lines.append("손실 · %s" % " · ".join(causes))
 	var build_parts: Array[String] = []
 	for held in run.build.words:
 		build_parts.append("%s R%d" % [db_ref.words[held["id"]].name, held["rank"]])
-	lines.append("빌드 · %s" % (", ".join(build_parts) if not build_parts.is_empty() else "없음"))
+	if not build_parts.is_empty():
+		lines.append("빌드 · %s" % ", ".join(build_parts))
 	var found: Array[String] = []
 	for id in run.discovered:
 		found.append(db_ref.words[id].name)
-	lines.append("신규 · %s" % (", ".join(found) if not found.is_empty() else "없음"))
-	lines.append("%dG" % int(run.gold_run))
+	if not found.is_empty():
+		lines.append("신규 · %s" % ", ".join(found))
+	if int(run.gold_run) > 0:
+		lines.append("%dG" % int(run.gold_run))
 	lines.append("다음 · %s" % _next_goal())
 	return "\n".join(lines)
 

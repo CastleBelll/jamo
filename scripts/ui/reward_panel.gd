@@ -62,7 +62,12 @@ func _refresh() -> void:
 		mode = &""
 	if (reward.removes_left <= 0 or not reward.deck.can_remove()) and mode == &"remove":
 		mode = &""
-	info_label.text = "덱 %d/%d · 선택 %d · 제거 %d" % [reward.deck.size(), reward.deck.deck_max, reward.picks_left, reward.removes_left]
+	var info := "덱 %d/%d" % [reward.deck.size(), reward.deck.deck_max]
+	if reward.picks_left > 0:
+		info += " · 선택 %d" % reward.picks_left
+	if reward.removes_left > 0:
+		info += " · 제거 %d" % reward.removes_left
+	info_label.text = info
 	_rebuild_candidates()
 	_rebuild_deck()
 	deck_view.visible = mode == &""
