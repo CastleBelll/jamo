@@ -10,6 +10,8 @@ const CODEX_UNKNOWN_ALPHA := 0.55
 const CODEX_ICON_PX := 96
 const CODEX_GLYPH_PX := 40
 const RANK_PIPS := 3
+const LOCK_REASON_COLOR := Color(0.58, 0.18, 0.12, 1)
+const BADGE_OFF_ALPHA := 0.5
 const BADGES := [["first_compound", "badge_compound", "첫 합성"], ["first_clear", "badge_clear", "첫 완주"], ["twelve_words", "badge_twelve", "12종"]]
 
 var db: ContentDB
@@ -209,7 +211,7 @@ func _research_card(row: Dictionary) -> Control:
 		var why := Label.new()
 		why.text = row["reason"]
 		why.theme_type_variation = &"MutedLabel"
-		why.add_theme_color_override("font_color", Color(0.58, 0.18, 0.12, 1))
+		why.add_theme_color_override("font_color", LOCK_REASON_COLOR)
 		text.add_child(why)
 	box.add_child(text)
 	var price := Label.new()
@@ -306,9 +308,11 @@ func _refresh_codex_detail() -> void:
 	var row := LibraryService.codex_row(db, db.words[StringName(codex_selected)])
 	var w: WordData = row["word"]
 	var head := _detail_head(w.name, AssetLib.word_icon(w.id) if row["unlocked"] else AssetLib.tex("lock_on"))
+	if not row["discovered"]:
+		head.modulate.a = CODEX_UNKNOWN_ALPHA  # same dimming as the tile: not restored yet
 	head.get_node("Text").add_child(_glyph_row(w.required_jamo))
 	if not row["unlocked"]:
-		_detail_line(row["condition"], &"MutedLabel", Color(0.58, 0.18, 0.12, 1))
+		_detail_line(row["condition"], &"MutedLabel", LOCK_REASON_COLOR)
 	elif w.is_compound and row["condition"] != "":
 		_detail_line(row["condition"], &"MutedLabel")
 	# One row per rank: "R1" tag + effect; ranks not reached yet are muted.
@@ -320,6 +324,7 @@ func _refresh_codex_detail() -> void:
 		tag.text = parts[0]
 		tag.custom_minimum_size = Vector2(44, 0)
 		tag.theme_type_variation = &"MutedLabel"
+		tag.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 		line.add_child(tag)
 		var effect := Label.new()
 		effect.text = parts[1] if parts.size() > 1 else parts[0]
@@ -334,10 +339,12 @@ func _refresh_codex_detail() -> void:
 	meta.add_theme_constant_override("separation", 6)
 	if row["discovered"] and w.is_compound:
 		meta.add_child(_label("첫 합성 %s" % row["first_at"], &"MutedLabel"))  # B10: 합성은 복원도 없이 발견 기록만
-	elif row["discovered"]:
+	else:
+		# Pips carry the state: all empty = not restored yet, filled = best rank reached.
 		for i in RANK_PIPS:
 			meta.add_child(_pip(i < int(row["best_rank"])))
-		meta.add_child(_label("×%d  %s" % [row["mastery"], row["tier"]], &"MutedLabel"))
+		if row["discovered"]:
+			meta.add_child(_label("×%d" % row["mastery"], &"MutedLabel"))
 	%CodexDetail.add_child(meta)
 	var boss := HBoxContainer.new()
 	boss.add_theme_constant_override("separation", 8)
@@ -430,7 +437,7 @@ func _refresh_records() -> void:
 		var column := VBoxContainer.new()
 		column.alignment = BoxContainer.ALIGNMENT_CENTER
 		var pic := _icon(AssetLib.tex(badge[1]), 72)
-		pic.modulate.a = 1.0 if b[badge[0]] else 0.3
+		pic.modulate.a = 1.0 if b[badge[0]] else BADGE_OFF_ALPHA
 		column.add_child(pic)
 		var caption := _label(badge[2], &"MutedLabel")
 		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
