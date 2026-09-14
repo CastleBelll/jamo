@@ -73,7 +73,8 @@ func _refresh() -> void:
 	_rebuild_hand()
 	deck_view.show_counts(DeckView.counts_of(forge.hand + forge.draw + forge.discard), DeckView.counts_of(forge.hand), true)
 	lock_label.text = "잠금 %d/%d" % [forge.locked.size(), forge.lock_max]
-	reroll_button.text = "Reroll %d (바뀜 %d)" % [forge.rerolls_left, forge.reroll_slots()]
+	reroll_button.text = "Reroll ×%d" % forge.rerolls_left
+	reroll_button.tooltip_text = "바뀜 %d장" % forge.reroll_slots()
 	reroll_button.disabled = not forge.can_reroll()
 	title_label.text = "단어 복원 · 빌드 %d/%d" % [forge.build.words.size(), forge.build.slots]
 	_rebuild_candidates()
@@ -126,11 +127,14 @@ func _rebuild_candidates() -> void:
 	var overflow := maxi(list.size() - MAX_CANDIDATE_ROWS * 2, 0)
 	for c in list.slice(0, MAX_CANDIDATE_ROWS * 2):
 		var w: WordData = c["word"]
-		var tag := "R%d→%d" % [forge.build.rank_of(w.id), forge.build.rank_of(w.id) + 1] if c["kind"] == ForgeService.KIND_RANK_UP else "신규"
+		# Name + effect; only rank-ups and replacements carry a tag (a new word needs no "신규").
+		var tags: Array[String] = []
+		if c["kind"] == ForgeService.KIND_RANK_UP:
+			tags.append("R%d→%d" % [forge.build.rank_of(w.id), forge.build.rank_of(w.id) + 1])
 		if c["needs_replace"] or c["replace_risk"]:
-			tag += " · 교체"
+			tags.append("교체")
 		var b := Button.new()
-		b.text = "%s  %s   %s" % [w.name, tag, EffectText.describe_rank(w, forge.build.rank_of(w.id) + 1)]
+		b.text = "%s  %s%s" % [w.name, ("%s   " % " · ".join(tags)) if not tags.is_empty() else "", EffectText.describe_rank(w, forge.build.rank_of(w.id) + 1)]
 		# The word's own picture leads the row; the candidate-kind glyph is the fallback.
 		if AssetLib.word_icon(w.id) != null:
 			b.icon = AssetLib.word_icon(w.id)
@@ -149,7 +153,7 @@ func _rebuild_candidates() -> void:
 		candidates_box.add_child(b)
 	if overflow > 0:
 		var more := Label.new()
-		more.text = "…후보 %d개 더 (Reroll로 확인)" % overflow
+		more.text = "…+%d" % overflow
 		more.theme_type_variation = &"MutedLabel"
 		candidates_box.add_child(more)
 	if list.is_empty():
@@ -211,11 +215,8 @@ func _pin_text() -> String:
 		return "목표 핀"
 	var st := forge.pin_status(run.pinned_word)
 	var w: WordData = st["word"]
-	var parts: Array[String] = []
-	for j in w.required_jamo:
-		parts.append("%s(덱 %d)" % [j, st["deck_counts"].get(j, 0)])
 	if st["possible"]:
-		return "목표 %s · 가능 · %s" % [w.name, " ".join(parts)]
+		return "목표 %s · 가능" % w.name
 	var lacking: Array[String] = []
 	for j in st["missing"]:
 		lacking.append("%s×%d" % [j, st["missing"][j]])
@@ -226,10 +227,10 @@ func _status_text() -> String:
 	if forge.restored_word != &"":
 		return "복원 완료 · %s" % db.words[forge.restored_word].name
 	if forge.is_failed():
-		return "복원 실패 · 안정도 +%.0f · 다음 Reroll +%d" % [db.balance.forge_fail_heal, db.balance.forge_fail_bonus_reroll]
+		return "실패 · 안정도 +%.0f · Reroll +%d" % [db.balance.forge_fail_heal, db.balance.forge_fail_bonus_reroll]
 	if forge.rerolls_left == 0 and not forge.candidates().is_empty():
-		return "후보 있음 · 넘기면 보정 없음"
-	return "활자 눌러 잠금 · Reroll"
+		return "넘기면 보정 없음"
+	return ""
 
 
 func _on_token(token_id: int) -> void:
