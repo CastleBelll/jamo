@@ -3,6 +3,7 @@ extends PanelContainer
 ## previews immediately and saves; opening it never resumes the combat clock.
 
 signal closed
+signal text_scale_changed
 
 ## Embedded in a library tab: the panel stays visible and shows no 계속하기 button.
 var embedded: bool = false
@@ -55,5 +56,5 @@ func _refresh_labels() -> void:
 
 
 func _apply_text_scale() -> void:
-	if text_root != null:
-		SettingsService.apply_text_scale(text_root, int(Meta.setting("text_scale")))
+	SettingsService.apply_text_scale(text_root, int(Meta.setting("text_scale")))
+	text_scale_changed.emit()
